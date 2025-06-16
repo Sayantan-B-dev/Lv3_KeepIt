@@ -5,10 +5,11 @@ import {
     postLogin,
     logoutUser
 } from "../controllers/authController.js"
+import upload from "../utils/multer.js"
 
 const router=express.Router()
 
-router.post('/register',registerUser)
+router.post('/register',upload.single('profileImage'),registerUser)
 router.post('/login',loginUser,postLogin)
 router.post('/logout',logoutUser)
 

@@ -4,32 +4,39 @@ import MongoStore from "connect-mongo"
 import passport from "passport"
 import flash from "connect-flash"
 import methodOverride from "method-override"
-import mongoSanitize from "express-mongo-sanitize"
+import sanitize from 'mongo-sanitize';
 import helmet from "helmet"
 
+
+
+//added fpr authRoutes
 import path from "path"
 import { fileURLToPath } from "url"
-const __dirname=path.dirname(fileURLToPath(import.meta.url))//added fpr authRoutes
+const __dirname=path.dirname(fileURLToPath(import.meta.url))
 
+
+//solves the express.session deprecated problem 
 import dotenv from 'dotenv';
-dotenv.config();//solves the express.session deprecated problem 
+dotenv.config();
 
 
-
+//important middlewares
 const app=express() 
 app.use(express.urlencoded({extended:true}))
 app.use(express.json())
 app.use(methodOverride('_method'))
-app.use(mongoSanitize())
+app.use((req, res, next) => {
+  req.body = sanitize(req.body);
+  req.params = sanitize(req.params);
+  next();
+});
 app.use(helmet())
 
-import authRoutes from "./routes/auth.js"
-app.use(authRoutes)
 
 app.use(session({
     secret:process.env.SESSION_SECRET,
     resave:false,
-    saveUninitialized:flash,
+    saveUninitialized:false,
     store:MongoStore.create({
         mongoUrl: 'mongodb://127.0.0.1:27017/myapp',
         touchAfter: 24 * 3600,
@@ -40,15 +47,28 @@ app.use(session({
     }
 }))
 
+//must be after session
+app.use(flash())
+
+// Passport middleware (after session)
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Custom middleware to make flash messages available in all responses (optional if using EJS)
 app.use((req,res,next)=>{
-    req.locals.success=req.flash("success")
-    req.locals.error=req.flash("error")
+    res.locals.success=req.flash("success")
+    res.locals.error=req.flash("error")
     next()
 })
 
+import authRoutes from "./routes/auth.js";
+import categoryRoutes from './routes/category.js'
+import noteRoutes from './routes/note.js'
 
-app.use(flash())
-app.use(passport.initialize())
-app.use(passport.session())
+
+app.use('/api/auth', authRoutes)
+app.use('/app/categories',categoryRoutes)
+app.use('/app/notes',noteRoutes)
+
 
 export default app
