@@ -1,0 +1,28 @@
+# Ignore environment variable files
+backend/.env
+frontend/.env
+backend/.env.* 
+frontend/.env.*
+
+# Ignore node_modules in both frontend and backend
+**/node_modules/
+
+# Ignore Vite build output (frontend)
+frontend/dist/
+
+# Ignore logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore OS-specific junk files
+.DS_Store
+Thumbs.db
+
+# Optional: Editor config
+.vscode/
+
+# Optional: dotenv override files
+*.local
