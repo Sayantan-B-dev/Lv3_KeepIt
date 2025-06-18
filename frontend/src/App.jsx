@@ -8,6 +8,8 @@ import Category from "./pages/Category";
 import Note from "./pages/Note";
 import axiosInstance from "./api/axiosInstance";
 
+import { StickyNavbar } from "./components/partials/StickyNavbar";
+
 function App() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -59,6 +61,8 @@ function App() {
 
   return (
     <BrowserRouter>
+        <StickyNavbar />
+
       <Routes>
         <Route 
           path="/" 

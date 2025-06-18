@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 
+
 const Home = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);

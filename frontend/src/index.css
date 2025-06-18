@@ -1,3 +1,5 @@
+
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -5,7 +7,8 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #F0F0F0;
+
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -13,14 +16,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 a {
   font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  color: #000000;
 }
-a:hover {
-  color: #535bf2;
-}
+
 
 body {
   margin: 0;
@@ -28,6 +35,8 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  font-family: 'Merriweather Variable', serif;
+
 }
 
 h1 {
@@ -56,7 +65,7 @@ button:focus-visible {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: #244b6b;
     background-color: #ffffff;
   }
   a:hover {
