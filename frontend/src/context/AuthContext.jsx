@@ -10,7 +10,6 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Update localStorage when user changes
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
     } else {
@@ -32,7 +31,6 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook for using the auth context
 const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {

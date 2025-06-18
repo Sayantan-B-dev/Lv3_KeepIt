@@ -13,7 +13,10 @@ const noteSchema =new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'User',
         required:true
-    }
+    },
+    createdAt:{type:Date,default:Date.now},
+    updatedAt:{type:Date,default:Date.now},
+    likes:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
 
 },{timestamps:true})
 

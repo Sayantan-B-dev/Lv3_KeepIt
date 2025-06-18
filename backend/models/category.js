@@ -9,6 +9,9 @@ const categorySchema=new mongoose.Schema({
         ref:'User',
         required:true
     },
+    notes:[{type:mongoose.Schema.Types.ObjectId,ref:'Note'}],
+    createdAt:{type:Date,default:Date.now},
+    updatedAt:{type:Date,default:Date.now},
 },{timestamps:true})
 
 const Category=mongoose.model('Category',categorySchema)

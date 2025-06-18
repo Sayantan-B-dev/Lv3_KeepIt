@@ -1,74 +1,76 @@
 import express from "express"
 import session from "express-session"
-import MongoStore from "connect-mongo"  
+import MongoStore from "connect-mongo"
 import passport from "passport"
 import flash from "connect-flash"
 import methodOverride from "method-override"
 import sanitize from 'mongo-sanitize';
 import helmet from "helmet"
-
-
-
-//added fpr authRoutes
-import path from "path"
-import { fileURLToPath } from "url"
-const __dirname=path.dirname(fileURLToPath(import.meta.url))
-
-
-//solves the express.session deprecated problem 
+import cors from "cors";
 import dotenv from 'dotenv';
+
+// Load environment variables
 dotenv.config();
 
+const app = express()
 
-//important middlewares
-const app=express() 
-app.use(express.urlencoded({extended:true}))
+// CORS configuration
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
+
+// Middlewares
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
 app.use(methodOverride('_method'))
+
+// Sanitize middleware
 app.use((req, res, next) => {
-  req.body = sanitize(req.body);
-  req.params = sanitize(req.params);
-  next();
+    req.body = sanitize(req.body);
+    req.params = sanitize(req.params);
+    next();
 });
-app.use(helmet())
 
-
+// Session configuration
 app.use(session({
-    secret:process.env.SESSION_SECRET,
-    resave:false,
-    saveUninitialized:false,
-    store:MongoStore.create({
-        mongoUrl: 'mongodb://127.0.0.1:27017/myapp',
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+        mongoUrl: process.env.DATABASE_URL || 'mongodb://127.0.0.1:27017/myapp',
         touchAfter: 24 * 3600,
     }),
-    cookie:{
+    cookie: {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7, 
+        maxAge: 1000 * 60 * 60 * 24 * 7,
     }
-}))
+}));
 
-//must be after session
-app.use(flash())
+// Flash messages
+app.use(flash());
 
-// Passport middleware (after session)
+// Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Custom middleware to make flash messages available in all responses (optional if using EJS)
-app.use((req,res,next)=>{
-    res.locals.success=req.flash("success")
-    res.locals.error=req.flash("error")
-    next()
-})
+// Flash messages middleware
+app.use((req, res, next) => {
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
+});
 
+// Import routes
 import authRoutes from "./routes/auth.js";
-import categoryRoutes from './routes/category.js'
-import noteRoutes from './routes/note.js'
+import categoryRoutes from './routes/category.js';
+import noteRoutes from './routes/note.js';
+import profileRoutes from './routes/profile.js';
 
+// Use routes
+app.use('/api/profile', profileRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/notes', noteRoutes);
 
-app.use('/api/auth', authRoutes)
-app.use('/app/categories',categoryRoutes)
-app.use('/app/notes',noteRoutes)
-
-
-export default app
+export default app;

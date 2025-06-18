@@ -42,3 +42,41 @@ export const logoutUser = (req, res) => {
         res.status(200).json({ message: 'logged out successfully' })
     })
 }
+
+export const checkAuth = (req, res) => {
+    // Development mode - always return authenticated
+    if (process.env.NODE_ENV === 'development') {
+        return res.status(200).json({ 
+            authenticated: true, 
+            user: {
+                _id: 'dev-user-id',
+                username: 'dev-user',
+                email: 'dev@example.com'
+            }
+        });
+    }
+
+    // Production mode - normal authentication check
+    if (req.isAuthenticated()) {
+        res.status(200).json({ 
+            authenticated: true, 
+            user: {
+                _id: req.user._id,
+                username: req.user.username,
+                email: req.user.email
+            }
+        });
+    } else {
+        res.status(401).json({ authenticated: false });
+    }
+}
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.find({}, 'username email profileImage');
+        res.json(users);
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
+}
