@@ -8,6 +8,7 @@ import Category from "./pages/Category";
 import Note from "./pages/Note";
 import axiosInstance from "./api/axiosInstance";
 import DotGrid from './components/advance/Background';
+import Footer from "./components/partials/footer";
 
 import { StickyNavbar } from "./components/partials/StickyNavbar";
 
@@ -63,6 +64,8 @@ function App() {
   return (
     <BrowserRouter>
       <StickyNavbar />
+
+      {/* background */}
       <div style={{ width: '100%', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: -3456, pointerEvents: 'none' }}>
         <DotGrid
           dotSize={2}
@@ -126,6 +129,8 @@ function App() {
           }
         />
       </Routes>
+
+      <Footer />
     </BrowserRouter>
   );
 }

@@ -3,6 +3,7 @@ import axiosInstance from '../api/axiosInstance';
 import UserBox from '../components/home/UserBox';
 import Hero from '../components/home/Hero';
 
+
 const Home = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,8 +13,7 @@ const Home = () => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get('/api/auth/users');
-        console.log('Users response:', response.data);
+        const response = await axiosInstance.get('/api/profile/users');
         setUsers(response.data);
       } catch (err) {
         console.error('Error details:', err.response || err);
@@ -37,7 +37,7 @@ const Home = () => {
   return (
     <div className="container mx-auto p-4">
       <Hero />
-      <h1 className="text-2xl font-bold mb-4 mt-10 text-black border-b-2 border-gray-300 pb-2 ">Users</h1>
+      <h1 className="text-2xl font-bold mt-10 text-black pb-2 ">Users</h1>
       <UserBox users={users} />
     </div>
   );

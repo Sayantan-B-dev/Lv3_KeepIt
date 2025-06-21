@@ -38,7 +38,7 @@ const boxes = [
 
 const Hero = () => {
   return (
-    <div className="mt-10 min-h-screen border-1 border-black  rounded-3xl shadow-xl flex items-center p-10 bg-gray-50 bg-[url('https://images.pexels.com/photos/317356/pexels-photo-317356.jpeg')] bg-cover bg-center bg-no-repeat">
+    <div style={{ height: "600px" }} className="mt-10 border-1 border-black rounded-3xl flex items-center p-10 bg-gray-50 bg-[url('https://images.pexels.com/photos/317356/pexels-photo-317356.jpeg')] bg-cover bg-center bg-no-repeat">
       <div className="container mx-auto px-4 py-16">
         <div className="grid lg:grid-cols-2 gap-12 items-center lg:gap-0">
           {/* Left Side - App Definition */}

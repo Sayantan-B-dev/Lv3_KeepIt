@@ -18,9 +18,11 @@ export const getUserProfile = async (req, res) => {
 // Get all users' public profiles
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select('_id username profileImage');
+    const users = await User.find({})
+      .select('_id username profileImage categories');
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
