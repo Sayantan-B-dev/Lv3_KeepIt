@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
-
+import UserBox from '../components/home/UserBox';
+import Hero from '../components/home/Hero';
 
 const Home = () => {
   const [users, setUsers] = useState([]);
@@ -36,30 +36,9 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Users</h1>
-      <div className="grid gap-4">
-        {users.map((user) => (
-          <Link 
-            key={user._id}
-            to={`/profile/${user._id}`}
-            className="block p-4 border rounded hover:bg-gray-50"
-          >
-            <div className="flex items-center gap-4">
-              {user.profileImage && (
-                <img 
-                  src={user.profileImage.url} 
-                  alt={user.username} 
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-              )}
-              <div>
-                <h2 className="text-xl font-semibold">{user.username}</h2>
-                <p className="text-gray-600">View profile and notes</p>
-              </div>
-            </div>
-          </Link>
-        ))}
-      </div>
+      <Hero />
+      <h1 className="text-2xl font-bold mb-4 mt-10 text-black border-b-2 border-gray-300 pb-2 ">Users</h1>
+      <UserBox users={users} />
     </div>
   );
 };

@@ -7,6 +7,7 @@ import {
   IconButton,
 } from "@material-tailwind/react";
 import DottedButton from "../buttons/DottedButton";
+import FluidGlass from "../advance/FluidGlass";
 
 const blackFont = {
   textDecoration: "none",
@@ -120,7 +121,7 @@ export function StickyNavbar() {
   
 
   return (
-    <Navbar className={`mx-auto max-w-[90%] rounded-4xl py-2 px-4 lg:px-8 lg:py-4 sticky top-4 z-50 transition-colors duration-500 ${scrolled ? "bg-white/20 backdrop-blur-xs border border-gray-500 shadow-3xl" : "bg-black/5"}`}>
+    <Navbar className={`mx-auto max-w-[90%] rounded-4xl py-2 px-4 lg:px-8 lg:py-4 sticky top-4 z-50 transition-colors backdrop-blur-xs duration-500 ${scrolled ? "bg-white/20 backdrop-blur-xs border border-gray-500 shadow-3xl" : "bg-black/5"}`}>
       <div className="container mx-auto flex items-center justify-between text-blue-gray-900">
         <Typography
           as="a"

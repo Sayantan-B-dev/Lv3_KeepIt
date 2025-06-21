@@ -7,6 +7,7 @@ import Profile from "./pages/Profile";
 import Category from "./pages/Category";
 import Note from "./pages/Note";
 import axiosInstance from "./api/axiosInstance";
+import DotGrid from './components/advance/Background';
 
 import { StickyNavbar } from "./components/partials/StickyNavbar";
 
@@ -61,55 +62,68 @@ function App() {
 
   return (
     <BrowserRouter>
-        <StickyNavbar />
+      <StickyNavbar />
+      <div style={{ width: '100%', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: -3456, pointerEvents: 'none' }}>
+        <DotGrid
+          dotSize={2}
+          gap={20}
+          baseColor="#1a1a2e"
+          activeColor="#16213e"
+          proximity={100}
+          shockRadius={200}
+          shockStrength={3}
+          resistance={600}
+          returnDuration={2.0}
+        />
+      </div>
 
       <Routes>
-        <Route 
-          path="/" 
+        <Route
+          path="/"
           element={
-            <Home 
-              notes={notes} 
-              loading={loading} 
-              error={error} 
+            <Home
+              notes={notes}
+              loading={loading}
+              error={error}
               isAuthenticated={isAuthenticated}
               user={user}
             />
-          } 
+          }
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route 
-          path="/profile/:userId" 
+        <Route
+          path="/profile/:userId"
           element={
-            <Profile 
+            <Profile
               user={user}
               loading={loading}
               error={error}
               isAuthenticated={isAuthenticated}
             />
-          } 
+          }
         />
-        <Route 
-          path="/category/:categoryId" 
+        <Route
+          path="/category/:categoryId"
           element={
-            <Category 
+            <Category
               user={user}
               loading={loading}
               error={error}
               isAuthenticated={isAuthenticated}
             />
-          } 
+          }
         />
-        <Route 
-          path="/note/:noteId" 
+        <Route
+          path="/note/:noteId"
           element={
-            <Note 
+            <Note
               user={user}
               loading={loading}
               error={error}
               isAuthenticated={isAuthenticated}
             />
-          } 
+          }
         />
       </Routes>
     </BrowserRouter>
