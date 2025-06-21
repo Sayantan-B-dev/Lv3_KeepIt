@@ -37,7 +37,7 @@ const Home = () => {
   return (
     <div className="container mx-auto p-4">
       <Hero />
-      <h1 className="text-2xl font-bold mt-10 text-black pb-2 ">Users</h1>
+      <h1 className="text-2xl font-bold mt-10 text-black pb-2 ">Explore</h1>
       <UserBox users={users} />
     </div>
   );

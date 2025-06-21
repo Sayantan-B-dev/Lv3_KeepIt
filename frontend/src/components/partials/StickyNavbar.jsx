@@ -7,6 +7,7 @@ import {
   IconButton,
 } from "@material-tailwind/react";
 import DottedButton from "../buttons/DottedButton";
+import { useNavigate } from "react-router-dom";
 
 const blackFont = {
   textDecoration: "none",
@@ -26,6 +27,7 @@ export { blackFontClass };
 export function StickyNavbar() {
   const [openNav, setOpenNav] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const onScroll = () => {
@@ -127,7 +129,9 @@ export function StickyNavbar() {
           as="a"
           href="#"
           className="mr-4 cursor-pointer py-1.5 font-bold text-2xl"
-          style={{ textDecoration: "none", color: "black" }}>
+          style={{ textDecoration: "none", color: "black" }}
+          onClick={() => navigate("/")}
+          >
           KeepIt
         </Typography>
         <div className="hidden lg:block">{navList}</div>

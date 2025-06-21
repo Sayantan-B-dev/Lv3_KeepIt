@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams,useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
+import DottedButton from "../components/buttons/DottedButton";
+import Magnet from "../components/advance/Magnet";
 
 const Category = ({ user: loggedInUser, loading: appLoading, error: appError, isAuthenticated }) => {
     const { categoryId } = useParams();
@@ -11,6 +13,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
     const [error, setError] = useState(null);
     const [notes, setNotes] = useState([]);
     const [user, setUser] = useState(null);
+    const [profile, setProfile] = useState(null);
 
     const handleNoteClick = (noteId) => {
         navigate(`/note/${noteId}`);
@@ -25,6 +28,9 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
             try {
                 const res = await axiosInstance.get(`/api/categories/${categoryId}`);
                 setCategory(res.data);
+
+                const profile = await axiosInstance.get(`/api/profile/${res.data.user}`);
+                setProfile(profile.data);
 
                 const notes = []
 
@@ -64,42 +70,81 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
     }
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-2">{category.name}</h1>
-            <div className="mb-2">
-                <span className="text-gray-600 text-sm">
-                    {category.isPrivate ? "Private" : "Public"}
-                </span>
+        <Magnet padding={50} disabled={false} magnetStrength={50} className="w-full">
+            <div className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16"
+                style={{
+                    backdropFilter: 'blur(2px)',
+                    backdropShadow: '20px',
+                    background: 'rgba(255, 255, 255, 0.01)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
+                    borderRadius: '60px',
+                }}
+            >
+                {/* Category Header */}
+                <div className="flex items-center gap-6 mb-8">
+                    <div className="relative">
+                        <div className="w-20 h-20 rounded-2xl bg-indigo-100 flex items-center justify-center text-4xl text-indigo-400 font-bold border-4 border-indigo-200 shadow-lg">
+                            {category.name?.[0]?.toUpperCase() || "?"}
+                        </div>
+                    </div>
+                    <div>
+                        <h1 className="text-4xl font-extrabold text-gray-900 flex items-center gap-2">
+                            {category.name}
+                            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${category.isPrivate ? "bg-red-100 text-red-500" : "bg-green-100 text-green-600"}`}>
+                                {category.isPrivate ? "Private" : "Public"}
+                            </span>
+                        </h1>
+                        <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
+                            <span className="flex items-center gap-1">
+                                <span className="text-xs text-gray-400">Created:</span>
+                                {new Date(category.createdAt).toLocaleString()}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                {/* Author */}
+                <div className="mb-8 flex items-center gap-6">
+                <span className="block font-semibold text-gray-700 mb-1">Author:</span>
+
+                    <div className="relative" >
+                        <img
+                            src={profile.profileImage.url}
+                            alt={profile.username}
+                            className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-indigo-200 shadow-xl transition-transform duration-300 hover:scale-105"
+                            onClick={() => handleUserClick(user._id)}
+                        />
+                        <span className="absolute bottom-2 right-2 bg-indigo-500 text-white text-xs px-2 py-1 rounded-full shadow-md cursor-pointer" onClick={() => handleUserClick(user._id)}>
+                        {user?.username}
+                        </span>
+                    </div>
+                </div>
+                {/* Notes */}
+                <div className="mb-8">
+                    <h2 className="font-semibold text-black mb-2 text-lg">Notes</h2>
+                    {notes && notes.length > 0 ? (
+                        <ul className="flex flex-wrap gap-3">
+                            {notes.map((note) => (
+                                <li key={note._id}>
+                                    <DottedButton
+                                        onClick={() => handleNoteClick(note._id)}
+                                        text={note.title}
+                                    />
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p className="text-gray-400 italic">No notes in this category.</p>
+                    )}
+                </div>
+                {/* Footer */}
+                <div className="mt-10 text-center">
+                    <p className="text-gray-500 text-sm italic">
+                        Viewing <span className="font-bold">{category.name}</span> category.
+                    </p>
+                </div>
             </div>
-            <div className="mb-4">
-                <span className="font-semibold">Author: </span>
-                <a onClick={()=>handleUserClick(user._id)}>{user?.username}</a>
-            </div>
-            <div className="text-gray-500 text-xs mb-4">
-                Created: {new Date(category.createdAt).toLocaleString()}
-            </div>
-            <div className="text-gray-500 text-xs mb-4">
-                Updated: {new Date(category.updatedAt).toLocaleString()}
-            </div>
-            <div>
-                <h2 className="font-semibold mt-4 mb-2">Notes:</h2>
-                {notes && notes.length > 0 ? (
-                    <ul className="list-disc ml-6 flex flex-col gap-2">
-                        {notes.map((note) => (
-                            <a
-                                key={note._id}
-                                className="text-blue-500 hover:text-blue-700 text-sm"
-                                onClick={() => handleNoteClick(note._id)}
-                            >
-                                {note.title}
-                            </a>
-                        ))}
-                    </ul>
-                ) : (
-                    <p className="text-gray-400">No notes in this category.</p>
-                )}
-            </div>
-        </div>
+        </Magnet>
     );
 };
 
