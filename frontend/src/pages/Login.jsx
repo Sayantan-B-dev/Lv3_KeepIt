@@ -3,7 +3,7 @@ import axios from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 
-const Login = () => {
+const Login = ({ setIsAuthenticated }) => {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -22,9 +22,15 @@ const Login = () => {
     setError("");
     setLoading(true);
     try {
-      const res = await axios.post("/login", formData);
-      setUser(res.data.user);
-      navigate("/");
+      await axios.post("/api/auth/login", formData);
+      const checkRes = await axios.get("/api/auth/check");
+      if (checkRes.data.authenticated) {
+        setUser(checkRes.data.user);
+        setIsAuthenticated(true);
+        navigate("/");
+      } else {
+        setError("Login failed. Please check your credentials and try again.");
+      }
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -55,7 +61,7 @@ const Login = () => {
             placeholder="Enter your username"
             value={formData.username}
             onChange={handleChange}
-            className="w-full border-gray-300 border-2 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300"
+            className="w-full border-gray-300 border-2 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 text-black"
             autoComplete="username"
             disabled={loading}
             required
@@ -72,7 +78,7 @@ const Login = () => {
             type="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full border-gray-300 border-2 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300"
+            className="w-full border-gray-300 border-2 rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-300 text-black"
             autoComplete="current-password"
             disabled={loading}
             required

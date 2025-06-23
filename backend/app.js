@@ -2,12 +2,15 @@ import express from "express"
 import session from "express-session"
 import MongoStore from "connect-mongo"
 import passport from "passport"
+import LocalStrategy from "passport-local"
 import flash from "connect-flash"
 import methodOverride from "method-override"
 import sanitize from 'mongo-sanitize';
 import helmet from "helmet"
 import cors from "cors";
 import dotenv from 'dotenv';
+import User from "./models/user.js"
+
 
 // Load environment variables
 dotenv.config();
@@ -60,6 +63,72 @@ app.use((req, res, next) => {
     res.locals.error = req.flash("error");
     next();
 });
+
+
+const workerSrcUrls = [
+    "'self'",
+    "blob:"
+];//this allows the home page to run..donno why
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            defaultSrc: ["'self'"],
+            workerSrc: workerSrcUrls,
+            connectSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            fontSrc: ["'self'"],
+            imgSrc: [
+                "'self'",
+                "blob:",
+                "data:",
+                "https://res.cloudinary.com/",
+                "https://api.maptiler.com/",
+            ],
+        },
+    })
+);
+// 🔹 Session Configuration (Before Passport
+const store = MongoStore.create({
+    mongoUrl: process.env.DATABASE_URL,//the Key matters very much
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: process.env.SESSION_SECRET,
+    }
+})
+store.on("error", function (e) {
+    console.log("Session Store error: ", e)
+})
+const sessionConfig = {
+    store,
+    name: `__cf${Math.floor(Math.random() * 1000000000)}`,
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,//to prevent from accessing the cookie from the client side
+        //secure:true,
+        expires: Date.now() + 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+    }
+}
+app.use(session(sessionConfig))
+app.use(flash());
+
+// 🔹 Passport Configuration (After Session)
+app.use(passport.initialize())
+app.use(passport.session())
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser()) //how to store in session
+passport.deserializeUser(User.deserializeUser()) //how to un-store in session
+
+// 🔹 Flash Messages Middleware (After Passport)
+app.use((req, res, next) => {
+  res.locals.currentUser=req.user
+  res.locals.success = req.flash('success');
+  res.locals.error = req.flash('error');
+  next();
+})
 
 // Import routes
 import authRoutes from "./routes/auth.js";

@@ -13,9 +13,16 @@ import upload from "../utils/multer.js"
 const router=express.Router()
 
 router.post('/register',upload.single('profileImage'),registerUser)
-router.post('/login',loginUser,postLogin)
-router.post('/logout',logoutUser)
-router.get('/check',checkAuth)
-router.get('/users', getAllUsers)
+
+router.route('/login').post(loginUser,postLogin)
+router.route('/logout').get(logoutUser)
+router.route('/check').get(checkAuth)
+router.route('/users').get(getAllUsers)
+// router.get('/register',(req,res)=>{
+//     res.render('register')
+// })
+// router.get('/login',(req,res)=>{
+//     res.render('login')
+// })
 
 export default router

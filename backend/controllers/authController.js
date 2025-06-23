@@ -25,36 +25,52 @@ export const registerUser = async (req, res, next) => {
     }
 }
 
-export const loginUser = passport.authenticate('local', {
-    failureFlash: false,
-    failureRedirect: '/login'
-})
+export const loginUser = (req, res, next) => {
+    // You can log or inspect req.body to see the incoming formData:
+    console.log("Login formData from frontend:", req.body.username, req.body.password);
 
+    passport.authenticate('local', (err, user, info) => {
+        if (err) return next(err);
+        if (!user) {
+            return res.status(401).json({ message: info?.message || "Invalid credentials" });
+        }
+        req.logIn(user, (err) => {
+            if (err) return next(err);
+            req.flash('success', 'welcome back');
+            // Don't send user info here for security; let frontend fetch it from /api/auth/check
+            return res.status(200).json({ message: 'logged in successfully' });
+        });
+    })(req, res, next);
+};
+
+// postLogin is now redundant, but if you want to keep it for route compatibility:
 export const postLogin = (req, res) => {
-    req.flash('success', 'welcome back')
-    res.status(200).json({ message: 'logged in successfully' })
-}
+    // This will only be called if loginUser calls next() with no error and user is authenticated
+    req.flash('success', 'welcome back');
+    res.status(200).json({ message: 'logged in successfully' });
+};
 
 export const logoutUser = (req, res) => {
     req.logout(err => {
         if (err) return next(err);
         req.flash('success', 'logged out successfully')
         res.status(200).json({ message: 'logged out successfully' })
+        res.redirect('/')
     })
 }
 
 export const checkAuth = (req, res) => {
     // Development mode - always return authenticated
-    if (process.env.NODE_ENV === 'development') {
-        return res.status(200).json({ 
-            authenticated: true, 
-            user: {
-                _id: 'dev-user-id',
-                username: 'dev-user',
-                email: 'dev@example.com'
-            }
-        });
-    }
+    // if (process.env.NODE_ENV === 'development') {
+    //     return res.status(200).json({ 
+    //         authenticated: true, 
+    //         user: {
+    //             _id: 'dev-user-id',
+    //             username: 'dev-user',
+    //             email: 'dev@example.com'
+    //         }
+    //     });
+    // }
 
     // Production mode - normal authentication check
     if (req.isAuthenticated()) {

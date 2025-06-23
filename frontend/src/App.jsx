@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Category from "./pages/Category";
 import Note from "./pages/Note";
+import Logout from "./pages/Logout";
 import axiosInstance from "./api/axiosInstance";
 import DotGrid from './components/advance/Background';
 import Footer from "./components/partials/footer";
@@ -16,7 +17,7 @@ function App() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -28,6 +29,7 @@ function App() {
         // First try to get authentication status
         try {
           const authRes = await axiosInstance.get("/api/auth/check");
+          console.log(authRes.data);
           if (authRes.data.authenticated) {
             setIsAuthenticated(true);
             setUser(authRes.data.user);
@@ -36,7 +38,6 @@ function App() {
             setUser(null);
           }
         } catch (authError) {
-          // If auth check fails, user is not authenticated
           setIsAuthenticated(false);
           setUser(null);
         }
@@ -63,7 +64,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <StickyNavbar />
+      <StickyNavbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
 
       {/* background */}
       <div style={{ width: '100%', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: -3456, pointerEvents: 'none' }}>
@@ -93,8 +94,9 @@ function App() {
             />
           }
         />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/logout" element={<Logout setIsAuthenticated={setIsAuthenticated} />} />
         <Route
           path="/profile/:userId"
           element={
