@@ -26,8 +26,6 @@ export const registerUser = async (req, res, next) => {
 }
 
 export const loginUser = (req, res, next) => {
-    // You can log or inspect req.body to see the incoming formData:
-    console.log("Login formData from frontend:", req.body.username, req.body.password);
 
     passport.authenticate('local', (err, user, info) => {
         if (err) return next(err);

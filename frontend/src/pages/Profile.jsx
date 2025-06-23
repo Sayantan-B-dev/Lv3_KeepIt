@@ -25,14 +25,7 @@ const Profile = ({ user: loggedInUser, loading: appLoading, error: appError, isA
       try {
         const res = await axiosInstance.get(`/api/profile/${userId}`);
         setProfile(res.data);
-
-        const categories = []
-
-        for (const id of res.data.categories) {
-          const { data } = await axiosInstance.get(`/api/categories/${id}`);
-          categories.push(data);
-        }
-        setCategories(categories);
+        setCategories(res.data.categories || []);
       } catch (err) {
         setError(
           err.response?.data?.message ||
@@ -65,7 +58,7 @@ const Profile = ({ user: loggedInUser, loading: appLoading, error: appError, isA
   }
 
   return (
-    <Magnet padding={50} disabled={false} magnetStrength={5} className="w-full">
+    <Magnet padding={50} disabled={false} magnetStrength={50} className="w-full" overflow="hidden">
     <div className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16" style={{
       backdropFilter: 'blur(2px)',
       backdropShadow: '20px',

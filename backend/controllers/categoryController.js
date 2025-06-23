@@ -3,6 +3,8 @@ import Category from "../models/category.js";
 export const getCategoryById = async (req, res) => {
     const {id}=req.params;
     const category=await Category.findById(id)
+        .populate('notes')
+        .populate('user', 'username profileImage bio location website')
     res.json(category)
 }
 

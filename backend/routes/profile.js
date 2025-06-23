@@ -1,5 +1,6 @@
 import express from 'express';
-import { getUserProfile, getAllUsers } from '../controllers/profileController.js';
+import { getUserProfile, getAllUsers, myProfile } from '../controllers/profileController.js';
+import {isLoggedIn} from '../middlewares/isAuthenticated.js'
 
 
 const router = express.Router();
@@ -8,6 +9,8 @@ const router = express.Router();
 router.get('/users', getAllUsers);
 
 // Get a specific user's public profile by ID
+router.get('/MyProfile', isLoggedIn, myProfile)
+
 router.get('/:userId', getUserProfile);
 
 export default router;

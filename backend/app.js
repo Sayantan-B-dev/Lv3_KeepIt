@@ -10,6 +10,7 @@ import helmet from "helmet"
 import cors from "cors";
 import dotenv from 'dotenv';
 import User from "./models/user.js"
+import GoogleStrategy from "passport-google-oauth20"
 
 
 // Load environment variables
@@ -119,15 +120,29 @@ app.use(flash());
 app.use(passport.initialize())
 app.use(passport.session())
 passport.use(new LocalStrategy(User.authenticate()));
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: "/api/auth/google/callback",
+    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+},
+    User.authenticate(),
+    async (accessToken, refreshToken, profile, done) => {
+        const user = await User.findOne({ googleId: profile.id })
+        if (!user) {
+            const newUser = new User({ googleId: profile.id, username: profile.displayName, email: profile.emails[0].value })
+            await newUser.save()
+        }
+    }));
 passport.serializeUser(User.serializeUser()) //how to store in session
 passport.deserializeUser(User.deserializeUser()) //how to un-store in session
 
 // 🔹 Flash Messages Middleware (After Passport)
 app.use((req, res, next) => {
-  res.locals.currentUser=req.user
-  res.locals.success = req.flash('success');
-  res.locals.error = req.flash('error');
-  next();
+    res.locals.currentUser = req.user
+    res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    next();
 })
 
 // Import routes
@@ -135,11 +150,12 @@ import authRoutes from "./routes/auth.js";
 import categoryRoutes from './routes/category.js';
 import noteRoutes from './routes/note.js';
 import profileRoutes from './routes/profile.js';
-
+import googleAuthRoutes from './routes/googleAuth.js';
 // Use routes
 app.use('/api/profile', profileRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/notes', noteRoutes);
+app.use('/api/google', googleAuthRoutes);
 
 export default app;

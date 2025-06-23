@@ -4,7 +4,7 @@ import UserBox from '../components/home/UserBox';
 import Hero from '../components/home/Hero';
 
 
-const Home = () => {
+const Home = ( {isAuthenticated, user} ) => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,7 +36,7 @@ const Home = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <Hero />
+      <Hero user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />
       <h1 className="text-2xl font-bold mt-10 text-black pb-2 ">Explore</h1>
       <UserBox users={users} />
     </div>

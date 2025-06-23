@@ -8,7 +8,7 @@ import {
     getAllUsers
 } from "../controllers/authController.js"
 import upload from "../utils/multer.js"
-//import { isLoggedIn } from "../middlewares/isAuthenticated.js"
+
 
 const router=express.Router()
 
@@ -18,11 +18,8 @@ router.route('/login').post(loginUser,postLogin)
 router.route('/logout').get(logoutUser)
 router.route('/check').get(checkAuth)
 router.route('/users').get(getAllUsers)
-// router.get('/register',(req,res)=>{
-//     res.render('register')
-// })
-// router.get('/login',(req,res)=>{
-//     res.render('login')
-// })
+//router.route('/my-profile').get(myProfile)
+
+
 
 export default router

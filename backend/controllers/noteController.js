@@ -1,4 +1,6 @@
 import Note from "../models/note.js"
+import Category from "../models/category.js"
+import User from "../models/user.js"
 
 export const getNotesById=async(req,res)=>{
     const {id}=req.params;
@@ -32,15 +34,63 @@ export const getAllPublicNotes=async(req,res)=>{
 }
 
 export const createNote=async(req,res)=>{
-    const note=new Note({
-        title:req.body.title,
-        content:req.body.content,
-        isPrivate:req.body.isPrivate||false,
-        category:req.body.category,
-        user:req.body._id
-    })
-    await note.save(),
-    res.status(201).json(note)
+    try {
+        const { title, content, category } = req.body;
+        console.log('Creating note with:', { title, content, category });
+        console.log('User ID:', req.user._id);
+        
+        // Find or create the category
+        let categoryDoc = await Category.findOne({ 
+            name: category, 
+            user: req.user._id 
+        });
+        console.log('Found category:', categoryDoc);
+        
+        if (!categoryDoc) {
+            // Create new category if it doesn't exist
+            categoryDoc = new Category({
+                name: category,
+                user: req.user._id
+            });
+            await categoryDoc.save();
+            console.log('Created new category:', categoryDoc);
+            
+            // Add category to user's categories array
+            await User.findByIdAndUpdate(
+                req.user._id,
+                { $addToSet: { categories: categoryDoc._id } }
+            );
+            console.log('Added category to user profile');
+        }
+        
+        // Create the note
+        const note = new Note({
+            title,
+            content,
+            category: categoryDoc._id,
+            user: req.user._id,
+            isPrivate: false
+        });
+        
+        console.log('Saving note:', note);
+        await note.save();
+        console.log('Note saved successfully:', note._id);
+        
+        // Add note to category's notes array
+        await Category.findByIdAndUpdate(
+            categoryDoc._id,
+            { $addToSet: { notes: note._id } }
+        );
+        console.log('Added note to category');
+        
+        res.status(201).json(note);
+    } catch (error) {
+        console.error('Error creating note:', error);
+        res.status(500).json({ 
+            error: 'Failed to create note',
+            details: error.message 
+        });
+    }
 }
 
 export const updateNote=async(req,res)=>{

@@ -73,13 +73,14 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer
-      className="border-t border-gray-200 pt-12 pb-6 px-4 md:px-0 rounded-t-3xl bottom-0 w-full"
+      className="border-t border-gray-200 pt-12 pb-6 px-4 md:px-0 rounded-t-3xl w-full z-50 bottom-0"
       style={{
         backdropFilter: 'blur(3px)',
         background: 'rgba(255, 255, 255, 0.1)',
         WebkitBackdropFilter: 'blur(12px)',
         boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-        border: '1px solid rgba(255, 255, 255, 0.18)'
+        border: '1px solid rgba(255, 255, 255, 0.18)',
+        marginTop: "auto"
       }}
     >
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-10">
@@ -99,7 +100,6 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:bg-indigo-50 rounded-full p-2 transition-colors"
-                
                 aria-label={item.name}
               >
                 {item.icon}

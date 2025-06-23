@@ -1,5 +1,7 @@
 import React from 'react'
 import DottedButton from '../buttons/DottedButton';
+import { useNavigate } from 'react-router-dom';
+
 
 
 
@@ -36,7 +38,9 @@ const boxes = [
   }
 ]
 
-const Hero = () => {
+const Hero = ( {user, loading, error, isAuthenticated} ) => {
+  const navigate = useNavigate();
+
   return (
     <div style={{ height: "600px" }} className="mt-10 border-1 border-black rounded-3xl flex items-center p-10 bg-gray-50 bg-[url('https://images.pexels.com/photos/317356/pexels-photo-317356.jpeg')] bg-cover bg-center bg-no-repeat">
       <div className="container mx-auto px-4 py-16">
@@ -54,7 +58,13 @@ const Hero = () => {
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4">
-              <DottedButton text="Get Started" />
+              <DottedButton text="Create Note" onClick={() => {
+                if (isAuthenticated) {
+                  navigate("/CreateNote");
+                } else {
+                  navigate("/login");
+                }
+              }} />
               <DottedButton text="Learn More" />
             </div>
 

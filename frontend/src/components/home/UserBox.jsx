@@ -15,10 +15,10 @@ const UserBox = ({ users }) => {
                 >
                     <Link
                         to={`/profile/${user._id}`}
-                        className="block flex justify-start items-center p-4 border rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 shadow-sm hover:shadow-md transition-all duration-300"
+                        className="block overflow-hidden flex justify-start items-center p-4 border rounded-lg bg-gradient-to-br from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 shadow-sm hover:shadow-md transition-all duration-300"
                     >
                         <div className="flex items-center gap-4">
-                            {user.profileImage && (
+                            {user.profileImage && user.profileImage.url ? (
                                 <motion.img
                                     src={user.profileImage.url}
                                     alt={user.username}
@@ -30,6 +30,18 @@ const UserBox = ({ users }) => {
                                     }}
                                     transition={{ type: "spring", stiffness: 400, damping: 15 }}
                                 />
+                            ) : (
+                                <motion.div
+                                    className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-4xl text-indigo-400 font-bold border-4 border-indigo-200 shadow-lg"
+                                    whileHover={{ 
+                                        scale: 1.3,
+                                        rotate: 5,
+                                        filter: "brightness(1.1)"
+                                    }}
+                                    transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                                >
+                                    {user.username?.[0]?.toUpperCase() || "?"}
+                                </motion.div>
                             )}
                             <motion.div
                                 whileHover={{ x: 5 }}

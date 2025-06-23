@@ -10,14 +10,16 @@ import Logout from "./pages/Logout";
 import axiosInstance from "./api/axiosInstance";
 import DotGrid from './components/advance/Background';
 import Footer from "./components/partials/footer";
-
+import MyProfile from "./pages/MyProfile";
 import { StickyNavbar } from "./components/partials/StickyNavbar";
+import CreateNote from "./pages/CreateNote";
 
 function App() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -29,7 +31,8 @@ function App() {
         // First try to get authentication status
         try {
           const authRes = await axiosInstance.get("/api/auth/check");
-          console.log(authRes.data);
+          const categories= await axiosInstance.get("/api/categories");
+          setCategories(categories.data);
           if (authRes.data.authenticated) {
             setIsAuthenticated(true);
             setUser(authRes.data.user);
@@ -45,6 +48,7 @@ function App() {
         // Then fetch public notes - this should work regardless of auth status
         try {
           const notesRes = await axiosInstance.get("/api/notes/public/all");
+          
           setNotes(notesRes.data || []);
         } catch (notesError) {
           console.error("Error fetching notes:", notesError);
@@ -64,7 +68,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <StickyNavbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
+      <StickyNavbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
 
       {/* background */}
       <div style={{ width: '100%', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: -3456, pointerEvents: 'none' }}>
@@ -97,6 +101,8 @@ function App() {
         <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
         <Route path="/register" element={<Register />} />
         <Route path="/logout" element={<Logout setIsAuthenticated={setIsAuthenticated} />} />
+        <Route path="/profile/MyProfile" element={<MyProfile user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories}/>} />
+        <Route path="/CreateNote" element={<CreateNote user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories}/>} />
         <Route
           path="/profile/:userId"
           element={
@@ -130,6 +136,7 @@ function App() {
             />
           }
         />
+        <Route path="/CreateNote" element={<CreateNote />} />
       </Routes>
 
       <Footer />

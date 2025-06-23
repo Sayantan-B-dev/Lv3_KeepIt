@@ -28,21 +28,9 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
             try {
                 const res = await axiosInstance.get(`/api/categories/${categoryId}`);
                 setCategory(res.data);
-
-                const profile = await axiosInstance.get(`/api/profile/${res.data.user}`);
-                setProfile(profile.data);
-
-                const notes = []
-
-                for (const id of res.data.notes) {
-                    const { data } = await axiosInstance.get(`/api/notes/${id}`);
-                    notes.push(data);
-                }
-
-                setNotes(notes);
-
-                const user = await axiosInstance.get(`/api/profile/${res.data.user}`);
-                setUser(user.data);
+                setNotes(res.data.notes || []);
+                setUser(res.data.user);
+                setProfile(res.data.user);
             } catch (err) {
                 setError(
                     err.response?.data?.message ||
@@ -108,12 +96,19 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                 <span className="block font-semibold text-gray-700 mb-1">Author:</span>
 
                     <div className="relative" >
-                        <img
-                            src={profile.profileImage.url}
-                            alt={profile.username}
-                            className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-indigo-200 shadow-xl transition-transform duration-300 hover:scale-105"
-                            onClick={() => handleUserClick(user._id)}
-                        />
+                        {user?.profileImage?.url ? (
+                            <img
+                                src={user.profileImage.url}
+                                alt={user.username}
+                                className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-indigo-200 shadow-xl transition-transform duration-300 hover:scale-105"
+                                onClick={() => handleUserClick(user._id)}
+                            />
+                        ) : (
+                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-indigo-100 flex items-center justify-center text-4xl text-indigo-400 font-bold border-4 border-indigo-200 shadow-xl cursor-pointer"
+                                onClick={() => handleUserClick(user._id)}>
+                                {user?.username?.[0]?.toUpperCase() || "?"}
+                            </div>
+                        )}
                         <span className="absolute bottom-2 right-2 bg-indigo-500 text-white text-xs px-2 py-1 rounded-full shadow-md cursor-pointer" onClick={() => handleUserClick(user._id)}>
                         {user?.username}
                         </span>
