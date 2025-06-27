@@ -65,7 +65,9 @@ const Hero = ( {user, loading, error, isAuthenticated} ) => {
                   navigate("/login");
                 }
               }} />
-              <DottedButton text="Learn More" />
+              <DottedButton text="Learn More" onClick={() => {
+                navigate("/about");
+              }} />
             </div>
 
             <div className="flex items-center space-x-8 pt-4">

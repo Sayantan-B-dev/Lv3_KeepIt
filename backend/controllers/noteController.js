@@ -113,3 +113,18 @@ export const deleteNote=async(req,res)=>{
     const note=await Note.findOneAndDelete({_id:id,user:req.user._id})
     res.json({message:'Note Deleted'})
 }
+
+// This middleware will sanitize req.body fields using regex
+export const sanitizeNoteInput = (req, res, next) => {
+  const sanitize = (str) =>
+    typeof str === "string"
+      ? str.replace(/[$.<>]/g, "") // Remove MongoDB operators and angle brackets
+      : str;
+
+  if (req.body.title) req.body.title = sanitize(req.body.title);
+  if (req.body.content) req.body.content = sanitize(req.body.content);
+  if (req.body.category) req.body.category = sanitize(req.body.category);
+
+  next();
+};
+

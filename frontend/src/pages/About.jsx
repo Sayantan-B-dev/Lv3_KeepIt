@@ -92,9 +92,9 @@ const About = () => {
           </ul>
         </div>
         <div className="text-center text-sm text-gray-500 mt-8">
-          &copy; {new Date().getFullYear()} <span className="font-semibold text-indigo-700">NoteMagnet</span>. Built with <span role="img" aria-label="love">❤️</span> by the NoteMagnet Team.
+          &copy; {new Date().getFullYear()} <span className="font-semibold text-indigo-700">KeepIt</span>. Built with <span role="img" aria-label="love">❤️</span> by the Sayantan.
         </div>
-      </div>
+      </div>  
     </Magnet>
   );
 };
