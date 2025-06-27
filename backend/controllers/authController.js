@@ -77,7 +77,8 @@ export const checkAuth = (req, res) => {
             user: {
                 _id: req.user._id,
                 username: req.user.username,
-                email: req.user.email
+                email: req.user.email,
+                profileImage: req.user.profileImage
             }
         });
     } else {

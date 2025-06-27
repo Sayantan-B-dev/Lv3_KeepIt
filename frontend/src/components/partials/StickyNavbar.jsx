@@ -28,6 +28,8 @@ export function StickyNavbar({ isAuthenticated, setIsAuthenticated, user }) {
   const [scrolled, setScrolled] = React.useState(false);
   const navigate = useNavigate();
 
+  console.log(user);
+
   React.useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 10);

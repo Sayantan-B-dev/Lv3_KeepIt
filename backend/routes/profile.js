@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUserProfile, getAllUsers, myProfile } from '../controllers/profileController.js';
+import { getUserProfile, getAllUsers, myProfile, updateProfile } from '../controllers/profileController.js';
 import {isLoggedIn} from '../middlewares/isAuthenticated.js'
 
 
@@ -12,5 +12,7 @@ router.get('/users', getAllUsers);
 router.get('/MyProfile', isLoggedIn, myProfile)
 
 router.get('/:userId', getUserProfile);
+
+router.put('/MyProfile', isLoggedIn, updateProfile);
 
 export default router;

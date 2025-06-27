@@ -4,6 +4,7 @@ import axiosInstance from "../api/axiosInstance";
 import DottedButton from "../components/buttons/DottedButton";
 import Magnet from "../components/advance/Magnet";
 import Loading from "../components/home/Loading";
+import Author from "../components/Author";
 
 const Note = () => {
   const { noteId } = useParams();
@@ -80,6 +81,7 @@ const Note = () => {
           borderRadius: '60px',
         }}
       >
+        <Author user={user} handleUserClick={handleUserClick} />
         {/* Note Header */}
         <div className="flex items-center gap-6 mb-8">
           <div className="relative">
@@ -101,26 +103,6 @@ const Note = () => {
               </span>
 
             </div>
-          </div>
-        </div>
-        {/* Author */}
-        <div className="mb-8 flex items-center gap-6">
-          <span className="block font-semibold text-gray-700 mb-1">Author:</span>
-          <div className="relative cursor-pointer" onClick={() => handleUserClick(user._id)}>
-            {user?.profileImage?.url ? (
-              <img
-                src={user.profileImage.url}
-                alt={user.username}
-                className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-indigo-200 shadow-xl transition-transform duration-300 hover:scale-105"
-              />
-            ) : (
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-indigo-100 flex items-center justify-center text-4xl text-indigo-400 font-bold border-4 border-indigo-200 shadow-xl">
-                {user?.username?.[0]?.toUpperCase() || "?"}
-              </div>
-            )}
-            <span className="absolute bottom-2 right-2 bg-indigo-500 text-white text-xs px-2 py-1 rounded-full shadow-md cursor-pointer">
-              {user?.username}
-            </span>
           </div>
         </div>
         {/* Category */}

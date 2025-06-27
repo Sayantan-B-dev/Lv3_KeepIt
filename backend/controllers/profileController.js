@@ -42,3 +42,19 @@ export const myProfile = async (req, res) => {
   }
 }
 
+export const updateProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    user.bio = req.body.bio;
+    user.website = req.body.website;
+    user.profileImage = req.body.profileImage;
+    await user.save();
+    res.json({ message: 'Profile updated successfully', profile: user });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+}
+
