@@ -8,6 +8,11 @@ export const getNotesById=async(req,res)=>{
     res.json(note)
 }
 
+export const pinNote=async(req,res)=>{
+    const {id}=req.params;
+    const note=await Note.findByIdAndUpdate(id,{isPinned:true},{new:true})
+    res.json(note)
+}
 
 export const getUserNotes=async(req,res)=>{
     const notes=await Note.find({user:req.user._id}).populate('category')
@@ -60,7 +65,7 @@ export const createNote=async(req,res)=>{
                 req.user._id,
                 { $addToSet: { categories: categoryDoc._id } }
             );
-            console.log('Added category to user profile');
+            //console.log('Added category to user profile');
         }
         
         // Create the note
@@ -81,7 +86,7 @@ export const createNote=async(req,res)=>{
             categoryDoc._id,
             { $addToSet: { notes: note._id } }
         );
-        console.log('Added note to category');
+        //console.log('Added note to category');
         
         res.status(201).json(note);
     } catch (error) {

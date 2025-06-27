@@ -1,5 +1,6 @@
 import express from 'express'
-
+import { validateBody } from '../middlewares/validate.js'
+import { noteSchema } from '../validators/auth.js'
 import {
     getUserNotes,
     getPublicNotesbyUser,
@@ -11,17 +12,20 @@ import {
 } from '../controllers/noteController.js'
 import {isLoggedIn} from '../middlewares/isAuthenticated.js'
 
+
 const router=express.Router()
 
 // Public routes
 router.get('/public/all',getAllPublicNotes)
-router.get('/',isLoggedIn,getUserNotes)
 router.get('/public/:userId',isLoggedIn,getPublicNotesbyUser)
-router.post('/',isLoggedIn,createNote)
-router.put('/:id',isLoggedIn,updateNote)
-router.delete('/:id',isLoggedIn,deleteNote)
+
+router.get('/',isLoggedIn,getUserNotes)
+router.post('/',isLoggedIn,validateBody(noteSchema),createNote)
 
 router.get('/:id', isLoggedIn, getNotesById);
+router.put('/:id',isLoggedIn,validateBody(noteSchema),updateNote)
+router.delete('/:id',isLoggedIn,deleteNote)
+
 
 
 export default router

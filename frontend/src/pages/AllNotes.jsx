@@ -96,7 +96,7 @@ const AllNotes = () => {
                     key={note._id || note.title}
                     text={note.title}
                     className="w-full"
-                    onClick={() => navigate(`/notes/${note._id}`)}
+                    onClick={() => navigate(`/note/${note._id}`)}
                   />
                   <div className="w-12 h-12">
                     <Author user={note.user} handleUserClick={handleUserClick} />
