@@ -21,6 +21,8 @@ const MyProfile = () => {
 
   // Editable fields
   const [editProfile, setEditProfile] = useState({});
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
   const fileInputRef = useRef(null);
 
   const handleCategoryClick = (categoryID) => {
@@ -42,6 +44,8 @@ const MyProfile = () => {
           location: res.data.location || "",
           website: res.data.website || "",
         });
+        setProfileImagePreview(res.data.profileImage?.url || null);
+        setProfileImageFile(null);
       } catch (err) {
         setError(
           err?.response?.data?.message ||
@@ -70,30 +74,26 @@ const MyProfile = () => {
     }));
   };
 
+  const uploadToBackend = async (file) => {
+    const data = new FormData();
+    data.append("image", file);
+    const res = await axiosInstance.post("/api/auth/upload-profile-image", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+      withCredentials: true, // if your backend uses cookies/session
+    });
+    if (!res.data?.url) throw new Error("Failed to upload image to backend");
+    return res.data;
+  };
+
   const handleProfileImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setUpdateLoading(true);
+    setProfileImageFile(file);
+    setProfileImagePreview(URL.createObjectURL(file));
     setUpdateError(null);
     setUpdateSuccess(null);
-    try {
-      const formData = new FormData();
-      formData.append("profileImage", file);
-      const res = await axiosInstance.post("/api/profile/uploadProfileImage", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setProfile((prev) => ({
-        ...prev,
-        profileImage: res.data.profileImage,
-      }));
-      setUpdateSuccess("Profile image updated!");
-    } catch (err) {
-      setUpdateError(
-        err?.response?.data?.message || "Failed to update profile image."
-      );
-    } finally {
-      setUpdateLoading(false);
-    }
   };
 
   const handleEdit = (e) => {
@@ -115,6 +115,8 @@ const MyProfile = () => {
       location: profile.location || "",
       website: profile.website || "",
     });
+    setProfileImagePreview(profile?.profileImage?.url || null);
+    setProfileImageFile(null);
   };
 
   const handleSave = async (e) => {
@@ -122,13 +124,27 @@ const MyProfile = () => {
     setUpdateLoading(true);
     setUpdateError(null);
     setUpdateSuccess(null);
+
+    let uploadedImage = profile?.profileImage || null;
+
     try {
+      if (profileImageFile) {
+        const backendRes = await uploadToBackend(profileImageFile);
+        uploadedImage = {
+          url: backendRes.url,
+          public_id: backendRes.public_id,
+        };
+      } else if (profileImagePreview === null) {
+        // If image was removed
+        uploadedImage = null;
+      }
+
       const res = await axiosInstance.put("/api/profile/MyProfile", {
         username: editProfile.username,
         email: editProfile.email,
         bio: editProfile.bio,
         website: editProfile.website,
-        profileImage: profile.profileImage,
+        profileImage: uploadedImage,
       });
       setProfile((prev) => ({
         ...prev,
@@ -141,6 +157,7 @@ const MyProfile = () => {
       setUpdateError(
         err?.response?.data?.message || "Failed to update profile."
       );
+      console.log(err);
     } finally {
       setUpdateLoading(false);
     }
@@ -177,9 +194,9 @@ const MyProfile = () => {
       >
         <div className="flex items-center gap-8 mb-10">
           <div className="relative cursor-pointer" onClick={handleProfileImageClick}>
-            {profile?.profileImage?.url ? (
+            {profileImagePreview ? (
               <img
-                src={profile.profileImage.url}
+                src={profileImagePreview}
                 alt={profile.username}
                 className="w-32 h-32 rounded-full object-cover border-4 border-indigo-200 shadow-lg"
                 style={{ opacity: editMode ? 0.7 : 1 }}

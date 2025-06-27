@@ -52,7 +52,7 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
                 content,
                 category,
             });
-            console.log(response.data);
+            //console.log(response.data);
 
             setSuccess(true);
 

@@ -1,32 +1,58 @@
-import User from "../models/user.js"
-import passport from "passport"
+import User from "../models/user.js";
+import passport from "passport";
+import { cloudinary, storage } from '../utils/cloudinary.js';
+import multer from 'multer';
+
+export const upload = multer({ storage });
+
+export const uploadProfileImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: "No file uploaded" });
+        }
+        res.json({
+            url: req.file.path, 
+            public_id: req.file.filename,
+        });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+};
 
 export const registerUser = async (req, res, next) => {
     try {
-        const { username, email, password } = req.body
-        const user = new User({ username, email })
+        const { username, email, password } = req.body;
+        const user = new User({ username, email });
 
-        if(req.file){
-            user.profileImage={
-                url:req.file.path,
-                filename:req.file.filename
-            }
+        if (req.file) {
+            user.profileImage = {
+                url: req.file.path,      // Cloudinary URL
+                filename: req.file.filename // Cloudinary public_id
+            };
         }
 
         const registeredUser = await User.register(user, password);
         req.login(registeredUser, e => {
-            if (e) return next(e)
-            req.flash("success", 'Welcome to Notes App')
-            res.status(201).json({ message: "Registered successfully" })
-        })
+            if (e) return next(e);
+            req.flash("success", 'Welcome to Notes App');
+            // Send back user info for frontend to use (including profileImage)
+            res.status(201).json({ 
+                message: "Registered successfully",
+                user: {
+                    _id: registeredUser._id,
+                    username: registeredUser.username,
+                    email: registeredUser.email,
+                    profileImage: registeredUser.profileImage
+                }
+            });
+        });
     } catch (e) {
-        req.flash("error", e.message)
-        res.status(400).json({ error: e.message })
+        req.flash("error", e.message);
+        res.status(400).json({ error: e.message });
     }
-}
+};
 
 export const loginUser = (req, res, next) => {
-
     passport.authenticate('local', (err, user, info) => {
         if (err) return next(err);
         if (!user) {
@@ -35,42 +61,43 @@ export const loginUser = (req, res, next) => {
         req.logIn(user, (err) => {
             if (err) return next(err);
             req.flash('success', 'welcome back');
-            // Don't send user info here for security; let frontend fetch it from /api/auth/check
-            return res.status(200).json({ message: 'logged in successfully' });
+            return res.status(200).json({ 
+                message: 'logged in successfully',
+                user: {
+                    _id: user._id,
+                    username: user.username,
+                    email: user.email,
+                    profileImage: user.profileImage
+                }
+            });
         });
     })(req, res, next);
 };
 
 // postLogin is now redundant, but if you want to keep it for route compatibility:
 export const postLogin = (req, res) => {
-    // This will only be called if loginUser calls next() with no error and user is authenticated
     req.flash('success', 'welcome back');
-    res.status(200).json({ message: 'logged in successfully' });
+    res.status(200).json({ 
+        message: 'logged in successfully',
+        user: {
+            _id: req.user._id,
+            username: req.user.username,
+            email: req.user.email,
+            profileImage: req.user.profileImage
+        }
+    });
 };
 
 export const logoutUser = (req, res) => {
     req.logout(err => {
         if (err) return next(err);
-        req.flash('success', 'logged out successfully')
-        res.status(200).json({ message: 'logged out successfully' })
-        res.redirect('/')
-    })
-}
+        req.flash('success', 'logged out successfully');
+        res.status(200).json({ message: 'logged out successfully' });
+        // Do not redirect in API response; frontend should handle navigation
+    });
+};
 
 export const checkAuth = (req, res) => {
-    // Development mode - always return authenticated
-    // if (process.env.NODE_ENV === 'development') {
-    //     return res.status(200).json({ 
-    //         authenticated: true, 
-    //         user: {
-    //             _id: 'dev-user-id',
-    //             username: 'dev-user',
-    //             email: 'dev@example.com'
-    //         }
-    //     });
-    // }
-
-    // Production mode - normal authentication check
     if (req.isAuthenticated()) {
         res.status(200).json({ 
             authenticated: true, 
@@ -84,14 +111,15 @@ export const checkAuth = (req, res) => {
     } else {
         res.status(401).json({ authenticated: false });
     }
-}
+};
 
 export const getAllUsers = async (req, res) => {
     try {
+        // Only return safe fields, including profileImage
         const users = await User.find({}, 'username email profileImage');
         res.json(users);
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });
     }
-}
+};

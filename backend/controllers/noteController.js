@@ -36,15 +36,15 @@ export const getAllPublicNotes=async(req,res)=>{
 export const createNote=async(req,res)=>{
     try {
         const { title, content, category } = req.body;
-        console.log('Creating note with:', { title, content, category });
-        console.log('User ID:', req.user._id);
+        //console.log('Creating note with:', { title, content, category });
+        //console.log('User ID:', req.user._id);
         
         // Find or create the category
         let categoryDoc = await Category.findOne({ 
             name: category, 
             user: req.user._id 
         });
-        console.log('Found category:', categoryDoc);
+        //console.log('Found category:', categoryDoc);
         
         if (!categoryDoc) {
             // Create new category if it doesn't exist
@@ -53,7 +53,7 @@ export const createNote=async(req,res)=>{
                 user: req.user._id
             });
             await categoryDoc.save();
-            console.log('Created new category:', categoryDoc);
+            //console.log('Created new category:', categoryDoc);
             
             // Add category to user's categories array
             await User.findByIdAndUpdate(
@@ -72,9 +72,9 @@ export const createNote=async(req,res)=>{
             isPrivate: false
         });
         
-        console.log('Saving note:', note);
+        //console.log('Saving note:', note);
         await note.save();
-        console.log('Note saved successfully:', note._id);
+        //console.log('Note saved successfully:', note._id);
         
         // Add note to category's notes array
         await Category.findByIdAndUpdate(

@@ -13,6 +13,7 @@ import User from "./models/user.js"
 import GoogleStrategy from "passport-google-oauth20"
 
 
+
 // Load environment variables
 dotenv.config();
 
@@ -151,11 +152,13 @@ import categoryRoutes from './routes/category.js';
 import noteRoutes from './routes/note.js';
 import profileRoutes from './routes/profile.js';
 import googleAuthRoutes from './routes/googleAuth.js';
+import globalRoutes from './routes/globalRoutes.js';
 // Use routes
 app.use('/api/profile', profileRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/google', googleAuthRoutes);
+app.use('/api/global', globalRoutes);
 
 export default app;

@@ -34,7 +34,7 @@ const Note = () => {
       try {
         const res = await axiosInstance.get(`/api/notes/${noteId}`);
         setNote(res.data);
-        console.log(res.data);
+        //console.log(res.data);
 
         const category = await axiosInstance.get(`/api/categories/${res.data.category}`);
         setCategory(category.data);

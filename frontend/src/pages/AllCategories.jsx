@@ -10,6 +10,7 @@ const AllCategories = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
   const handleUserClick = (userId) => {
     navigate(`/profile/${userId}`);
@@ -31,6 +32,11 @@ const AllCategories = () => {
     };
     fetchCategories();
   }, []);
+
+  // Filter categories based on search input (case-insensitive)
+  const filteredCategories = categories.filter(cat =>
+    cat.name && cat.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
@@ -64,6 +70,8 @@ const AllCategories = () => {
           <input
             type="text"
             placeholder="Search categories"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
             className="flex-1 h-10 px-4 rounded-md border-1 border-gray-300 text-black focus:outline-none focus:border-black"
             style={{
               backdropFilter: 'blur(2px)',
@@ -78,10 +86,10 @@ const AllCategories = () => {
         {error && <div style={{ color: '#e63946' }}>{error}</div>}
         {!loading && !error && (
           <ul style={{ listStyle: 'none', padding: 0 }} className='flex flex-col gap-2'>
-            {categories.length === 0 ? (
-              <li>No categories found.</li>
+            {filteredCategories.length === 0 ? (
+              <li className='text-center text-red-500'>No categories found.</li>
             ) : (
-              categories.map((cat) => (
+              filteredCategories.map((cat) => (
                 <div key={cat._id || cat.name} className='flex items-center gap-2 w-full'>
                   <DottedButton key={cat._id || cat.name} text={cat.name} className='w-full' />
                   <div className='w-12 h-12'><Author user={cat.user} handleUserClick={handleUserClick} /></div>
