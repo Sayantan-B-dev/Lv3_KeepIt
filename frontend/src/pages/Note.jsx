@@ -84,25 +84,18 @@ const Note = () => {
         <Author user={user} handleUserClick={handleUserClick} />
         {/* Note Header */}
         <div className="flex items-center gap-6 mb-8">
-          <div className="relative">
-            <div className="w-20 h-20 rounded-2xl bg-indigo-100 flex items-center justify-center text-4xl text-indigo-400 font-bold border-4 border-indigo-200 shadow-lg">
-              {note.title?.[0]?.toUpperCase() || "?"}
-            </div>
-          </div>
+        <div className="relative">
+                            <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
+                                Title:
+                            </p>
+                        </div>
           <div>
-            <h1 className="text-4xl font-extrabold text-gray-900 flex items-center gap-2">
+            <h3 className="text-4xl font-extrabold text-gray-900 flex items-center gap-2">
               {note.title}
               <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${note.isPrivate ? "bg-red-100 text-red-500" : "bg-green-100 text-green-600"}`}>
                 {note.isPrivate ? "Private" : "Public"}
               </span>
-            </h1>
-            <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
-              <span className="flex items-center gap-1">
-                <span className="text-xs text-gray-400">Created:</span>
-                {new Date(note.createdAt).toLocaleString()}
-              </span>
-
-            </div>
+            </h3>
           </div>
         </div>
         {/* Category */}
