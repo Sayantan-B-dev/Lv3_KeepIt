@@ -54,7 +54,7 @@ export function StickyNavbar({ isAuthenticated, setIsAuthenticated, user }) {
   const navItems = [
     {
       label: "All Categories",
-      href: "/categories",
+      href: "/all-categories",
       icon: (
         <svg width="18" height="18" fill="none" viewBox="0 0 20 20">
           <rect x="2" y="2" width="6" height="6" rx="2" fill="#90A4AE"/>
@@ -66,7 +66,7 @@ export function StickyNavbar({ isAuthenticated, setIsAuthenticated, user }) {
     },
     {
       label: "All Notes",
-      href: "/notes",
+      href: "/all-notes",
       icon: (
         <svg width="18" height="18" fill="none" viewBox="0 0 20 20">
           <rect x="3" y="4" width="14" height="2" rx="1" fill="#90A4AE"/>

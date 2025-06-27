@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import UserBox from '../components/home/UserBox';
-import Hero from '../components/home/Hero';
+import Magnet from '../components/advance/Magnet';
 
-
-const Home = ( {isAuthenticated, user} ) => {
+const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -17,7 +15,6 @@ const Home = ( {isAuthenticated, user} ) => {
         const response = await axiosInstance.get('/api/profile/users');
         setUsers(response.data);
       } catch (err) {
-        console.error('Error details:', err.response || err);
         setError('Failed to load users');
       } finally {
         setLoading(false);
@@ -36,12 +33,15 @@ const Home = ( {isAuthenticated, user} ) => {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <Hero user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />
-      <h1 className="text-2xl font-bold mt-10 text-black pb-2 ">Explore</h1>
-      <div id="explore-users"><UserBox users={users} /></div>
+    <Magnet  padding={50} disabled={false} magnetStrength={100} className="w-full">
+    <div className="container mx-auto p-4 ">
+      <h1 className="text-2xl font-bold mt-10 text-black pb-2">All Users</h1>
+      <div id="explore-users">
+        <UserBox users={users} />
+      </div>
     </div>
+    </Magnet>
   );
 };
 
-export default Home;
+export default AllUsers;

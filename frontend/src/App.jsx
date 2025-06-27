@@ -13,6 +13,10 @@ import Footer from "./components/partials/footer";
 import MyProfile from "./pages/MyProfile";
 import { StickyNavbar } from "./components/partials/StickyNavbar";
 import CreateNote from "./pages/CreateNote";
+import AllNotes from "./pages/AllNotes";
+import AllCategories from "./pages/AllCategories";
+import About from "./pages/About";
+import AllUsers from "./pages/AllUsers";
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -103,6 +107,10 @@ function App() {
         <Route path="/logout" element={<Logout setIsAuthenticated={setIsAuthenticated} />} />
         <Route path="/profile/MyProfile" element={<MyProfile user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories}/>} />
         <Route path="/CreateNote" element={<CreateNote user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories}/>} />
+        <Route path="/all-categories" element={<AllCategories user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+        <Route path="/all-notes" element={<AllNotes user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+        <Route path="/about" element={<About user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+        <Route path="/all-users" element={<AllUsers user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
         <Route
           path="/profile/:userId"
           element={
