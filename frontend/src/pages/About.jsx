@@ -56,7 +56,7 @@ const About = () => {
   return (
     <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
       <div
-        className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-22 relative"
+        className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-22 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
         style={{
           backdropFilter: 'blur(2px)',
           backdropShadow: '20px',
@@ -69,7 +69,7 @@ const About = () => {
         <h2 className="text-3xl font-extrabold text-center mb-4 text-indigo-800 mb-8 tracking-tight drop-shadow-lg">About KeepIt</h2>
         <div className="text-lg text-gray-700 leading-relaxed mb-8">
           <p>
-            <span className="font-semibold text-indigo-700 cursor-pointer" onClick={() => navigate("/")}>KeepIt</span> is a collaborative note-taking platform designed to help you organize, share, and discover knowledge with ease. Whether you're a student, professional, or lifelong learner, NoteMagnet empowers you to create, categorize, and explore notes from a vibrant community.
+            <span className="font-semibold text-indigo-700 cursor-pointer" onClick={() => navigate("/")}>KeepIt</span> is a platform designed to help you organize, share, and discover knowledge with ease. Whether you're a student, professional, or lifelong learner, KeepIt empowers you to create, categorize, and explore notes.
           </p>
         </div>
         <div className="mb-8">

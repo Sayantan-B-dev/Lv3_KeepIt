@@ -3,6 +3,7 @@ import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import Magnet from "../components/advance/Magnet";
 import DottedButton from "../components/buttons/DottedButton";
+import Loading from "../components/home/Loading";
 
 const textAreaStyle =
     "w-full border border-gray-300 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
@@ -25,9 +26,7 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
     // If loading authentication/user info, show loading
     if (loading) {
         return (
-            <div className="flex justify-center items-center h-96 text-lg text-gray-700">
-                Loading user information...
-            </div>
+            <Loading />
         );
     }
 
@@ -63,7 +62,7 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
 
             // Navigate after a short delay
             setTimeout(() => {
-                navigate("/");
+                navigate("/profile/MyProfile");
             }, 1000);
         } catch (err) {
             let errorMsg = "Failed to create note. Please try again.";
@@ -84,7 +83,7 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
             className="w-full"
         >
             <div
-                className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16"
+                className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
                 style={{
                     backdropFilter: 'blur(2px)',
                     backdropShadow: '20px',
@@ -92,6 +91,7 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
                     WebkitBackdropFilter: 'blur(12px)',
                     boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
                     borderRadius: '60px',
+                    border: '1px dashed black',
                 }}>
                 <h2 className="text-3xl font-bold mb-6 text-gray-900">
                     Create a New Note

@@ -17,6 +17,7 @@ import AllNotes from "./pages/AllNotes";
 import AllCategories from "./pages/AllCategories";
 import About from "./pages/About";
 import AllUsers from "./pages/AllUsers";
+import Loading from "./components/home/Loading";
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -35,8 +36,8 @@ function App() {
         // First try to get authentication status
         try {
           const authRes = await axiosInstance.get("/api/auth/check");
-          const categories= await axiosInstance.get("/api/categories");
-          setCategories(categories.data);
+          const categoriesRes = await axiosInstance.get("/api/categories");
+          setCategories(categoriesRes.data);
           if (authRes.data.authenticated) {
             setIsAuthenticated(true);
             setUser(authRes.data.user);
@@ -49,10 +50,8 @@ function App() {
           setUser(null);
         }
 
-        // Then fetch public notes - this should work regardless of auth status
         try {
           const notesRes = await axiosInstance.get("/api/notes/public/all");
-          
           setNotes(notesRes.data || []);
         } catch (notesError) {
           console.error("Error fetching notes:", notesError);
@@ -69,6 +68,10 @@ function App() {
 
     fetchData();
   }, []);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <BrowserRouter>

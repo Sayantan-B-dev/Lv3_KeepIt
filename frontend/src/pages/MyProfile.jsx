@@ -29,6 +29,11 @@ const MyProfile = () => {
     navigate(`/category/${categoryID}`);
   };
 
+  // New: handle create note
+  const handleCreateNote = () => {
+    navigate("/CreateNote");
+  };
+
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
@@ -180,30 +185,52 @@ const MyProfile = () => {
   }
 
   return (
-    <Magnet padding={50} disabled={false} magnetStrength={150} className="w-full">
+    <Magnet
+      padding={50}
+      disabled={false}
+      magnetStrength={150}
+      className="w-full"
+    >
       <div
-        className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16"
+        className={`
+          mx-auto
+          p-4 sm:p-6 md:p-10
+          w-[90%] max-w-full
+          md:w-[90%] md:max-w-2xl
+          lg:max-w-3xl
+          bg-gradient-to-br from-white via-indigo-50 to-blue-50
+          shadow-2xl border border-indigo-100
+          mt-8 md:mt-10 mb-12 md:mb-16
+          rounded-3xl md:rounded-[60px]
+          transition-all
+        `}
         style={{
           backdropFilter: 'blur(2px)',
           backdropShadow: '20px',
           background: 'rgba(255, 255, 255, 0.01)',
           WebkitBackdropFilter: 'blur(12px)',
-          boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
+          boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.20)',
           borderRadius: '60px',
+          border: '1px dashed black',
         }}
       >
-        <div className="flex items-center gap-8 mb-10">
-          <div className="relative cursor-pointer" onClick={handleProfileImageClick}>
+        <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 mb-8 md:mb-10">
+          <div
+            className="relative cursor-pointer mb-4 sm:mb-0"
+            onClick={handleProfileImageClick}
+          >
             {profileImagePreview ? (
               <img
                 src={profileImagePreview}
                 alt={profile.username}
-                className="w-32 h-32 rounded-full object-cover border-4 border-indigo-200 shadow-lg"
+                className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-indigo-200 shadow-lg"
                 style={{ opacity: editMode ? 0.7 : 1 }}
               />
             ) : (
-              <div className="w-32 h-32 rounded-full bg-indigo-100 flex items-center justify-center text-5xl text-indigo-400 font-bold border-4 border-indigo-200 shadow-lg"
-                style={{ opacity: editMode ? 0.7 : 1 }}>
+              <div
+                className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-indigo-100 flex items-center justify-center text-4xl sm:text-5xl text-indigo-400 font-bold border-4 border-indigo-200 shadow-lg"
+                style={{ opacity: editMode ? 0.7 : 1 }}
+              >
                 {profile.username?.[0]?.toUpperCase() || "?"}
               </div>
             )}
@@ -225,33 +252,66 @@ const MyProfile = () => {
               </>
             )}
           </div>
-          <div>
-            <h1 className="text-4xl font-extrabold text-gray-900 flex items-center gap-2">
+          <div className="w-full flex-1">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 flex items-center gap-2 flex-wrap">
               {profile.username}
-              <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${profile.isVerified ? "bg-green-100 text-green-600" : "bg-yellow-100 text-yellow-600"}`}>
+              <span
+                className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${profile.isVerified
+                    ? "bg-green-100 text-green-600"
+                    : "bg-yellow-100 text-yellow-600"
+                  }`}
+              >
                 {profile.isVerified ? "Verified" : "Unverified"}
               </span>
             </h1>
-            <div className="flex flex-col gap-2 mt-3 text-base text-gray-600 font-medium">
-              <span className="flex items-center gap-1">
+            <div className="flex gap-2 mt-2 sm:mt-3 text-base text-gray-600 font-medium">
+              {/* <span className="flex items-center gap-1">
                 <span className="text-xs text-gray-400">Joined:</span>
                 {new Date(profile.createdAt).toLocaleDateString()}
               </span>
-
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 flex-wrap">
                 <span className="text-xs text-gray-400">Followers:</span>
                 {profile.followers?.length || 0}
                 <span className="ml-2 text-xs text-gray-400">Following:</span>
                 {profile.following?.length || 0}
+              </span> */}
+              <span className="flex items-center gap-1">
+                <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M8 16h8M8 12h8M8 8h8" />
+                </svg>
+                {profile.notesCount ?? profile.notes?.length ?? 0}
+                <span className="ml-1 text-xs text-gray-400">Notes</span>
               </span>
+              <span className="flex items-center gap-1">
+                <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19.5 3 21l1.5-4L16.5 3.5z" />
+                </svg>
+                {profile.categoriesCount ?? profile.categories?.length ?? 0}
+                <span className="ml-1 text-xs text-gray-400">Categories</span>
+              </span>
+            </div>
+            {/* Add Create Note Button here */}
+            <div className="mt-4 flex flex-wrap gap-2">
+              <div
+                type="button"
+                onClick={handleCreateNote}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-none border border-dashed border-black shadow transition cursor-pointer"
+                style={{ background: "white" }}
+              >
+                <span className="font-semibold text-indigo-700 text-base">Create a new Note</span>
+              </div>
             </div>
           </div>
         </div>
 
         <form onSubmit={handleSave}>
           <div className="flex flex-col justify-start gap-2">
-            <div className="flex flex-row gap-2 items-center">
-              <label className="block text-sm font-semibold text-gray-700 mb-1 text-center text-nowrap">Bio : </label>
+            <div className="flex flex-col sm:flex-row gap-2 items-center">
+              <label className="block text-sm font-semibold text-gray-700 mb-1 text-center text-nowrap min-w-[60px]">
+                Bio :
+              </label>
               {editMode ? (
                 <textarea
                   name="bio"
@@ -261,21 +321,26 @@ const MyProfile = () => {
                   rows={3}
                   maxLength={200}
                   style={{
-                    scrollbarWidth: 'none',
-                    '&::-webkit-scrollbar': {
-                      display: 'none',
-                    },
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
                   }}
                 />
               ) : (
-
-                <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-fit">
-                  <p className="text-black">{profile.bio ? `"${profile.bio}"` : <span className="italic text-gray-400">No bio</span>}</p>
+                <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-full sm:w-fit">
+                  <p className="text-black">
+                    {profile.bio ? (
+                      `"${profile.bio}"`
+                    ) : (
+                      <span className="italic text-gray-400">No bio</span>
+                    )}
+                  </p>
                 </div>
               )}
             </div>
-            <div className="flex flex-row gap-2 items-center">
-              <label className="block text-sm font-semibold text-gray-700 mb-1 text-nowrap">Website : </label>
+            <div className="flex flex-col sm:flex-row gap-2 items-center">
+              <label className="block text-sm font-semibold text-gray-700 mb-1 text-nowrap min-w-[60px]">
+                Website :
+              </label>
               {editMode ? (
                 <input
                   type="url"
@@ -286,13 +351,17 @@ const MyProfile = () => {
                   maxLength={128}
                 />
               ) : (
-                <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-fit" >
+                <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-full sm:w-fit">
                   {profile.website ? (
                     <a
-                      href={profile.website.startsWith("http") ? profile.website : `https://${profile.website}`}
+                      href={
+                        profile.website.startsWith("http")
+                          ? profile.website
+                          : `https://${profile.website}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-black"
+                      className="text-black break-all"
                     >
                       {profile.website}
                     </a>
@@ -305,8 +374,10 @@ const MyProfile = () => {
           </div>
 
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-indigo-700 mb-4 mt-8">Your Categories</h2>
-            <div className="flex flex-wrap gap-4">
+            <h2 className="text-xl sm:text-2xl font-bold text-indigo-700 mb-4 mt-8">
+              Your Categories
+            </h2>
+            <div className="flex flex-wrap gap-3 sm:gap-4">
               {categories.length === 0 ? (
                 <span className="text-gray-400">No categories found.</span>
               ) : (
@@ -322,22 +393,16 @@ const MyProfile = () => {
             </div>
           </div>
 
-
-          <div className="flex gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             {!editMode ? (
-              <button onClick={handleEdit} >
-                <EncryptButton/>
+              <button onClick={handleEdit}>
+                <EncryptButton />
               </button>
             ) : (
               <>
                 <button
                   type="submit"
-                  className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition"
-                  style={{
-                    borderColor: 'black',
-                    borderWidth: '1px',
-                    borderStyle: 'dashed',
-                  }}
+                  className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black"
                   disabled={updateLoading}
                 >
                   {updateLoading ? "Saving..." : "Save"}

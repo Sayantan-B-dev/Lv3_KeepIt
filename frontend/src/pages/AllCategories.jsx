@@ -40,7 +40,7 @@ const AllCategories = () => {
 
   return (
     <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
-      <div className='container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-21 relative'
+      <div className='container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-21 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl'
         style={{
           backdropFilter: 'blur(2px)',
           backdropShadow: '20px',
@@ -91,7 +91,7 @@ const AllCategories = () => {
             ) : (
               filteredCategories.map((cat) => (
                 <div key={cat._id || cat.name} className='flex items-center gap-2 w-full'>
-                  <DottedButton key={cat._id || cat.name} text={cat.name} className='w-full' />
+                  <DottedButton key={cat._id || cat.name} text={cat.name} className='w-full' onClick={() => navigate(`/category/${cat._id}`)} />
                   <div className='w-12 h-12'><Author user={cat.user} handleUserClick={handleUserClick} /></div>
                 </div>
               ))

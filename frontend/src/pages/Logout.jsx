@@ -10,21 +10,17 @@ const Logout = ({ setIsAuthenticated }) => {
   useEffect(() => {
     const handleLogout = async () => {
       try {
-        // Call logout API
         await axiosInstance.post("/api/auth/logout");
         
-        // Clear user state
         setUser(null);
         setIsAuthenticated(false);
         
-        // Clear localStorage
         localStorage.removeItem("user");
         
-        // Redirect to home page
         navigate("/");
+        window.location.reload();
       } catch (error) {
         console.error("Logout error:", error);
-        // Even if logout fails, clear local state and redirect
         setUser(null);
         setIsAuthenticated(false);
         localStorage.removeItem("user");
@@ -36,7 +32,7 @@ const Logout = ({ setIsAuthenticated }) => {
   }, [navigate, setUser, setIsAuthenticated]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen w-full">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
         <p className="text-gray-600">Logging out...</p>

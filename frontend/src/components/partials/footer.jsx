@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {blackFontClass} from "./StickyNavbar";
+import { blackFontClass } from "./StickyNavbar";
 
 const footerLinks = [
   {
@@ -73,7 +73,7 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer
-      className="border-t border-gray-200 pt-12 pb-6 px-4 md:px-0 rounded-t-3xl w-full z-50 bottom-0"
+      className="border-t border-gray-200 pt-10 pb-4 px-2 sm:px-4 md:px-8 rounded-t-3xl w-full z-50 bottom-0"
       style={{
         backdropFilter: 'blur(3px)',
         background: 'rgba(255, 255, 255, 0.1)',
@@ -83,16 +83,16 @@ const Footer = () => {
         marginTop: "auto"
       }}
     >
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-10">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-8 md:gap-10 w-full">
         {/* Brand & Description */}
-        <div className="flex-1 mb-8 md:mb-0">
+        <div className="flex-1 mb-8 md:mb-0 min-w-[220px] justify-center items-center text-center">
           <Link to="/" className="flex items-center gap-2 mb-3">
-            <span className="text-2xl font-extrabold text-indigo-700 tracking-tight">KeepIt</span>
+            <span className="text-2xl font-extrabold text-indigo-700 tracking-tight m-auto">KeepIt</span>
           </Link>
-          <p className="text-gray-500 max-w-xs text-sm">
+          <p className="text-gray-500 max-w-xs text-sm text-center m-auto">
             Capture, organize, and share knowledge from across the web. Transform scattered information into meaningful content that grows with you.
           </p>
-          <div className="flex gap-3 mt-5">
+          <div className="flex gap-3 mt-5 m-auto justify-center">
             {socialLinks.map((item) => (
               <a
                 key={item.name}
@@ -108,9 +108,9 @@ const Footer = () => {
           </div>
         </div>
         {/* Links */}
-        <div className="flex flex-1 justify-between gap-8">
+        <div className="flex flex-col sm:flex-row flex-1 justify-between gap-6 sm:gap-8 md:gap-10 w-full">
           {footerLinks.map((section) => (
-            <div key={section.title}>
+            <div key={section.title} className="mb-6 sm:mb-0 min-w-[120px] text-center">
               <h4 className="text-black font-bold mb-3">{section.title}</h4>
               <ul className="space-y-2">
                 {section.links.map((link) => (
@@ -129,11 +129,11 @@ const Footer = () => {
         </div>
       </div>
       {/* Bottom Bar */}
-      <div className="max-w-7xl mx-auto mt-10 pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-400">
-        <span>
+      <div className="max-w-7xl mx-auto mt-8 pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-xs text-gray-400 w-full">
+        <span className="text-center">
           &copy; {new Date().getFullYear()} KeepIt. All rights reserved. @Sayantan-B-Dev
         </span>
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-center">
           <Link to="#" className="hover:text-indigo-600 transition-colors">Privacy Policy</Link>
           <Link to="#" className="hover:text-indigo-600 transition-colors">Terms of Service</Link>
         </div>

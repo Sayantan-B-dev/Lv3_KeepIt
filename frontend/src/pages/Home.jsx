@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import UserBox from '../components/home/UserBox';
 import Hero from '../components/home/Hero';
+import Loading from '../components/home/Loading';
 
 
 const Home = ( {isAuthenticated, user} ) => {
@@ -28,7 +29,7 @@ const Home = ( {isAuthenticated, user} ) => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {
@@ -36,7 +37,7 @@ const Home = ( {isAuthenticated, user} ) => {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 w-[90%] max-w-full ">
       <Hero user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />
       <h1 className="text-2xl font-bold mt-10 text-black pb-2 ">Explore</h1>
       <div id="explore-users"><UserBox users={users} /></div>

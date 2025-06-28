@@ -112,10 +112,11 @@ const Note = ({ user: loggedInUser }) => {
       />
       <Magnet padding={50} disabled={false} magnetStrength={50} className="w-full">
         <div
-          className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16"
+          className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
           style={{
             ...backdropStyle,
             borderRadius: '60px',
+            border: '1px dashed black',
           }}
         >
           <Author user={user} handleUserClick={handleUserClick} />
@@ -125,9 +126,9 @@ const Note = ({ user: loggedInUser }) => {
               <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
                 Title:
               </p>
-            </div>
+            </div>  
             <div>
-              <h3 className="text-4xl font-extrabold text-gray-900 flex items-center gap-2">
+              <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 flex items-center gap-2">
                 {note.title}
                 <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${note.isPrivate ? "bg-red-100 text-red-500" : "bg-green-100 text-green-600"}`}>
                   {note.isPrivate ? "Private" : "Public"}

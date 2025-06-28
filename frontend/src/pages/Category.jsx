@@ -4,7 +4,8 @@ import axiosInstance from "../api/axiosInstance";
 import DottedButton from "../components/buttons/DottedButton";
 import Magnet from "../components/advance/Magnet";
 import Author from "../components/Author";
-import ConfirmPopUp from "../components/ConfirmPopUp"; // keep import as is
+import ConfirmPopUp from "../components/ConfirmPopUp"; 
+import Loading from "../components/home/Loading";
 
 const backdropStyle = {
     backdropFilter: 'blur(2px)',
@@ -87,7 +88,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
     }, [categoryId]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <Loading />;
     }
 
     if (error) {
@@ -115,7 +116,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                 backdropStyle={backdropStyle}
             />
             <Magnet padding={50} disabled={false} magnetStrength={50} className="w-full">
-                <div className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-2 relative"
+                <div className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-2 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
                     style={{
                         ...backdropStyle,
                         borderTopLeftRadius: '60px',
@@ -128,26 +129,24 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
 
                     {/* Category Header */}
                     <div className="flex items-center justify-center gap-6 mb-2">
-                        <div className="relative">
-                            <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
-                                Category
-                            </p>
-                        </div>
                         <div>
-                            <h3 className="text-4xl font-extrabold text-gray-900 flex items-center gap-2">
+                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 flex items-center gap-2 ">
+                            <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2 ">
+                                Category : 
+                            </p>
                                 {category.name}
                                 <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${category.isPrivate ? "bg-red-100 text-red-500" : "bg-green-100 text-green-600"}`}>
                                     {category.isPrivate ? "Private" : "Public"}
                                 </span>
                             </h3>
                             <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
-                                <span className="flex items-center gap-1">
+                                <span className="flex items-center gap-1 text-xs    ">
                                     <span className="text-xs text-gray-400">Created:</span>
-                                    {new Date(category.createdAt).toLocaleString()}
+                                    {new Date(category.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                                 </span>
                                 {isOwner && (
                                     <button
-                                        className="ml-4 p-1 rounded-full text-gray-400 hover:text-red-500 transition"
+                                        className="ml-4 p-1 rounded-full text-gray-400 hover:text-red-500 transition cursor-pointer"
                                         onClick={() => setShowDeletePopup(true)}
                                         disabled={deleting}
                                         title="Delete this category"
@@ -170,7 +169,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                     </div>
                 </div>
             </Magnet>
-            <div className="mb-8 container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border-1 border-black "
+            <div className="mb-8 container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border-1 border-black w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
                 style={{
                     ...backdropStyle,
                     borderTopLeftRadius: '0px',

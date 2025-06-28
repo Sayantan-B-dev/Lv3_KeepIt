@@ -99,7 +99,7 @@ const Register = () => {
       <div className="flex items-center justify-center bg-gray-20">
         <form
           onSubmit={handleSubmit}
-          className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16"
+          className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
           style={{
             backdropFilter: "blur(2px)",
             backdropShadow: "20px",
@@ -107,6 +107,7 @@ const Register = () => {
             WebkitBackdropFilter: "blur(12px)",
             boxShadow: "0 4px 32px 0 rgba(31, 38, 135, 0.10)",
             borderRadius: "60px",
+            border: '1px dashed black',
           }}
           encType="multipart/form-data"
         >

@@ -39,7 +39,7 @@ const AllNotes = () => {
   return (
     <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
       <div
-        className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-22 relative"
+        className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-22 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
         style={{
           backdropFilter: 'blur(2px)',
           backdropShadow: '20px',

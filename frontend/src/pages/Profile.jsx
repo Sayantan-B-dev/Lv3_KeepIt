@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import DottedButton from "../components/buttons/DottedButton";
 import Magnet from "../components/advance/Magnet";
+import Loading from "../components/home/Loading";
 
 const Profile = ({
   user: loggedInUser,
@@ -17,6 +18,23 @@ const Profile = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [followLoading, setFollowLoading] = useState(false);
+  const [followError, setFollowError] = useState(null);
+  const [isFollowing, setIsFollowing] = useState(false);
+
+  // Check if loggedInUser is following this profile
+  useEffect(() => {
+    if (
+      loggedInUser &&
+      profile &&
+      Array.isArray(profile.followers) &&
+      profile.followers.includes(loggedInUser._id)
+    ) {
+      setIsFollowing(true);
+    } else {
+      setIsFollowing(false);
+    }
+  }, [loggedInUser, profile]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -44,13 +62,54 @@ const Profile = ({
     navigate(`/category/${categoryID}`);
   };
 
-  if (appLoading || loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[40vh]">
-        <span className="text-lg text-gray-500">Loading...</span>
-      </div>
-    );
+  if (loading) {
+    return <Loading />;
   }
+
+  // const handleFollow = async () => {
+  //   if (!isAuthenticated || !loggedInUser || !profile) return;
+  //   setFollowLoading(true);
+  //   setFollowError(null);
+  //   try {
+  //     const res = await axiosInstance.post(`/api/profile/${profile._id}/follow`);
+  //     // Update followers in profile state
+  //     setProfile((prev) => ({
+  //       ...prev,
+  //       followers: res.data.followers,
+  //     }));
+  //     setIsFollowing(true);
+  //   } catch (err) {
+  //     setFollowError(
+  //       err.response?.data?.message ||
+  //         "Failed to follow user. Please try again later."
+  //     );
+  //   } finally {
+  //     setFollowLoading(false);
+  //   }
+  // };
+
+  // const handleUnfollow = async () => {
+  //   if (!isAuthenticated || !loggedInUser || !profile) return;
+  //   setFollowLoading(true);
+  //   setFollowError(null);
+  //   try {
+  //     const res = await axiosInstance.post(`/api/profile/${profile._id}/unfollow`);
+  //     setProfile((prev) => ({
+  //       ...prev,
+  //       followers: res.data.followers,
+  //     }));
+  //     setIsFollowing(false);
+  //   } catch (err) {
+  //     setFollowError(
+  //       err.response?.data?.message ||
+  //         "Failed to unfollow user. Please try again later."
+  //     );
+  //   } finally {
+  //     setFollowLoading(false);
+  //   }
+  // };
+
+
 
   if (appError) {
     return (
@@ -76,6 +135,13 @@ const Profile = ({
     );
   }
 
+  // Only show follow/unfollow if viewing someone else's profile and logged in
+  // const showFollow =
+  //   isAuthenticated &&
+  //   loggedInUser &&
+  //   profile &&
+  //   loggedInUser._id !== profile._id;
+
   return (
     <Magnet
       padding={50}
@@ -85,7 +151,7 @@ const Profile = ({
       overflow="hidden"
     >
       <div
-        className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16"
+        className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
         style={{
           backdropFilter: "blur(2px)",
           backdropShadow: "20px",
@@ -93,6 +159,7 @@ const Profile = ({
           WebkitBackdropFilter: "blur(12px)",
           boxShadow: "0 4px 32px 0 rgba(31, 38, 135, 0.10)",
           borderRadius: "60px",
+          border: '1px dashed black',
         }}
       >
         {/* Profile Header */}
@@ -116,10 +183,28 @@ const Profile = ({
             )}
           </div>
           <div>
-            <h1 className="text-4xl font-extrabold text-gray-900 flex items-center gap-2">
+            <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 flex items-center gap-2">
               {profile.username}
-            </h1>
-            <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
+            </h3>
+            <div className="flex flex-row gap-4 items-center mt-3 text-base text-gray-600 font-medium">
+              <span className="flex items-center gap-1">
+                <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M8 16h8M8 12h8M8 8h8" />
+                </svg>
+                {profile.notesCount ?? profile.notes?.length ?? 0}
+                <span className="ml-1 text-xs text-gray-400">Notes</span>
+              </span>
+              <span className="flex items-center gap-1">
+                <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19.5 3 21l1.5-4L16.5 3.5z" />
+                </svg>
+                {profile.categoriesCount ?? profile.categories?.length ?? 0}
+                <span className="ml-1 text-xs text-gray-400">Categories</span>
+              </span>
+            </div>
+            {/* <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
               <span className="flex items-center gap-1">
                 {profile.followers?.length || 0}
                 <span className="ml-1 text-xs text-gray-400">Followers</span>
@@ -129,6 +214,32 @@ const Profile = ({
                 <span className="ml-1 text-xs text-gray-400">Following</span>
               </span>
             </div>
+            {showFollow && (
+              <div className="mt-4">
+                <div
+                  className={`inline-block px-6 py-2 rounded-full font-semibold text-sm cursor-pointer transition-all border border-indigo-300 shadow-md ${
+                    isFollowing
+                      ? "bg-indigo-100 text-indigo-600 hover:bg-indigo-200"
+                      : "bg-indigo-600 text-white hover:bg-indigo-700"
+                  } ${followLoading ? "opacity-60 pointer-events-none" : ""}`}
+                  onClick={isFollowing ? handleUnfollow : handleFollow}
+                  tabIndex={0}
+                  role="button"
+                  aria-disabled={followLoading}
+                >
+                  {followLoading
+                    ? isFollowing
+                      ? "Unfollowing..."
+                      : "Following..."
+                    : isFollowing
+                    ? "Unfollow"
+                    : "Follow"}
+                </div>
+                {followError && (
+                  <div className="mt-2 text-xs text-red-500">{followError}</div>
+                )}
+              </div>
+            )} */}
           </div>
         </div>
 

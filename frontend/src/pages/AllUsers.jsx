@@ -42,16 +42,22 @@ const AllUsers = () => {
     return <div className="text-red-500">{error}</div>;
   }
 
+  const containerStyle = {
+    backdropFilter: 'blur(2px)',
+    backdropShadow: '20px',
+    background: 'rgba(255, 255, 255, 0.01)',
+    WebkitBackdropFilter: 'blur(12px)',
+    boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
+    borderRadius: '60px',
+  };
+
   return (
     <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
-      <div className="container mx-auto p-6 shadow-2xl border-1 border-dashed border-black mt-10 mb-21 relative"
+      <div className="container mx-auto p-6 shadow-2xl border-1 border-dashed border-black mt-10 mb-21 relative w-[90%] max-w-[90%] md:max-w-2xl lg:max-w-3xl"
         style={{
-          backdropFilter: 'blur(2px)',
-          backdropShadow: '20px',
-          background: 'rgba(255, 255, 255, 0.01)',
-          WebkitBackdropFilter: 'blur(12px)',
-          boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-          borderRadius: '60px',
+          width: '90%',
+          maxWidth: '90%',
+          ...containerStyle,
         }}>
         <h1 className="text-2xl font-bold text-center mb-4 text-black mb-8">All Users</h1>
         <div className="flex items-center gap-3 w-full mb-6">
@@ -78,15 +84,11 @@ const AllUsers = () => {
             onChange={e => setSearch(e.target.value)}
             className="flex-1 h-10 px-4 rounded-md border-1 border-gray-300 text-black focus:outline-none focus:border-black"
             style={{
-              backdropFilter: 'blur(2px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              background: 'rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-              borderRadius: '60px',
+              ...containerStyle,
             }}
           />
         </div>
-        <div id="explore-users">
+        <div id="explore-users" >
           {filteredUsers.length === 0 ? (
             <div className="text-center text-red-500">No users found.</div>
           ) : (
