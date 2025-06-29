@@ -21,7 +21,7 @@ const app = express()
 
 // CORS configuration
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL,
     credentials: true
 }));
 
@@ -48,7 +48,7 @@ app.use(session({
     }),
     cookie: {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7,
+        maxAge: 1000 * 60 * 60 * 24 * 30,
     }
 }));
 

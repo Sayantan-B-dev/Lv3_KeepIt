@@ -81,15 +81,16 @@ const Register = () => {
         headers: {
           "Content-Type": "multipart/form-data",
         },
+        withCredentials: true,
       });
 
       setUser(res.data.user || null);
       toast.success("Registered successfully! Please log in.");
-      navigate("/login");
+      navigate("/");
     } catch (err) {
       setError(
         err.response?.data?.error ||
-          "Registration failed. Please check your details and try again."
+        "Registration failed. Please check your details and try again."
       );
       toast.error(err.response?.data?.error || "Registration failed. Please check your details and try again.");
       console.log(err);
@@ -313,9 +314,8 @@ const Register = () => {
               </div>
               <label
                 htmlFor="profileImage"
-                className={`cursor-pointer px-4 py-2 bg-white border-2 border-blue-200 rounded-lg shadow-sm text-blue-600 font-semibold hover:bg-blue-50 transition duration-200 ${
-                  loading ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`cursor-pointer px-4 py-2 bg-white border-2 border-blue-200 rounded-lg shadow-sm text-blue-600 font-semibold hover:bg-blue-50 transition duration-200 ${loading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 style={{ display: "inline-block" }}
               >
                 {formData.profileImagePreview ? "Change Image" : "Upload Image"}
@@ -353,11 +353,10 @@ const Register = () => {
             </a>
           </div> */}
           <DottedButton
-              text={loading ? "Registering..." : "Register"}
+            text={loading ? "Registering..." : "Register"}
             type="submit"
-            className={`w-full bg-blue-600 py-2 rounded font-semibold hover:bg-blue-700 transition ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
-            }`}
+            className={`w-full bg-blue-600 py-2 rounded font-semibold hover:bg-blue-700 transition ${loading ? "opacity-50 cursor-not-allowed" : ""
+              }`}
             disabled={loading}
           />
           <div className="mt-4 text-center text-sm text-black">
@@ -369,6 +368,17 @@ const Register = () => {
               Login
             </Link>
           </div>
+          <div className="mt-4 text-center text-xs text-black word-wrap" style={{ letterSpacing: "1px", fontFamily: "monospace", fontSize: "10px" }}>
+            <p>
+              Please save your username and password in a secure place. 
+              <br />
+
+              The "Forgot Password" feature is not available yet.
+              <br />
+              After registration, your session will remain active for 1 hour.
+            </p>
+          </div>
+
         </form>
       </div>
     </Magnet>
