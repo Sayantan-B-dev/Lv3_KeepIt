@@ -6,6 +6,8 @@ import {
 } from "@material-tailwind/react";
 import DottedButton from "../buttons/DottedButton";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../api/axiosInstance";
+import { toast } from "react-toastify";
 
 const blackFont = {
   textDecoration: "none",
@@ -207,13 +209,20 @@ export function StickyNavbar({ isAuthenticated, setIsAuthenticated, user }) {
                 <DottedButton
                   text="Log Out"
                   className="hidden lg:block"
-                  onClick={() => {
-                    localStorage.removeItem("token");
+                  onClick={async () => {
+                    try {
+                      await axiosInstance.post("/api/auth/logout");
+                    } catch (err) {
+
+                    }
+                    localStorage.removeItem("user");
                     setIsAuthenticated(false);
-                    navigate("/");
+                    toast.success("Logged out successfully");
+                    setTimeout(() => {
+                      navigate("/");
+                    }, 3000);
                   }}
                 />
-
               </>
             )}
           </div>
@@ -250,11 +259,18 @@ export function StickyNavbar({ isAuthenticated, setIsAuthenticated, user }) {
                 <DottedButton
                   text="Log Out"
                   className="w-full sm:w-auto"
-                  onClick={() => {
-                    localStorage.removeItem("token");
+                  onClick={async () => {
+                    try {
+                      await axiosInstance.post("/api/auth/logout");
+                    } catch (err) {
+                    }
+                    localStorage.removeItem("user");
                     setIsAuthenticated(false);
                     setOpenNav(false);
-                    navigate("/");
+                    toast.success("Logged out successfully");
+                    setTimeout(() => {
+                      navigate("/");
+                    }, 3000);
                   }}
                 />
               </>

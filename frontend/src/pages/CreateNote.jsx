@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Magnet from "../components/advance/Magnet";
 import DottedButton from "../components/buttons/DottedButton";
 import Loading from "../components/home/Loading";
+import { toast } from "react-toastify";
 
 const textAreaStyle =
     "w-full border border-gray-300 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
@@ -54,7 +55,7 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
             //console.log(response.data);
 
             setSuccess(true);
-
+            toast.success("Note created successfully");
 
             setTitle("");
             setContent("");

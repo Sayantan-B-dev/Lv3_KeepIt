@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import DottedButton from "../components/buttons/DottedButton";
 import Magnet from "../components/advance/Magnet";
+import { toast } from 'react-toastify';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -83,12 +84,14 @@ const Register = () => {
       });
 
       setUser(res.data.user || null);
+      toast.success("Registered successfully! Please log in.");
       navigate("/login");
     } catch (err) {
       setError(
         err.response?.data?.error ||
           "Registration failed. Please check your details and try again."
       );
+      toast.error(err.response?.data?.error || "Registration failed. Please check your details and try again.");
       console.log(err);
     } finally {
       setLoading(false);

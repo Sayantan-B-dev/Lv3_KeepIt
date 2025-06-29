@@ -19,6 +19,8 @@ import About from "./pages/About";
 import AllUsers from "./pages/AllUsers";
 import Loading from "./components/home/Loading";
 
+
+
 function App() {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -74,84 +76,86 @@ function App() {
   }
 
   return (
-    <BrowserRouter>
-      <StickyNavbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
+    <>
+      <BrowserRouter>
+        <StickyNavbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
 
-      {/* background */}
-      <div style={{ width: '100%', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: -3456, pointerEvents: 'none' }}>
-        <DotGrid
-          dotSize={2}
-          gap={20}
-          baseColor="#1a1a2e"
-          activeColor="#16213e"
-          proximity={100}
-          shockRadius={200}
-          shockStrength={3}
-          resistance={600}
-          returnDuration={2.0}
-        />
-      </div>
+        {/* background */}
+        <div style={{ width: '100%', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: -3456, pointerEvents: 'none' }}>
+          <DotGrid
+            dotSize={2}
+            gap={20}
+            baseColor="#1a1a2e"
+            activeColor="#16213e"
+            proximity={100}
+            shockRadius={200}
+            shockStrength={3}
+            resistance={600}
+            returnDuration={2.0}
+          />
+        </div>
 
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Home
-              notes={notes}
-              loading={loading}
-              error={error}
-              isAuthenticated={isAuthenticated}
-              user={user}
-            />
-          }
-        />
-        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/logout" element={<Logout setIsAuthenticated={setIsAuthenticated} />} />
-        <Route path="/profile/MyProfile" element={<MyProfile user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories}/>} />
-        <Route path="/CreateNote" element={<CreateNote user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories}/>} />
-        <Route path="/all-categories" element={<AllCategories user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-        <Route path="/all-notes" element={<AllNotes user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-        <Route path="/about" element={<About user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-        <Route path="/all-users" element={<AllUsers user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-        <Route
-          path="/profile/:userId"
-          element={
-            <Profile
-              user={user}
-              loading={loading}
-              error={error}
-              isAuthenticated={isAuthenticated}
-            />
-          }
-        />
-        <Route
-          path="/category/:categoryId"
-          element={
-            <Category
-              user={user}
-              loading={loading}
-              error={error}
-              isAuthenticated={isAuthenticated}
-            />
-          }
-        />
-        <Route
-          path="/note/:noteId"
-          element={
-            <Note
-              user={user}
-              loading={loading}
-              error={error}
-              isAuthenticated={isAuthenticated}
-            />
-          }
-        />
-        <Route path="/CreateNote" element={<CreateNote />} />
-      </Routes>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                notes={notes}
+                loading={loading}
+                error={error}
+                isAuthenticated={isAuthenticated}
+                user={user}
+              />
+            }
+          />
+          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/logout" element={<Logout setIsAuthenticated={setIsAuthenticated} />} />
+          <Route path="/profile/MyProfile" element={<MyProfile user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories}/>} />
+          <Route path="/CreateNote" element={<CreateNote user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories} />} />
+          <Route path="/all-categories" element={<AllCategories user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+          <Route path="/all-notes" element={<AllNotes user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+          <Route path="/about" element={<About user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+          <Route path="/all-users" element={<AllUsers user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+          <Route
+            path="/profile/:userId"
+            element={
+              <Profile
+                user={user}
+                loading={loading}
+                error={error}
+                isAuthenticated={isAuthenticated}
+              />
+            }
+          />
+          <Route
+            path="/category/:categoryId"
+            element={
+              <Category
+                user={user}
+                loading={loading}
+                error={error}
+                isAuthenticated={isAuthenticated}
+              />
+            }
+          />
+          <Route
+            path="/note/:noteId"
+            element={
+              <Note
+                user={user}
+                loading={loading}
+                error={error}
+                isAuthenticated={isAuthenticated}
+              />
+            }
+          />
+          <Route path="/CreateNote" element={<CreateNote />} />
+        </Routes>
 
-      <Footer />
-    </BrowserRouter>
+        <Footer />
+      </BrowserRouter>
+    </>
   );
 }
 

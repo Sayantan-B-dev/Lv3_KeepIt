@@ -6,6 +6,7 @@ import Magnet from "../components/advance/Magnet";
 import Loading from "../components/home/Loading";
 import Author from "../components/Author";
 import ConfirmPopUp from "../components/ConfirmPopUp";
+import { toast } from "react-toastify";
 
 const backdropStyle = {
   backdropFilter: 'blur(2px)',
@@ -41,8 +42,9 @@ const Note = ({ user: loggedInUser }) => {
     setError(null);
     try {
       await axiosInstance.delete(`/api/notes/${noteId}`);
+      toast.success("Note deleted successfully");
       setShowDeletePopup(false);
-      navigate("/"); // or navigate to notes list if you have one
+      navigate("/profile/MyProfile");
     } catch (err) {
       setError(
         err.response?.data?.message ||

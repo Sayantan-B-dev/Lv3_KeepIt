@@ -3,6 +3,7 @@ import axios from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import Magnet from "../components/advance/Magnet";
+import { toast } from 'react-toastify';
 
 const Login = ({ setIsAuthenticated }) => {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -29,16 +30,21 @@ const Login = ({ setIsAuthenticated }) => {
       if (checkRes.data.authenticated) {
         setUser(checkRes.data.user);
         setIsAuthenticated(true);
+        toast.success("Logged in successfully!");
         navigate("/");
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       } else {
         setError("Login failed. Please check your credentials and try again.");
+        toast.error("Login failed. Please check your credentials and try again.");
       }
     } catch (err) {
       setError(
         err.response?.data?.message ||
         "Login failed. Please check your credentials and try again."
       );
+      toast.error(err.response?.data?.message || "Login failed. Please check your credentials and try again.");
     } finally {
       setLoading(false);
     }

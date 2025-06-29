@@ -6,6 +6,7 @@ import Magnet from "../components/advance/Magnet";
 import Author from "../components/Author";
 import ConfirmPopUp from "../components/ConfirmPopUp"; 
 import Loading from "../components/home/Loading";
+import { toast } from "react-toastify";
 
 const backdropStyle = {
     backdropFilter: 'blur(2px)',
@@ -41,6 +42,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
         setError(null);
         try {
             // First, delete all notes in this category
+            toast.success("Category deleted successfully");
             if (notes && notes.length > 0) {
                 // Use Promise.all to delete all notes in parallel
                 await Promise.all(
@@ -52,7 +54,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
             // Then, delete the category itself
             await axiosInstance.delete(`/api/categories/${categoryId}`);
             setShowDeletePopup(false);
-            navigate("/"); // or navigate to categories list if you have one
+            navigate("/profile/MyProfile");
         } catch (err) {
             setError(
                 err.response?.data?.message ||

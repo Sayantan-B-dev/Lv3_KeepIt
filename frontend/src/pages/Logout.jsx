@@ -18,7 +18,9 @@ const Logout = ({ setIsAuthenticated }) => {
         localStorage.removeItem("user");
         
         navigate("/");
-        window.location.reload();
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
       } catch (error) {
         console.error("Logout error:", error);
         setUser(null);
