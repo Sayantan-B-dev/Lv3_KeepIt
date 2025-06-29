@@ -31,11 +31,17 @@ export const loginSchema = Joi.object({
 });
 
 export const noteSchema = Joi.object({
-    title:Joi.string().min(3).max(100).required(),
+    title:Joi.string().min(3).max(50).required(),
     content:Joi.string().min(10).max(1000).required(),
     category:Joi.string().min(3).max(50).required(),
     tags:Joi.array().items(Joi.string()),
     isPublic:Joi.boolean(),
     isPinned:Joi.boolean(),
     isArchived:Joi.boolean(),
+});
+export const categorySchema = Joi.object({
+    name:Joi.string().min(3).max(20).required(),
+    isPrivate:Joi.boolean(),
+    user:Joi.string().required(),
+    notes:Joi.array().items(Joi.string()),
 });

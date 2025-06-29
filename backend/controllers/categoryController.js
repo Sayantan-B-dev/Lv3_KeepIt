@@ -1,4 +1,5 @@
 import Category from "../models/category.js";
+import User from "../models/user.js";
 
 export const getCategoryById = async (req, res) => {
     const {id}=req.params;
@@ -36,7 +37,11 @@ export const updateCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
     const { id } = req.params;
-    await Category.findOneAndDelete({ _id: id, user: req.user._id })
-    res.json({ message: "Category Deleted" })
+    await Category.findOneAndDelete({ _id: id, user: req.user._id });
+    await User.findByIdAndUpdate(
+        req.user._id,
+        { $pull: { categories: id } }
+    );
+    res.json({ message: "Category Deleted" });
 }
 

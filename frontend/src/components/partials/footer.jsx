@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { blackFontClass } from "./StickyNavbar";
 
+
 const footerLinks = [
   {
     title: "Product",
@@ -80,9 +81,11 @@ const Footer = () => {
         WebkitBackdropFilter: 'blur(12px)',
         boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
         border: '1px solid rgba(255, 255, 255, 0.18)',
-        marginTop: "auto"
+        marginTop: "auto",
+        position:"relative"
       }}
     >
+
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-8 md:gap-10 w-full">
         {/* Brand & Description */}
         <div className="flex-1 mb-8 md:mb-0 min-w-[220px] justify-center items-center text-center">

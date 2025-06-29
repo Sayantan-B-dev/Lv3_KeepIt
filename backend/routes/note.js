@@ -1,6 +1,6 @@
 import express from 'express'
 import { validateBody } from '../middlewares/validate.js'
-import { noteSchema } from '../validators/auth.js'
+import { noteSchema,categorySchema } from '../validators/auth.js'
 import {
     getUserNotes,
     getPublicNotesbyUser,
@@ -23,7 +23,7 @@ router.get('/',isLoggedIn,getUserNotes)
 router.post('/',isLoggedIn,validateBody(noteSchema),createNote)
 
 router.get('/:id', isLoggedIn, getNotesById);
-router.put('/:id',isLoggedIn,validateBody(noteSchema),updateNote)
+router.put('/:id',isLoggedIn,validateBody(noteSchema || categorySchema),updateNote)
 router.delete('/:id',isLoggedIn,deleteNote)
 
 

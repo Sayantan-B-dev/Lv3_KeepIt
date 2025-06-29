@@ -132,8 +132,8 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                     {/* Category Header */}
                     <div className="flex items-center justify-center gap-6 mb-2">
                         <div>
-                            <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 flex items-center gap-2 ">
-                            <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2 ">
+                            <h3 className="text-xl sm:text-2xl md:text-2xl font-extrabold text-gray-900 flex items-center gap-2 ">
+                            <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
                                 Category : 
                             </p>
                                 {category.name}

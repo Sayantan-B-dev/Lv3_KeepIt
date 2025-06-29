@@ -2,6 +2,8 @@ import User from "../models/user.js";
 import passport from "passport";
 import { cloudinary, storage } from '../utils/cloudinary.js';
 import multer from 'multer';
+import session from 'express-session';
+import flash from 'connect-flash';
 
 export const upload = multer({ storage });
 
@@ -29,7 +31,7 @@ export const registerUser = async (req, res, next) => {
         const recentCount = await User.countDocuments({
             registrationIp: ip,
             createdAt: { $gte: since }
-        });
+        }); 
         if (recentCount >= 2) {
             return res.status(429).json({ error: "Registration limit reached: Only 2 accounts per day allowed from this IP." });
         }
@@ -73,7 +75,7 @@ export const loginUser = (req, res, next) => {
             if (err) return next(err);
             req.flash('success', 'welcome back');
             return res.status(200).json({ 
-                message: 'logged in successfully',
+                message: req.flash("success")[0] || "Logged in successfully",
                 user: {
                     _id: user._id,
                     username: user.username,
@@ -99,12 +101,19 @@ export const postLogin = (req, res) => {
     });
 };
 
-export const logoutUser = (req, res) => {
+export const logoutUser = (req, res, next) => {
     req.logout(err => {
         if (err) return next(err);
         req.flash('success', 'logged out successfully');
-        res.status(200).json({ message: 'logged out successfully' });
-        // Do not redirect in API response; frontend should handle navigation
+        req.session.destroy((err) => {
+            if (err) return next(err);
+            Object.keys(req.cookies || {}).forEach(cookieName => {
+                if (cookieName.startsWith('__cf') || cookieName === 'connect.sid') {
+                    res.clearCookie(cookieName);
+                }
+            });
+            res.status(200).json({ message: 'logged out successfully' });
+        });
     });
 };
 

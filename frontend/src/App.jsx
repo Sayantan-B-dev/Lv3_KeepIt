@@ -18,6 +18,7 @@ import AllCategories from "./pages/AllCategories";
 import About from "./pages/About";
 import AllUsers from "./pages/AllUsers";
 import Loading from "./components/home/Loading";
+import Book from "./components/partials/Book";
 
 
 
@@ -81,7 +82,20 @@ function App() {
         <StickyNavbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
 
         {/* background */}
-        <div style={{ width: '100%', height: '100vh', position: 'fixed', top: 0, left: 0, zIndex: -3456, pointerEvents: 'none' }}>
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            width: '100%',
+            height: '100%',
+            minWidth: '200vw',
+            minHeight: '200vh',
+            maxWidth: '200vw',
+            maxHeight: '200vh',
+            zIndex: -3456,
+            pointerEvents: 'none',
+          }}
+        >
           <DotGrid
             dotSize={2}
             gap={20}
@@ -111,7 +125,7 @@ function App() {
           <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
           <Route path="/register" element={<Register />} />
           <Route path="/logout" element={<Logout setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="/profile/MyProfile" element={<MyProfile user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories}/>} />
+          <Route path="/profile/MyProfile" element={<MyProfile user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories} />} />
           <Route path="/CreateNote" element={<CreateNote user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories} />} />
           <Route path="/all-categories" element={<AllCategories user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
           <Route path="/all-notes" element={<AllNotes user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
@@ -152,6 +166,8 @@ function App() {
           />
           <Route path="/CreateNote" element={<CreateNote />} />
         </Routes>
+
+        <Book />  
 
         <Footer />
       </BrowserRouter>
