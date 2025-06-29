@@ -22,7 +22,18 @@ export const uploadProfileImage = async (req, res) => {
 export const registerUser = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
-        const user = new User({ username, email });
+        // Get IP address
+        const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        // Check how many users registered from this IP in last 24 hours
+        const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        const recentCount = await User.countDocuments({
+            registrationIp: ip,
+            createdAt: { $gte: since }
+        });
+        if (recentCount >= 2) {
+            return res.status(429).json({ error: "Registration limit reached: Only 2 accounts per day allowed from this IP." });
+        }
+        const user = new User({ username, email, registrationIp: ip });
 
         if (req.file) {
             user.profileImage = {

@@ -58,3 +58,61 @@ export const updateProfile = async (req, res) => {
   }
 }
 
+// Follow a user
+export const followUser = async (req, res) => {
+  try {
+    const targetUserId = req.params.userId;
+    const currentUserId = req.user._id;
+    if (targetUserId === String(currentUserId)) {
+      return res.status(400).json({ message: "You cannot follow yourself." });
+    }
+    const targetUser = await User.findById(targetUserId);
+    const currentUser = await User.findById(currentUserId);
+    if (!targetUser || !currentUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    // Prevent duplicate follows
+    if (targetUser.followers.includes(currentUserId)) {
+      return res.status(400).json({ message: "Already following this user." });
+    }
+    targetUser.followers.push(currentUserId);
+    currentUser.following.push(targetUserId);
+    await targetUser.save();
+    await currentUser.save();
+    res.json({ message: "Followed successfully.", followers: targetUser.followers });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// Unfollow a user
+export const unfollowUser = async (req, res) => {
+  try {
+    const targetUserId = req.params.userId;
+    const currentUserId = req.user._id;
+    if (targetUserId === String(currentUserId)) {
+      return res.status(400).json({ message: "You cannot unfollow yourself." });
+    }
+    const targetUser = await User.findById(targetUserId);
+    const currentUser = await User.findById(currentUserId);
+    if (!targetUser || !currentUser) {
+      return res.status(404).json({ message: "User not found." });
+    }
+    // Only unfollow if currently following
+    if (!targetUser.followers.includes(currentUserId)) {
+      return res.status(400).json({ message: "You are not following this user." });
+    }
+    targetUser.followers = targetUser.followers.filter(
+      (id) => String(id) !== String(currentUserId)
+    );
+    currentUser.following = currentUser.following.filter(
+      (id) => String(id) !== String(targetUserId)
+    );
+    await targetUser.save();
+    await currentUser.save();
+    res.json({ message: "Unfollowed successfully.", followers: targetUser.followers });
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+

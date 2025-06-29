@@ -40,6 +40,15 @@ export const getAllPublicNotes=async(req,res)=>{
 
 export const createNote=async(req,res)=>{
     try {
+        // Limit: Max 5 notes per hour per account
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        const notesLastHour = await Note.countDocuments({
+            user: req.user._id,
+            createdAt: { $gte: oneHourAgo }
+        });
+        if (notesLastHour >= 5) {
+            return res.status(429).json({ error: "Note creation limit reached: Only 5 notes per hour allowed." });
+        }
         const { title, content, category } = req.body;
         //console.log('Creating note with:', { title, content, category });
         //console.log('User ID:', req.user._id);

@@ -24,6 +24,7 @@ const userSchema =new mongoose.Schema({
     isPremium:{type:Boolean,default:false},
     isVerified:{type:Boolean,default:false},
     categories:[{type:mongoose.Schema.Types.ObjectId,ref:'Category'}],
+    registrationIp: { type: String },
 })
 
 userSchema.plugin(passportLocalMongoose)
