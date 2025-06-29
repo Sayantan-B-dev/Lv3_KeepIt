@@ -12,12 +12,12 @@ profileImageSchema.virtual('thumbnail').get(function(){
 
 const userSchema =new mongoose.Schema({
     googleID:{type:String},
-    username:{type:String},
-    email: { type: String, required: true, unique: true },
+    username:{type:String ,maxLength:20,minLength:3,required:true},
+    email: { type: String, required: true, unique: true,maxLength:128,minLength:3 },
     profileImage: profileImageSchema,
-    bio:{type:String},
-    location:{type:String},
-    website:{type:String},
+    bio:{type:String,maxLength:200},
+    location:{type:String,maxLength:128},
+    website:{type:String,maxLength:128},
     followers:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
     following:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
     createdAt:{type:Date,default:Date.now},

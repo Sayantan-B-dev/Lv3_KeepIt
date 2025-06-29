@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 
 const categorySchema=new mongoose.Schema({
-    name:{type:String,required:true},
+    name:{type:String,required:true,maxLength:30,minLength:3},
     isPrivate:{type:Boolean,default:false},
     user:{
         type:mongoose.Schema.Types.ObjectId,

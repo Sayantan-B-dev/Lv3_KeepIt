@@ -184,6 +184,19 @@ const MyProfile = () => {
     return <div>User not found.</div>;
   }
 
+  // Helper to ensure the website link is always valid for <a href>
+  // If the user entered a protocol, use as is. Otherwise, prepend '//' so browser will use http(s) as needed.
+  const getWebsiteHref = (website) => {
+    if (!website) return "";
+    if (/^https?:\/\//i.test(website)) {
+      return website;
+    }
+    if (/^\/\//.test(website)) {
+      return website;
+    }
+    return '//' + website;
+  };
+
   return (
     <Magnet
       padding={50}
@@ -343,22 +356,20 @@ const MyProfile = () => {
               </label>
               {editMode ? (
                 <input
-                  type="url"
+                  type="text"
                   name="website"
                   value={editProfile.website}
                   onChange={handleInputChange}
                   className="w-full border border-indigo-200 text-black rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                   maxLength={128}
+                  placeholder="e.g. example.com or https://example.com"
+                  autoComplete="off"
                 />
               ) : (
                 <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-full sm:w-fit">
                   {profile.website ? (
                     <a
-                      href={
-                        profile.website.startsWith("http")
-                          ? profile.website
-                          : `https://${profile.website}`
-                      }
+                      href={getWebsiteHref(profile.website)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-black break-all"

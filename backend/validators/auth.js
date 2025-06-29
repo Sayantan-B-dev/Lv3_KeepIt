@@ -40,8 +40,14 @@ export const noteSchema = Joi.object({
     isArchived:Joi.boolean(),
 });
 export const categorySchema = Joi.object({
-    name:Joi.string().min(3).max(20).required(),
+    name:Joi.string().min(3).max(30).required(),
     isPrivate:Joi.boolean(),
     user:Joi.string().required(),
     notes:Joi.array().items(Joi.string()),
+});
+
+export const userSchema = Joi.object({
+    username:Joi.string().min(3).max(20).required(),
+    email:Joi.string().email().required(),
+    password:Joi.string().min(8).max(128).required(),
 });
