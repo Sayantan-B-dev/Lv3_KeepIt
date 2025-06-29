@@ -6,6 +6,7 @@ import Magnet from "../components/advance/Magnet";
 
 const Login = ({ setIsAuthenticated }) => {
   const [formData, setFormData] = useState({ username: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const { setUser } = useAuth();
@@ -85,18 +86,69 @@ const Login = ({ setIsAuthenticated }) => {
           <label className="block py-2 mb-1 font-medium text-gray-500" htmlFor="password">
             Password
           </label>
-          <input
-            id="password"
-            name="password"
-            placeholder="Enter your password"
-            type="password"
-            value={formData.password}
-            onChange={handleChange}
-            className="w-full border-gray-300 border-1 rounded px-3 py-2 focus:outline-none focus:ring focus:border-black text-black"
-            autoComplete="current-password"
-            disabled={loading}
-            required
-          />
+          <div className="relative">
+            <input
+              id="password"
+              name="password"
+              placeholder="Enter your password"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full border-gray-300 border-1 rounded px-3 py-2 focus:outline-none focus:ring focus:border-black text-black pr-10"
+              autoComplete="current-password"
+              disabled={loading}
+              required
+            />
+                          <div
+                type="button"
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+                onClick={() => setShowPassword((prev) => !prev)}
+                tabIndex={-1}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  // Eye open SVG
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M1.5 12C3.5 6.5 8 3 12 3s8.5 3.5 10.5 9c-2 5.5-6.5 9-10.5 9S3.5 17.5 1.5 12z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      fill="none"
+                    />
+                    <circle
+                      cx="12"
+                      cy="12"
+                      r="3.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      fill="none"
+                    />
+                  </svg>
+                ) : (
+                  // Eye closed SVG
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path
+                      d="M1.5 12C3.5 6.5 8 3 12 3c2.1 0 4.2.7 6 2M22.5 12c-2 5.5-6.5 9-10.5 9-2.1 0-4.2-.7-6-2"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      fill="none"
+                    />
+                    <path
+                      d="M3 3l18 18"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
+                    <path
+                      d="M9.5 14.5a3.5 3.5 0 0 1 5-5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      fill="none"
+                    />
+                  </svg>
+                )}
+              </div>
+          </div>
         </div>
         <button
           type="submit"

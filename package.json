@@ -2,12 +2,5 @@
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run backend\"",
     "backend": "nodemon backend/server.js"
-  },
-  "dependencies": {
-    "helmet": "^8.1.0",
-    "joi": "^17.13.3",
-    "passport-google-oauth20": "^2.0.0",
-    "react-router-dom": "^7.6.2",
-    "vite": "^6.2.0"
   }
 }

@@ -6,7 +6,7 @@ export const registerSchema = Joi.object({
   password: Joi.string()
     .min(8)
     .max(128)
-    .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\-=[\]{};:\\"|,.<>/?]).+$'))
+    .pattern(new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z0-9]).+$'))
     .required()
     .messages({
       'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.'
