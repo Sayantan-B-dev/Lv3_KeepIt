@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUserProfile, getAllUsers, myProfile, updateProfile, followUser, unfollowUser } from '../controllers/profileController.js';
+import { getUserProfile, getAllUsers, myProfile, updateProfile, followUser, unfollowUser,deleteUser } from '../controllers/profileController.js';
 import {isLoggedIn} from '../middlewares/isAuthenticated.js'
 import { aiModeration } from '../middlewares/aiModeration.js'
 
@@ -20,5 +20,8 @@ router.post('/:userId/follow', isLoggedIn, followUser);
 
 // Unfollow a user
 router.post('/:userId/unfollow', isLoggedIn, unfollowUser);
+router.delete('/MyProfile', isLoggedIn,deleteUser);
+
+
 
 export default router;

@@ -1,4 +1,6 @@
 import User from '../models/user.js';
+import Note from '../models/note.js';
+import Category from '../models/category.js';
 
 // Get a user's public profile by ID
 export const getUserProfile = async (req, res) => {
@@ -116,3 +118,16 @@ export const unfollowUser = async (req, res) => {
   }
 };
 
+
+
+export const deleteUser = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    await Note.deleteMany({ user: userId });
+    await Category.deleteMany({ user: userId });
+    await req.user.deleteOne();
+    res.json({ message: 'Profile and all associated notes and categories deleted successfully.' });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+}

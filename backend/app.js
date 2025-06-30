@@ -17,6 +17,7 @@ import GoogleStrategy from "passport-google-oauth20"
 // Load environment variables
 dotenv.config();
 
+
 const app = express()
 
 // CORS configuration
@@ -92,7 +93,7 @@ app.use(
 );
 // 🔹 Session Configuration (Before Passport
 const store = MongoStore.create({
-    mongoUrl: process.env.DATABASE_URL,//the Key matters very much
+    mongoUrl: process.env.DATABASE_URL,
     touchAfter: 24 * 60 * 60,
     crypto: {
         secret: process.env.SESSION_SECRET,
