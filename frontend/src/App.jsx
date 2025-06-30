@@ -19,6 +19,7 @@ import About from "./pages/About";
 import AllUsers from "./pages/AllUsers";
 import Loading from "./components/home/Loading";
 import Book from "./components/partials/Book";
+import Waiting from "./components/partials/Waiting";
 
 
 
@@ -109,63 +110,99 @@ function App() {
           />
         </div>
 
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <Home
-                notes={notes}
-                loading={loading}
-                error={error}
-                isAuthenticated={isAuthenticated}
-                user={user}
-              />
-            }
-          />
-          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/logout" element={<Logout setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="/profile/MyProfile" element={<MyProfile user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories} />} />
-          <Route path="/CreateNote" element={<CreateNote user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories} />} />
-          <Route path="/all-categories" element={<AllCategories user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-          <Route path="/all-notes" element={<AllNotes user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-          <Route path="/about" element={<About user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-          <Route path="/all-users" element={<AllUsers user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-          <Route
-            path="/profile/:userId"
-            element={
-              <Profile
-                user={user}
-                loading={loading}
-                error={error}
-                isAuthenticated={isAuthenticated}
-              />
-            }
-          />
-          <Route
-            path="/category/:categoryId"
-            element={
-              <Category
-                user={user}
-                loading={loading}
-                error={error}
-                isAuthenticated={isAuthenticated}
-              />
-            }
-          />
-          <Route
-            path="/note/:noteId"
-            element={
-              <Note
-                user={user}
-                loading={loading}
-                error={error}
-                isAuthenticated={isAuthenticated}
-              />
-            }
-          />
-          <Route path="/CreateNote" element={<CreateNote />} />
-        </Routes>
+        {(error === "Something went wrong. Please try again later." 
+          || error === "Failed to load users"
+          || error === "Failed to load notes. Please try again later."
+          || error === "Failed to load categories. Please try again later."
+          || error === "Failed to load profile. Please try again later."
+          || error === "Failed to load data. Please try again later."
+          || error === "Network Error"
+          || error === "Request failed with status code 500"
+          || error === "Request failed with status code 404"
+          || error === "Request failed with status code 401"
+          || error === "Request failed with status code 403"
+          || error === "Internal Server Error"
+          || error === "Service Unavailable"
+          || error === "Backend is offline"
+        ) ? (
+          <Routes>
+            <Route
+              path="*"
+              element={
+                <Waiting
+                  {...{
+                    children: (() => {
+                      if (typeof window !== "undefined") {
+                        setTimeout(() => {
+                          window.location.reload();
+                        }, 60000); 
+                      }
+                      return null;
+                    })()
+                  }}
+                />
+              }
+            />
+          </Routes>
+        ) : (
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  notes={notes}
+                  loading={loading}
+                  error={error}
+                  isAuthenticated={isAuthenticated}
+                  user={user}
+                />
+              }
+            />
+            <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/logout" element={<Logout setIsAuthenticated={setIsAuthenticated} />} />
+            <Route path="/profile/MyProfile" element={<MyProfile user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories} />} />
+            <Route path="/CreateNote" element={<CreateNote user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories} />} />
+            <Route path="/all-categories" element={<AllCategories user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+            <Route path="/all-notes" element={<AllNotes user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+            <Route path="/about" element={<About user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+            <Route path="/all-users" element={<AllUsers user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+            <Route
+              path="/profile/:userId"
+              element={
+                <Profile
+                  user={user}
+                  loading={loading}
+                  error={error}
+                  isAuthenticated={isAuthenticated}
+                />
+              }
+            />
+            <Route
+              path="/category/:categoryId"
+              element={
+                <Category
+                  user={user}
+                  loading={loading}
+                  error={error}
+                  isAuthenticated={isAuthenticated}
+                />
+              }
+            />
+            <Route
+              path="/note/:noteId"
+              element={
+                <Note
+                  user={user}
+                  loading={loading}
+                  error={error}
+                  isAuthenticated={isAuthenticated}
+                />
+              }
+            />
+            <Route path="/CreateNote" element={<CreateNote />} />
+          </Routes>
+        )}
 
         <Book />  
 

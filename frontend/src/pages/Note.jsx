@@ -180,7 +180,7 @@ const Note = ({ user: loggedInUser }) => {
       />
       <Magnet padding={50} disabled={false} magnetStrength={50} className="w-full">
         <div
-          className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
+          className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-[70%] lg:max-w-[70%] "
           style={{
             ...backdropStyle,
             borderRadius: '60px',
