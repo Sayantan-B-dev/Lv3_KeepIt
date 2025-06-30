@@ -85,8 +85,11 @@ const Register = () => {
       });
 
       setUser(res.data.user || null);
-      toast.success("Registered successfully! Please log in.");
+      
+      toast.success("Registered and logged in!");
+      
       navigate("/");
+      window.location.reload();
     } catch (err) {
       setError(
         err.response?.data?.error ||

@@ -24,9 +24,7 @@ export const uploadProfileImage = async (req, res) => {
 export const registerUser = async (req, res, next) => {
     try {
         const { username, email, password } = req.body;
-        // Get IP address
         const ip = req.ip || req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        // Check how many users registered from this IP in last 24 hours
         const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
         const recentCount = await User.countDocuments({
             registrationIp: ip,
@@ -39,17 +37,21 @@ export const registerUser = async (req, res, next) => {
 
         if (req.file) {
             user.profileImage = {
-                url: req.file.path,      // Cloudinary URL
-                filename: req.file.filename // Cloudinary public_id
+                url: req.file.path,      
+                filename: req.file.filename 
             };
         }
 
         const registeredUser = await User.register(user, password);
-        req.login(registeredUser, e => {
-            if (e) return next(e);
+
+        // Explicitly log in the user after registration
+        req.logIn(registeredUser, function(err) {
+            if (err) {
+                req.flash("error", err.message);
+                return res.status(400).json({ error: err.message });
+            }
             req.flash("success", 'Welcome to Notes App');
-            // Send back user info for frontend to use (including profileImage)
-            res.status(201).json({ 
+            return res.status(201).json({ 
                 message: "Registered successfully",
                 user: {
                     _id: registeredUser._id,
