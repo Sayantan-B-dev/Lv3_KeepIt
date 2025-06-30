@@ -11,6 +11,7 @@ import {
     getNotesById
 } from '../controllers/noteController.js'
 import {isLoggedIn} from '../middlewares/isAuthenticated.js'
+import { aiModeration } from '../middlewares/aiModeration.js'
 
 
 const router=express.Router()
@@ -20,11 +21,11 @@ router.get('/public/all',getAllPublicNotes)
 router.get('/public/:userId',isLoggedIn,getPublicNotesbyUser)
 
 router.get('/',isLoggedIn,getUserNotes)
-router.post('/',isLoggedIn,validateBody(noteSchema),createNote)
+router.post('/',isLoggedIn,validateBody(noteSchema),aiModeration,createNote)
 
 router.get('/:id', isLoggedIn, getNotesById);
-router.put('/:id',isLoggedIn,validateBody(noteSchema || categorySchema),updateNote)
-router.put('/:id/edit',isLoggedIn,validateBody(noteSchema || categorySchema),updateNote)
+router.put('/:id',isLoggedIn,validateBody(noteSchema || categorySchema),aiModeration,updateNote)
+router.put('/:id/edit',isLoggedIn,validateBody(noteSchema || categorySchema),aiModeration,updateNote)
 router.delete('/:id',isLoggedIn,deleteNote)
 
 
