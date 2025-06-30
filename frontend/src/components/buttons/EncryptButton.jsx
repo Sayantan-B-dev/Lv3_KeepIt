@@ -9,7 +9,7 @@ const Example = () => {
   );
 };
 
-const TARGET_TEXT = "Edit Profile";
+const TARGET_TEXT = "Edit";
 const CYCLES_PER_LETTER = 2;
 const SHUFFLE_TIME = 50;
 

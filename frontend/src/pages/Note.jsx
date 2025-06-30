@@ -7,6 +7,8 @@ import Loading from "../components/home/Loading";
 import Author from "../components/Author";
 import ConfirmPopUp from "../components/ConfirmPopUp";
 import { toast } from "react-toastify";
+import EncryptButton from "../components/buttons/EncryptButton";
+
 
 const backdropStyle = {
   backdropFilter: 'blur(2px)',
@@ -15,6 +17,15 @@ const backdropStyle = {
   WebkitBackdropFilter: 'blur(12px)',
   boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
 };
+
+function linkify(text) {
+  if (!text) return '';
+  const urlRegex = /(\bhttps?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, (url) => {
+    const displayUrl = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
+    return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: blue;">${displayUrl}</a>`;
+  });
+}
 
 const Note = ({ user: loggedInUser }) => {
   const { noteId } = useParams();
@@ -29,6 +40,12 @@ const Note = ({ user: loggedInUser }) => {
 
   const [deleting, setDeleting] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
+
+  const [editMode, setEditMode] = useState(false);
+  const [editNote, setEditNote] = useState({ title: "", content: "" });
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
+  const [updateSuccess, setUpdateSuccess] = useState(null);
 
   const handleUserClick = (userId) => {
     navigate(`/profile/${userId}`);
@@ -55,6 +72,54 @@ const Note = ({ user: loggedInUser }) => {
     }
   };
 
+  const handleEdit = () => {
+    setEditMode(true);
+    setUpdateError(null);
+    setUpdateSuccess(null);
+    setEditNote({ title: note.title, content: note.content });
+  };
+
+  const handleCancel = () => {
+    setEditMode(false);
+    setUpdateError(null);
+    setUpdateSuccess(null);
+    setEditNote({ title: note.title, content: note.content });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditNote((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+    setUpdateLoading(true);
+    setUpdateError(null);
+    setUpdateSuccess(null);
+    try {
+      const res = await axiosInstance.put(`/api/notes/${noteId}/edit`, {
+        title: editNote.title,
+        content: editNote.content,
+        category: note.category?._id || note.category
+      });
+      setNote((prev) => ({ ...prev, ...res.data }));
+      setEditMode(false);
+      setUpdateSuccess("Note updated successfully!");
+      toast.success("Note updated successfully!");
+    } catch (err) {
+      // Try to extract the most specific error message
+      let errorMsg =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to update note.";
+      setUpdateError(errorMsg);
+      toast.error(errorMsg);
+    } finally {
+      setUpdateLoading(false);
+    }
+  };
+
   useEffect(() => {
     const fetchNote = async () => {
       setLoading(true);
@@ -62,6 +127,7 @@ const Note = ({ user: loggedInUser }) => {
       try {
         const res = await axiosInstance.get(`/api/notes/${noteId}`);
         setNote(res.data);
+        setEditNote({ title: res.data.title, content: res.data.content });
 
         const category = await axiosInstance.get(`/api/categories/${res.data.category}`);
         setCategory(category.data);
@@ -128,34 +194,26 @@ const Note = ({ user: loggedInUser }) => {
               <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
                 Title:
               </p>
-            </div>  
+            </div>
             <div>
-              <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 flex items-center gap-2">
-                {note.title}
-                <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${note.isPrivate ? "bg-red-100 text-red-500" : "bg-green-100 text-green-600"}`}>
-                  {note.isPrivate ? "Private" : "Public"}
-                </span>
-                {isOwner && (
-                  <button
-                    className="ml-4 p-1 rounded-full text-gray-400 hover:text-red-500 transition"
-                    onClick={() => setShowDeletePopup(true)}
-                    disabled={deleting}
-                    title="Delete this note"
-                    style={{ background: "none", border: "none", outline: "none" }}
-                  >
-                    {deleting ? (
-                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                      </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m5 0H4" />
-                      </svg>
-                    )}
-                  </button>
-                )}
-              </h3>
+              {editMode ? (
+                <input
+                  type="text"
+                  name="title"
+                  value={editNote.title}
+                  onChange={handleInputChange}
+                  className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 border border-indigo-200 rounded px-2 py-1"
+                  maxLength={100}
+                  disabled={updateLoading}
+                />
+              ) : (
+                <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 flex items-center gap-2">
+                  {note.title}
+                  <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${note.isPrivate ? "bg-red-100 text-red-500" : "bg-green-100 text-green-600"}`}>
+                    {note.isPrivate ? "Private" : "Public"}
+                  </span>
+                </h3>
+              )}
             </div>
           </div>
           {/* Category */}
@@ -169,21 +227,62 @@ const Note = ({ user: loggedInUser }) => {
           {/* Content */}
           <div className="mb-8">
             <h2 className="font-semibold text-black mb-2 text-lg">Content</h2>
-            <div className="bg-white/80 rounded-xl px-5 py-4 shadow-sm border border-indigo-50 whitespace-pre-line text-gray-800">
-              {note.content}
-            </div>
+            {editMode ? (
+              <textarea
+                name="content"
+                value={editNote.content}
+                onChange={handleInputChange}
+                className="w-full h-40 border border-indigo-200 rounded-lg px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                rows={8}
+                maxLength={2000}
+                disabled={updateLoading}
+              />
+            ) : (
+              <div
+                className="bg-white/80 rounded-xl px-5 py-4 shadow-sm border border-indigo-50 whitespace-pre-line text-gray-800"
+                dangerouslySetInnerHTML={{ __html: linkify(note.content) }}
+              />
+            )}
           </div>
           {/* Likes */}
-          <div className="flex items-center gap-2 mt-6">
+          {/* <div className="flex items-center gap-2 mt-6">
             <span className="font-semibold text-gray-700">Likes:</span>
             <span className="text-indigo-600 font-bold">{note.likes ? note.likes.length : 0}</span>
-          </div>
+          </div> */}
+          {isOwner && !editMode && (
+            <button onClick={handleEdit} className="w-full">
+              <EncryptButton />
+            </button>
+          )}
+          {isOwner && editMode && (
+            <div className="flex gap-3 mb-auto w-full justify-center">
+              <button
+                onClick={handleSave}
+                className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black"
+                disabled={updateLoading}
+                style={{ border: "1px dashed black" }}
+              >
+                {updateLoading ? "Saving..." : "Save"}
+              </button>
+              <button
+                onClick={handleCancel}
+                className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-red-400/20 transition"
+                disabled={updateLoading}
+                style={{ border: "1px dashed black" }}
+              >
+                Cancel
+              </button>
+            </div>
+          )}
           {/* Footer */}
           <div className="mt-10 text-center">
             <p className="text-gray-500 text-sm italic">
               Viewing note <span className="font-bold">{note.title}</span>.
             </p>
           </div>
+
+          {updateError && <div className="mt-2 text-red-500 text-center">{updateError}</div>}
+          {updateSuccess && <div className="mt-2 text-green-600 text-center">{updateSuccess}</div>}
         </div>
       </Magnet>
     </>

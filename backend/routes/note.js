@@ -24,6 +24,7 @@ router.post('/',isLoggedIn,validateBody(noteSchema),createNote)
 
 router.get('/:id', isLoggedIn, getNotesById);
 router.put('/:id',isLoggedIn,validateBody(noteSchema || categorySchema),updateNote)
+router.put('/:id/edit',isLoggedIn,validateBody(noteSchema || categorySchema),updateNote)
 router.delete('/:id',isLoggedIn,deleteNote)
 
 
