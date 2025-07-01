@@ -53,6 +53,10 @@ store.on("error", function (e) {
 })
 
 const isProduction = process.env.NODE_ENV === 'production';
+if (isProduction) {
+    app.set('trust proxy', 1); // ✅ required for secure cookies to work on Render
+  }
+  
 
 const sessionConfig = {
     store,
@@ -63,7 +67,7 @@ const sessionConfig = {
     cookie: {
         httpOnly: true,
         maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
-        sameSite: "lax",
+        sameSite: "none",
         secure: false
     }
 }
