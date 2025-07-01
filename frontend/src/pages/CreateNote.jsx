@@ -134,10 +134,10 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
                         />
                     </div>
                     {formError && (
-                        <div className="text-red-500 font-medium">{formError}</div>
+                        <div className="text-red-500 font-medium text-center">{formError}</div>
                     )}
                     {success && (
-                        <div className="text-green-600 font-medium">
+                        <div className="text-green-600 font-medium text-center">
                             Note created! Redirecting...
                         </div>
                     )}
