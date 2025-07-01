@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "../api/axiosInstance";
+import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import Magnet from "../components/advance/Magnet";
@@ -25,8 +25,9 @@ const Login = ({ setIsAuthenticated }) => {
     setError("");
     setLoading(true);
     try {
-      await axios.post("/api/auth/login", formData);
-      const checkRes = await axios.get("/api/auth/check");
+      await axiosInstance.post("/api/auth/login", formData, { withCredentials: true });
+      const checkRes = await axiosInstance.get("/api/auth/check", { withCredentials: true });
+      console.log(checkRes.data)
       if (checkRes.data.authenticated) {
         setUser(checkRes.data.user);
         setIsAuthenticated(true);

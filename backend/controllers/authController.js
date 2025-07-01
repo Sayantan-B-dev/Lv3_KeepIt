@@ -74,6 +74,10 @@ export const loginUser = (req, res, next) => {
         }
         req.logIn(user, (err) => {
             if (err) return next(err);
+            // console.log("✅ req.user after login:", req.user);
+            // console.log("✅ req.sessionID after login:", req.sessionID);
+            // console.log("✅ Session content:", req.session);
+          
             req.flash('success', 'welcome back');
             return res.status(200).json({ 
                 message: req.flash("success")[0] || "Logged in successfully",
@@ -88,7 +92,6 @@ export const loginUser = (req, res, next) => {
     })(req, res, next);
 };
 
-// postLogin is now redundant, but if you want to keep it for route compatibility:
 export const postLogin = (req, res) => {
     req.flash('success', 'welcome back');
     res.status(200).json({ 
@@ -119,6 +122,8 @@ export const logoutUser = (req, res, next) => {
 };
 
 export const checkAuth = (req, res) => {
+//     console.log("🔍 checkAuth: req.user =", req.user);
+//   console.log("🔍 checkAuth: session ID =", req.sessionID);
     if (req.isAuthenticated()) {
         res.status(200).json({ 
             authenticated: true, 
