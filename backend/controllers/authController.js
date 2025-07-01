@@ -30,8 +30,9 @@ export const registerUser = async (req, res, next) => {
             registrationIp: ip,
             createdAt: { $gte: since }
         }); 
-        if (recentCount >= 3) {
-            return res.status(429).json({ error: "Registration limit reached: Only 2 accounts per day allowed from this IP." });
+        let userLimit=5
+        if (recentCount >= userLimit) {
+            return res.status(429).json({ error: `Registration limit reached: Only ${userLimit} accounts per day allowed from this IP.` });
         }
         const user = new User({ username, email, registrationIp: ip });
 
