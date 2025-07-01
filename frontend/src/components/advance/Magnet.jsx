@@ -1,5 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 
+// Mobile detection utility
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+         window.innerWidth <= 768;
+};
+
 const Magnet = ({
   children,
   padding = 100,
@@ -13,10 +19,23 @@ const Magnet = ({
 }) => {
   const [isActive, setIsActive] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
   const magnetRef = useRef(null);
 
+  // Mobile detection
   useEffect(() => {
-    if (disabled) {
+    const checkMobile = () => {
+      setIsMobileDevice(isMobile());
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  useEffect(() => {
+    // Disable magnet effect on mobile or if explicitly disabled
+    if (disabled || isMobileDevice) {
       setPosition({ x: 0, y: 0 });
       return;
     }
@@ -47,7 +66,7 @@ const Magnet = ({
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [padding, disabled, magnetStrength]);
+  }, [padding, disabled, magnetStrength, isMobileDevice]);
 
   const transitionStyle = isActive ? activeTransition : inactiveTransition;
 

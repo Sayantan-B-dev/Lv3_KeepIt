@@ -1,5 +1,5 @@
 'use client';
-import { useRef, useEffect, useCallback, useMemo } from "react";
+import { useRef, useEffect, useCallback, useMemo, useState } from "react";
 import { gsap } from "gsap";
 import { InertiaPlugin } from "gsap/InertiaPlugin";
 
@@ -16,6 +16,12 @@ const throttle = (func, limit) => {
       func.apply(this, args);
     }
   };
+};
+
+// Mobile detection utility
+const isMobile = () => {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+         window.innerWidth <= 768;
 };
 
 function hexToRgb(hex) {
@@ -46,6 +52,9 @@ const DotGrid = ({
   const wrapperRef = useRef(null);
   const canvasRef = useRef(null);
   const dotsRef = useRef([]);
+  const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  
   const pointerRef = useRef({
     x: 0,
     y: 0,
@@ -57,6 +66,12 @@ const DotGrid = ({
     lastY: 0,
   });
 
+  // Mobile optimizations
+  const mobileDotSize = isMobileDevice ? dotSize * 0.6 : dotSize;
+  const mobileGap = isMobileDevice ? gap * 1.5 : gap;
+  const mobileProximity = isMobileDevice ? proximity * 0.7 : proximity;
+  const mobileDpr = isMobileDevice ? 1 : (window.devicePixelRatio || 1);
+
   const baseRgb = useMemo(() => hexToRgb(baseColor), [baseColor]);
   const activeRgb = useMemo(() => hexToRgb(activeColor), [activeColor]);
 
@@ -64,9 +79,36 @@ const DotGrid = ({
     if (typeof window === "undefined" || !window.Path2D) return null;
 
     const p = new window.Path2D();
-    p.arc(0, 0, dotSize / 2, 0, Math.PI * 2);
+    p.arc(0, 0, mobileDotSize / 2, 0, Math.PI * 2);
     return p;
-  }, [dotSize]);
+  }, [mobileDotSize]);
+
+  // Check if element is in viewport
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    if (wrapperRef.current) {
+      observer.observe(wrapperRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Mobile detection
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobileDevice(isMobile());
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const buildGrid = useCallback(() => {
     const wrap = wrapperRef.current;
@@ -74,27 +116,26 @@ const DotGrid = ({
     if (!wrap || !canvas) return;
 
     const { width, height } = wrap.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
 
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
+    canvas.width = width * mobileDpr;
+    canvas.height = height * mobileDpr;
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
     const ctx = canvas.getContext("2d");
-    if (ctx) ctx.scale(dpr, dpr);
+    if (ctx) ctx.scale(mobileDpr, mobileDpr);
 
-    const cols = Math.floor((width + gap) / (dotSize + gap));
-    const rows = Math.floor((height + gap) / (dotSize + gap));
-    const cell = dotSize + gap;
+    const cols = Math.floor((width + mobileGap) / (mobileDotSize + mobileGap));
+    const rows = Math.floor((height + mobileGap) / (mobileDotSize + mobileGap));
+    const cell = mobileDotSize + mobileGap;
 
-    const gridW = cell * cols - gap;
-    const gridH = cell * rows - gap;
+    const gridW = cell * cols - mobileGap;
+    const gridH = cell * rows - mobileGap;
 
     const extraX = width - gridW;
     const extraY = height - gridH;
 
-    const startX = extraX / 2 + dotSize / 2;
-    const startY = extraY / 2 + dotSize / 2;
+    const startX = extraX / 2 + mobileDotSize / 2;
+    const startY = extraY / 2 + mobileDotSize / 2;
 
     const dots = [];
     for (let y = 0; y < rows; y++) {
@@ -105,15 +146,23 @@ const DotGrid = ({
       }
     }
     dotsRef.current = dots;
-  }, [dotSize, gap]);
+  }, [mobileDotSize, mobileGap, mobileDpr]);
 
   useEffect(() => {
-    if (!circlePath) return;
+    if (!circlePath || !isVisible) return;
 
     let rafId;
-    const proxSq = proximity * proximity;
+    const proxSq = mobileProximity * mobileProximity;
+    let frameCount = 0;
+    const skipFrames = isMobileDevice ? 2 : 1; // Skip frames on mobile
 
     const draw = () => {
+      frameCount++;
+      if (frameCount % skipFrames !== 0) {
+        rafId = requestAnimationFrame(draw);
+        return;
+      }
+
       const canvas = canvasRef.current;
       if (!canvas) return;
       const ctx = canvas.getContext("2d");
@@ -132,7 +181,7 @@ const DotGrid = ({
         let style = baseColor;
         if (dsq <= proxSq) {
           const dist = Math.sqrt(dsq);
-          const t = 1 - dist / proximity;
+          const t = 1 - dist / mobileProximity;
           const r = Math.round(baseRgb.r + (activeRgb.r - baseRgb.r) * t);
           const g = Math.round(baseRgb.g + (activeRgb.g - baseRgb.g) * t);
           const b = Math.round(baseRgb.b + (activeRgb.b - baseRgb.b) * t);
@@ -151,7 +200,7 @@ const DotGrid = ({
 
     draw();
     return () => cancelAnimationFrame(rafId);
-  }, [proximity, baseColor, activeRgb, baseRgb, circlePath]);
+  }, [mobileProximity, baseColor, activeRgb, baseRgb, circlePath, isVisible, isMobileDevice]);
 
   useEffect(() => {
     buildGrid();
@@ -197,7 +246,7 @@ const DotGrid = ({
 
       for (const dot of dotsRef.current) {
         const dist = Math.hypot(dot.cx - pr.x, dot.cy - pr.y);
-        if (speed > speedTrigger && dist < proximity && !dot._inertiaApplied) {
+        if (speed > speedTrigger && dist < mobileProximity && !dot._inertiaApplied) {
           dot._inertiaApplied = true;
           gsap.killTweensOf(dot);
           const pushX = dot.cx - pr.x + vx * 0.005;
@@ -257,7 +306,7 @@ const DotGrid = ({
   }, [
     maxSpeed,
     speedTrigger,
-    proximity,
+    mobileProximity,
     resistance,
     returnDuration,
     shockRadius,
