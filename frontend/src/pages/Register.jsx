@@ -27,6 +27,8 @@ const Register = () => {
     const { name, value, files } = e.target;
     if (name === "profileImage") {
       const file = files && files[0];
+      const previousImage=formData.profileImagePreview;
+      console.log(previousImage);
       if (file) {
         const reader = new FileReader();
         reader.onloadend = () => {

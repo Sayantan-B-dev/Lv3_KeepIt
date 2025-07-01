@@ -1,6 +1,7 @@
 import User from '../models/user.js';
 import Note from '../models/note.js';
 import Category from '../models/category.js';
+import { cloudinary } from '../utils/cloudinary.js';
 
 // Get a user's public profile by ID
 export const getUserProfile = async (req, res) => {
@@ -44,16 +45,59 @@ export const myProfile = async (req, res) => {
   }
 }
 
+function extractPublicId(url) {
+  try {
+    const urlParts = url.split('/upload/');
+    if (urlParts.length < 2) return null;
+
+    let publicIdWithVersion = urlParts[1]; 
+    const parts = publicIdWithVersion.split('/');
+    
+    if (parts[0].startsWith('v')) parts.shift();
+
+    let publicId = parts.join('/');
+    publicId = publicId.split('.')[0];
+
+    return publicId;
+  } catch {
+    return null;
+  }
+}
+
 export const updateProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    
+
+    if (
+      req.body.profileImage &&
+      user.profileImage &&
+      user.profileImage.filename &&
+      req.body.profileImage.filename !== user.profileImage.filename
+    ) {
+      const publicId = extractPublicId(user.profileImage.filename);
+      
+      if (publicId) {
+        console.log("Deleting Cloudinary image with publicId:", publicId);
+        const result = await cloudinary.uploader.destroy(publicId, { invalidate: true });
+        console.log(result); 
+      } else {
+        console.log("Failed to extract publicId from:", user.profileImage.filename);
+      }
+    }
+    
+
     user.bio = req.body.bio;
     user.website = req.body.website;
-    user.profileImage = req.body.profileImage;
+    if (req.body.profileImage) {
+      user.profileImage = req.body.profileImage;
+    }
     await user.save();
+
     res.json({ message: 'Profile updated successfully', profile: user });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
@@ -118,15 +162,19 @@ export const unfollowUser = async (req, res) => {
   }
 };
 
-
-
 export const deleteUser = async (req, res) => {
   try {
     const userId = req.user._id;
+
+    if (req.user.profileImage && req.user.profileImage.filename) {
+      await cloudinary.uploader.destroy(req.user.profileImage.filename);
+    }
+
     await Note.deleteMany({ user: userId });
     await Category.deleteMany({ user: userId });
     await req.user.deleteOne();
-    res.json({ message: 'Profile and all associated notes and categories deleted successfully.' });
+
+    res.json({ message: 'Profile, image, and all associated notes and categories deleted successfully.' });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }

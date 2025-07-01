@@ -20,7 +20,7 @@ function Waiting() {
           Server Down!
         </span>
         <span className="text-xs text-gray-500 italic mt-2 block">
-          This page will reload every 1 min automatically until the server is online.
+          This page will reload every 10 seconds automatically until the server is online.
         </span>
       </div>
     </div>

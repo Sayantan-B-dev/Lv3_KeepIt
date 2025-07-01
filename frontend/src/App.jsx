@@ -135,7 +135,7 @@ function App() {
                       if (typeof window !== "undefined") {
                         setTimeout(() => {
                           window.location.reload();
-                        }, 60000); 
+                        }, 10000); 
                       }
                       return null;
                     })()
