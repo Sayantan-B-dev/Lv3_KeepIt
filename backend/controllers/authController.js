@@ -2,8 +2,6 @@ import User from "../models/user.js";
 import passport from "passport";
 import { cloudinary, storage } from '../utils/cloudinary.js';
 import multer from 'multer';
-import session from 'express-session';
-import flash from 'connect-flash';
 
 export const upload = multer({ storage });
 
@@ -30,7 +28,7 @@ export const registerUser = async (req, res, next) => {
             registrationIp: ip,
             createdAt: { $gte: since }
         }); 
-        let userLimit=5
+        const userLimit = 5;
         if (recentCount >= userLimit) {
             return res.status(429).json({ error: `Registration limit reached: Only ${userLimit} accounts per day allowed from this IP.` });
         }
@@ -138,7 +136,6 @@ export const checkAuth = (req, res) => {
 
 export const getAllUsers = async (req, res) => {
     try {
-        // Only return safe fields, including profileImage
         const users = await User.find({}, 'username email profileImage');
         res.json(users);
     } catch (error) {

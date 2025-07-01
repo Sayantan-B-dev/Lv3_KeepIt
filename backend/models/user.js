@@ -11,7 +11,6 @@ profileImageSchema.virtual('thumbnail').get(function(){
 })
 
 const userSchema =new mongoose.Schema({
-    googleID:{type:String},
     username:{type:String ,maxLength:20,minLength:3,required:true},
     email: { type: String, required: true, unique: true,maxLength:128,minLength:3 },
     profileImage: profileImageSchema,
