@@ -20,7 +20,8 @@ import AllUsers from "./pages/AllUsers";
 import Loading from "./components/home/Loading";
 import Book from "./components/partials/Book";
 import Waiting from "./components/partials/Waiting";
-import "./assets/mobile-optimizations.css";
+
+
 
 function App() {
   const [notes, setNotes] = useState([]);
@@ -88,10 +89,10 @@ function App() {
             inset: 0,
             width: '100%',
             height: '100%',
-            minWidth: '100vw',
-            minHeight: '100vh',
-            maxWidth: '100vw',
-            maxHeight: '100vh',
+            minWidth: '200vw',
+            minHeight: '200vh',
+            maxWidth: '200vw',
+            maxHeight: '200vh',
             zIndex: -3456,
             pointerEvents: 'none',
           }}
@@ -203,7 +204,7 @@ function App() {
           </Routes>
         )}
 
-        {/* <Book />   */}
+        <Book />  
 
         <Footer />
       </BrowserRouter>

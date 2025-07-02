@@ -1,11 +1,5 @@
 import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
-import { useEffect, useRef, useState } from "react";
-
-// Mobile detection utility
-const isMobile = () => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-         window.innerWidth <= 768;
-};
+import { useEffect, useRef } from "react";
 
 const vertexShader = `
 attribute vec2 uv;
@@ -59,39 +53,9 @@ export default function Iridescence({
 }) {
   const ctnDom = useRef(null);
   const mousePos = useRef({ x: 0.5, y: 0.5 });
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-
-  // Mobile detection
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobileDevice(isMobile());
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Check if element is in viewport
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setIsVisible(entry.isIntersecting);
-      },
-      { threshold: 0.1 }
-    );
-
-    if (ctnDom.current) {
-      observer.observe(ctnDom.current);
-    }
-
-    return () => observer.disconnect();
-  }, []);
 
   useEffect(() => {
-    if (!ctnDom.current || !isVisible) return;
-    
+    if (!ctnDom.current) return;
     const ctn = ctnDom.current;
     const renderer = new Renderer();
     const gl = renderer.gl;
@@ -100,7 +64,7 @@ export default function Iridescence({
     let program;
 
     function resize() {
-      const scale = isMobileDevice ? 0.5 : 1; // Reduce resolution on mobile
+      const scale = 1;
       renderer.setSize(ctn.offsetWidth * scale, ctn.offsetHeight * scale);
       if (program) {
         program.uniforms.uResolution.value = new Color(
@@ -128,23 +92,15 @@ export default function Iridescence({
           ),
         },
         uMouse: { value: new Float32Array([mousePos.current.x, mousePos.current.y]) },
-        uAmplitude: { value: isMobileDevice ? amplitude * 0.5 : amplitude },
-        uSpeed: { value: isMobileDevice ? speed * 0.7 : speed },
+        uAmplitude: { value: amplitude },
+        uSpeed: { value: speed },
       },
     });
 
     const mesh = new Mesh(gl, { geometry, program });
     let animateId;
-    let frameCount = 0;
-    const skipFrames = isMobileDevice ? 2 : 1; // Skip frames on mobile
 
     function update(t) {
-      frameCount++;
-      if (frameCount % skipFrames !== 0) {
-        animateId = requestAnimationFrame(update);
-        return;
-      }
-      
       animateId = requestAnimationFrame(update);
       program.uniforms.uTime.value = t * 0.001;
       renderer.render({ scene: mesh });
@@ -153,8 +109,6 @@ export default function Iridescence({
     ctn.appendChild(gl.canvas);
 
     function handleMouseMove(e) {
-      if (isMobileDevice) return; // Disable mouse interaction on mobile
-      
       const rect = ctn.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width;
       const y = 1.0 - (e.clientY - rect.top) / rect.height;
@@ -162,23 +116,21 @@ export default function Iridescence({
       program.uniforms.uMouse.value[0] = x;
       program.uniforms.uMouse.value[1] = y;
     }
-    if (mouseReact && !isMobileDevice) {
+    if (mouseReact) {
       ctn.addEventListener("mousemove", handleMouseMove);
     }
 
     return () => {
       cancelAnimationFrame(animateId);
       window.removeEventListener("resize", resize);
-      if (mouseReact && !isMobileDevice) {
+      if (mouseReact) {
         ctn.removeEventListener("mousemove", handleMouseMove);
       }
-      if (ctn.contains(gl.canvas)) {
-        ctn.removeChild(gl.canvas);
-      }
+      ctn.removeChild(gl.canvas);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [color, speed, amplitude, mouseReact, isMobileDevice, isVisible]);
+  }, [color, speed, amplitude, mouseReact]);
 
   return (
     <div
