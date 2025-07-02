@@ -61,7 +61,7 @@ const MyProfile = () => {
       } catch (err) {
         setError(
           err?.response?.data?.message ||
-            "Failed to load profile. Please try again later."
+          "Failed to load profile. Please try again later."
         );
         setProfile(null);
       } finally {
@@ -108,8 +108,8 @@ const MyProfile = () => {
     } catch (err) {
       throw new Error(
         err?.response?.data?.message ||
-          err?.message ||
-          "Failed to upload image to backend"
+        err?.message ||
+        "Failed to upload image to backend"
       );
     }
   };
@@ -182,8 +182,8 @@ const MyProfile = () => {
     } catch (err) {
       setUpdateError(
         err?.response?.data?.message ||
-          err?.message ||
-          "Failed to update profile."
+        err?.message ||
+        "Failed to update profile."
       );
       console.log(err);
     } finally {
@@ -207,8 +207,8 @@ const MyProfile = () => {
     } catch (err) {
       setDeleteError(
         err?.response?.data?.message ||
-          err?.message ||
-          "Failed to delete account."
+        err?.message ||
+        "Failed to delete account."
       );
     } finally {
       setDeleteLoading(false);
@@ -323,11 +323,10 @@ const MyProfile = () => {
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 flex items-center gap-2 flex-wrap">
                 {profile.username}
                 <span
-                  className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${
-                    profile.isVerified
+                  className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${profile.isVerified
                       ? "bg-green-100 text-green-600"
                       : "bg-yellow-100 text-yellow-600"
-                  }`}
+                    }`}
                 >
                   {profile.isVerified ? "Verified" : "Unverified"}
                 </span>
@@ -444,15 +443,17 @@ const MyProfile = () => {
             </div>
 
             <div className="mb-8">
-              <h2 className="text-xl sm:text-2xl font-bold text-indigo-700 mb-4 mt-8">
-                Your Categories
+              <h2 className="text-xl sm:text-2xl font-bold text-black mb-4 mt-8 text-center">
+                Your Categories :
               </h2>
-              <div className="flex flex-wrap gap-3 sm:gap-4">
+              <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
                 {categories.length === 0 ? (
                   <span className="text-gray-400">No categories found.</span>
                 ) : (
                   categories.map((cat) => (
                     <DottedButton
+                      style={{ fontSize: "12px" }}
+
                       key={cat._id}
                       onClick={() => handleCategoryClick(cat._id)}
                       className="px-4 py-2 border-indigo-300"
@@ -507,9 +508,8 @@ const MyProfile = () => {
                 role="button"
                 tabIndex={0}
                 aria-label="Delete My Account"
-                className={`mt-4 flex items-center justify-center cursor-pointer transition group ${
-                  deleteLoading ? "opacity-50 pointer-events-none" : ""
-                }`}
+                className={`mt-4 flex items-center justify-center cursor-pointer transition group ${deleteLoading ? "opacity-50 pointer-events-none" : ""
+                  }`}
                 onClick={() => !deleteLoading && setShowDeleteConfirm(true)}
                 onKeyDown={(e) => {
                   if (

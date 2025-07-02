@@ -86,13 +86,15 @@ const AllNotes = () => {
         {loading && <div>Loading notes...</div>}
         {error && <div style={{ color: '#e63946' }}>{error}</div>}
         {!loading && !error && (
-          <ul style={{ listStyle: 'none', padding: 0 }} className="flex flex-col gap-2">
+          <div style={{ listStyle: 'none', padding: 0 }} className="flex flex-col gap-2">
             {filteredNotes.length === 0 ? (
-              <li className='text-center text-red-500'>No notes found.</li>
+              <div className='text-center text-red-500'>No notes found.</div>
             ) : (
               filteredNotes.map((note) => (
-                <div key={note._id || note.title} className="flex items-center gap-2 w-full">
+                <div key={note._id || note.title} className="flex items-center gap-2  w-[70%] m-auto">
                   <DottedButton
+              style={{fontSize:"12px"}}
+
                     key={note._id || note.title}
                     text={note.title}
                     className="w-full"
@@ -104,7 +106,7 @@ const AllNotes = () => {
                 </div>
               ))
             )}
-          </ul>
+          </div>
         )}
       </div>
     </Magnet>

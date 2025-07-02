@@ -2,7 +2,6 @@ import { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
-import Magnet from "../components/advance/Magnet";
 import { toast } from 'react-toastify';
 
 const Login = ({ setIsAuthenticated }) => {
@@ -52,7 +51,6 @@ const Login = ({ setIsAuthenticated }) => {
   };
 
   return (
-    <Magnet padding={50} disabled={false} magnetStrength={50} className="w-full">
     <div 
  
     >
@@ -173,7 +171,7 @@ const Login = ({ setIsAuthenticated }) => {
           </Link>
         </div>
       </form>
-    </div></Magnet>
+    </div>
   );
 };
 

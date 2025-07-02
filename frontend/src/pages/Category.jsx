@@ -4,7 +4,7 @@ import axiosInstance from "../api/axiosInstance";
 import DottedButton from "../components/buttons/DottedButton";
 import Magnet from "../components/advance/Magnet";
 import Author from "../components/Author";
-import ConfirmPopUp from "../components/ConfirmPopUp"; 
+import ConfirmPopUp from "../components/ConfirmPopUp";
 import Loading from "../components/home/Loading";
 import { toast } from "react-toastify";
 
@@ -131,16 +131,16 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
 
                     {/* Category Header */}
                     <div className="flex items-center justify-center gap-6 mb-2">
-                        <div>
-                            <h3 className="text-xl sm:text-2xl md:text-2xl font-extrabold text-gray-900 flex items-center gap-2 ">
-                            <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
-                                Category : 
-                            </p>
-                                {category.name}
-                                <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${category.isPrivate ? "bg-red-100 text-red-500" : "bg-green-100 text-green-600"}`}>
-                                    {category.isPrivate ? "Private" : "Public"}
-                                </span>
-                            </h3>
+                        <div className="flex flex-col items-center">
+                            <dev className="text-xl sm:text-2xl md:text-2xl font-extrabold text-gray-900 flex flex-col items-center gap-2 ">
+                                <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
+                                    Category :
+                                </p>
+
+                                <p className="text-lg font-bold break-words text-center px-2">
+                                    {category.name}
+                                </p>
+                            </dev>
                             <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
                                 <span className="flex items-center gap-1 text-xs    ">
                                     <span className="text-xs text-gray-400">Created:</span>
@@ -187,6 +187,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                                 <Magnet key={note._id} padding={5} disabled={false} magnetStrength={20} className="w-full">
                                     <li key={note._id}>
                                         <DottedButton
+                                            style={{ fontSize: "12px" }}
                                             className="w-full text-left"
                                             onClick={() => handleNoteClick(note._id)}
                                             text={index + 1 + ". " + note.title}

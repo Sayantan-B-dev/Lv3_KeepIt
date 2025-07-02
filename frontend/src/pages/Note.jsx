@@ -209,17 +209,15 @@ const Note = ({ user: loggedInUser }) => {
               ) : (
                 <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 flex items-center gap-2">
                   {note.title}
-                  <span className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${note.isPrivate ? "bg-red-100 text-red-500" : "bg-green-100 text-green-600"}`}>
-                    {note.isPrivate ? "Private" : "Public"}
-                  </span>
                 </h3>
               )}
             </div>
           </div>
           {/* Category */}
-          <div className="mb-8 flex items-center gap-4">
+          <div className="mb-8 flex flex-col items-center gap-4">
             <span className="block font-semibold text-gray-700">Category:</span>
             <DottedButton
+              style={{fontSize:"12px"}}
               onClick={() => handleCategoryClick(category._id)}
               text={category?.name || note.category}
             />

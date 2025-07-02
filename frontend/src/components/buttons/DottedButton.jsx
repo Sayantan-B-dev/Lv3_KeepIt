@@ -1,4 +1,6 @@
-const DottedButton = ({ text, onClick,className}) => {
+
+
+const DottedButton = ({ text, onClick, className, style }) => {
     const buttonClass = `
         rounded-2xl 
         border-dashed 
@@ -20,11 +22,11 @@ const DottedButton = ({ text, onClick,className}) => {
         active:rounded-2xl 
         active:shadow-none
     `;
-    const combinedClass = `${buttonClass} ${className}`;
+    const combinedClass = `${buttonClass} ${className || ""}`;
     return (
         <button
             className={combinedClass}
-            style={{backgroundColor: "white",borderColor: "black" }}  
+            style={{ backgroundColor: "white", borderColor: "black", ...style }}
             onClick={onClick}
         >
             {text}

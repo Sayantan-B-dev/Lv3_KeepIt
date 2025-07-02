@@ -274,16 +274,18 @@ const Profile = ({
 
         {/* Categories */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-indigo-700 mb-2 mt-8">
-            Categories
+          <h2 className="text-lg font-semibold text-black text-center mb-2 mt-8">
+            Categories :
           </h2>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-4 justify-center">
             {categories.length === 0 ? (
               <span className="text-gray-400">No categories found.</span>
             ) : (
               categories.map((cat) => (
                 <DottedButton
                   key={cat._id}
+              style={{fontSize:"12px"}}
+
                   onClick={() => handleCategoryClick(cat._id)}
                   className="px-4 py-2 border-indigo-300"
                   text={cat.name}

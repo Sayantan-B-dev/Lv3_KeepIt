@@ -85,18 +85,21 @@ const AllCategories = () => {
         {loading && <div>Loading categories...</div>}
         {error && <div style={{ color: '#e63946' }}>{error}</div>}
         {!loading && !error && (
-          <ul style={{ listStyle: 'none', padding: 0 }} className='flex flex-col gap-2'>
+          <div style={{ listStyle: 'none', padding: 0 }} className='flex flex-col gap-2'>
             {filteredCategories.length === 0 ? (
-              <li className='text-center text-red-500'>No categories found.</li>
+              <div className='text-center text-red-500'>No categories found.</div>
             ) : (
               filteredCategories.map((cat) => (
-                <div key={cat._id || cat.name} className='flex items-center gap-2 w-full'>
-                  <DottedButton key={cat._id || cat.name} text={cat.name} className='w-full' onClick={() => navigate(`/category/${cat._id}`)} />
+                <div key={cat._id || cat.name} className='flex items-center gap-2 w-[70%] m-auto'>
+                  <DottedButton
+              style={{fontSize:"12px"}}
+                  
+                  key={cat._id || cat.name} text={cat.name} className='w-full' onClick={() => navigate(`/category/${cat._id}`)} />
                   <div className='w-12 h-12'><Author user={cat.user} handleUserClick={handleUserClick} /></div>
                 </div>
               ))
             )}
-          </ul>
+          </div>
         )}
       </div>
     </Magnet>

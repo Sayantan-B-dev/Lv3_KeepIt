@@ -3,7 +3,6 @@ import axios from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import DottedButton from "../components/buttons/DottedButton";
-import Magnet from "../components/advance/Magnet";
 import { toast } from 'react-toastify';
 
 const Register = () => {
@@ -105,7 +104,6 @@ const Register = () => {
   };
 
   return (
-    <Magnet padding={50} disabled={false} magnetStrength={50} className="w-full">
       <div className="flex items-center justify-center bg-gray-20">
         <form
           onSubmit={handleSubmit}
@@ -367,7 +365,6 @@ const Register = () => {
 
         </form>
       </div>
-    </Magnet>
   );
 };
 
