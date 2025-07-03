@@ -74,7 +74,7 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer
-      className="border-t border-gray-200 pt-10 pb-4 px-2 sm:px-4 md:px-8 rounded-t-3xl w-full z-50 bottom-0"
+      className="border-t border-gray-200 pt-10 pb-4 px-2 sm:px-4 md:px-8 rounded-t-3xl w-full z-50 bottom-0 "
       style={{
         backdropFilter: 'blur(3px)',
         background: 'rgba(255, 255, 255, 0.1)',
@@ -86,16 +86,16 @@ const Footer = () => {
       }}
     >
 
-      <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-8 md:gap-10 w-full">
+      <div className="max-w-[90%] mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-8 md:gap-10 w-full">
         {/* Brand & Description */}
-        <div className="flex-1 mb-8 md:mb-0 min-w-[220px] justify-center items-center text-center">
-          <Link to="/" className="flex items-center gap-2 mb-3">
-            <span className="text-2xl font-extrabold text-indigo-700 tracking-tight m-auto">KeepIt</span>
+        <div className="flex-1 mb-8 md:mb-0 min-w-[220px] text-center md:text-left flex flex-col items-center md:items-start justify-center">
+          <Link to="/" className="flex items-center gap-2 mb-3 m-auto md:m-0">
+            <span className="text-2xl font-extrabold text-indigo-700 tracking-tight m-auto md:m-0">KeepIt</span>
           </Link>
-          <p className="text-gray-500 max-w-xs text-sm text-center m-auto">
+          <p className="text-gray-500 max-w-xs text-sm text-center md:text-left m-auto md:m-0">
             Capture, organize, and share knowledge from across the web. Transform scattered information into meaningful content that grows with you.
           </p>
-          <div className="flex gap-3 mt-5 m-auto justify-center">
+          <div className="flex gap-3 mt-5 m-auto md:m-0 justify-center md:justify-start">
             {socialLinks.map((item) => (
               <a
                 key={item.name}
