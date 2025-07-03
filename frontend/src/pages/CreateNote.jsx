@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
-import { useNavigate } from "react-router-dom";
-import Magnet from "../components/advance/Magnet";
+import { useNavigate, useLocation } from "react-router-dom";
 import DottedButton from "../components/buttons/DottedButton";
 import Loading from "../components/home/Loading";
 import { toast } from "react-toastify";
@@ -9,30 +8,40 @@ import { toast } from "react-toastify";
 const textAreaStyle =
     "w-full border border-gray-300 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
 
-const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
+const CreateNote = (props) => {
+    const location = useLocation();
+    const preselectedCategory = location.state?.category;
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [category, setCategory] = useState("");
+    // If thisCategory is passed, use it as the initial value for category, otherwise empty string
+    const [category, setCategory] = useState(preselectedCategory || "");
     const [formError, setFormError] = useState(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
+    // If thisCategory changes, update category state accordingly
+    useEffect(() => {
+        if (preselectedCategory) {
+            setCategory(preselectedCategory);
+        }
+    }, [preselectedCategory]);
+
     // Redirect to login if not authenticated
     useEffect(() => {
-        if (typeof isAuthenticated !== "undefined" && !isAuthenticated) {
+        if (typeof props.isAuthenticated !== "undefined" && !props.isAuthenticated) {
             navigate("/login");
         }
-    }, [isAuthenticated, navigate]);
+    }, [props.isAuthenticated, navigate]);
 
     // If loading authentication/user info, show loading
-    if (loading) {
+    if (props.loading) {
         return (
             <Loading />
         );
     }
 
     // If not authenticated, don't render form (redirect handled above)
-    if (!isAuthenticated) {
+    if (!props.isAuthenticated) {
         return null;
     }
 
@@ -41,7 +50,7 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
         setFormError(null);
         setSuccess(false);
 
-        if (!title.trim() || !content.trim() || !category.trim()) {
+        if (!title.trim() || !content.trim() || !category._id) {
             setFormError("All fields are required.");
             return;
         }
@@ -50,7 +59,7 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
             const response = await axiosInstance.post("/api/notes", {
                 title,
                 content,
-                category,
+                category: category.name,
             });
             //console.log(response.data);
 
@@ -59,12 +68,11 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
 
             setTitle("");
             setContent("");
-            setCategory("");
+            setCategory(preselectedCategory || "");
 
-            // Navigate after a short delay
             setTimeout(() => {
-                navigate("/profile/MyProfile");
-            }, 1000);
+                navigate(`/category/${category._id}`);
+            }, 500);
         } catch (err) {
             let errorMsg = "Failed to create note. Please try again.";
             if (err.response?.data?.error) {
@@ -77,12 +85,6 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
     };
 
     return (
-        <Magnet
-            padding={50}
-            disabled={false}
-            magnetStrength={20}
-            className="w-full"
-        >
             <div
                 className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
                 style={{
@@ -127,11 +129,25 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
                         </label>
                         <input
                             type="text"
-                            className={textAreaStyle}
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
+                            className={
+                                preselectedCategory
+                                    ? `${textAreaStyle} bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed`
+                                    : textAreaStyle
+                            }
+                            value={category.name}
+                            onChange={
+                                preselectedCategory
+                                    ? undefined // If thisCategory is passed, disable editing
+                                    : (e) => setCategory(e.target.value)
+                            }
                             placeholder="e.g. Personal, Work, Ideas"
+                            disabled={!!preselectedCategory}
                         />
+                        {preselectedCategory && (
+                            <div className="text-xs text-gray-400 mt-1 ml-1">
+                                Category is preselected and cannot be changed.
+                            </div>
+                        )}
                     </div>
                     {formError && (
                         <div className="text-red-500 font-medium text-center">{formError}</div>
@@ -148,7 +164,6 @@ const CreateNote = ({ user, loading, error, isAuthenticated, categories }) => {
                     />
                 </form>
             </div>
-        </Magnet>
     );
 };
 

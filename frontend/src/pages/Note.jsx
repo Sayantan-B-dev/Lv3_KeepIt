@@ -60,7 +60,7 @@ const Note = ({ user: loggedInUser }) => {
       await axiosInstance.delete(`/api/notes/${noteId}`);
       toast.success("Note deleted successfully");
       setShowDeletePopup(false);
-      navigate("/profile/MyProfile");
+      navigate(`/category/${category?._id || note.category}`);
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -274,9 +274,9 @@ const Note = ({ user: loggedInUser }) => {
             <span className="text-indigo-600 font-bold">{note.likes ? note.likes.length : 0}</span>
           </div> */}
           {isOwner && !editMode && (
-            <button onClick={handleEdit} className="w-full">
+            <div onClick={handleEdit} className="w-full">
               <EncryptButton />
-            </button>
+            </div>
           )}
           {isOwner && editMode && (
             <div className="flex gap-3 mb-auto w-full justify-center">

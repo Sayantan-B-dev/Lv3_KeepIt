@@ -18,4 +18,7 @@ router.post('/',isLoggedIn,aiModeration,createCategory)
 router.put('/:id',isLoggedIn,aiModeration,updateCategory)
 router.delete('/:id',isLoggedIn,deleteCategory)
 
+
+
+
 export default router 

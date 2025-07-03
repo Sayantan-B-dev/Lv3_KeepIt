@@ -27,8 +27,16 @@ const Register = () => {
     if (name === "profileImage") {
       const file = files && files[0];
       const previousImage=formData.profileImagePreview;
-      console.log(previousImage);
       if (file) {
+        const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+        if (!allowedTypes.includes(file.type)) {
+          toast.error("Only JPEG, JPG, and PNG images are allowed.");
+          return;
+        }
+        if (file.size > 3 * 1024 * 1024) {
+          toast.error("Image size must be less than 3MB.");
+          return;
+        }
         const reader = new FileReader();
         reader.onloadend = () => {
           setFormData((prev) => ({

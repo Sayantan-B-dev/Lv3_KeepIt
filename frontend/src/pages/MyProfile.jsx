@@ -117,6 +117,15 @@ const MyProfile = () => {
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+    if (!allowedTypes.includes(file.type)) {
+      setUpdateError("Only JPEG, JPG, and PNG images are allowed.");
+      return;
+    }
+    if (file.size > 3 * 1024 * 1024) {
+      setUpdateError("Image size must be less than 3MB.");
+      return;
+    }
     setProfileImageFile(file);
     setProfileImagePreview(URL.createObjectURL(file));
     setUpdateError(null);
@@ -467,9 +476,9 @@ const MyProfile = () => {
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               {!editMode ? (
-                <button onClick={handleEdit}>
+                <div onClick={handleEdit}>
                   <EncryptButton />
-                </button>
+                </div>
               ) : (
                 <>
                   <button

@@ -37,7 +37,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
     };
 
     const handleCreateNote = () => {
-        navigate("/CreateNote");
+        navigate("/CreateNote", { state: { category } });
     };
 
     // When deleting a category, also delete all notes in it
@@ -136,7 +136,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                     {/* Category Header */}
                     <div className="flex items-center justify-center gap-6 mb-2">
                         <div className="flex flex-col items-center">
-                            <dev className="text-xl sm:text-2xl md:text-2xl font-extrabold text-gray-900 flex flex-col items-center gap-2 ">
+                            <div className="text-xl sm:text-2xl md:text-2xl font-extrabold text-gray-900 flex flex-col items-center gap-2 ">
                                 <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
                                     Category :
                                 </p>
@@ -144,7 +144,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                                 <p className="text-lg font-bold break-words text-center px-2" style={{ wordBreak: "break-all" }}>
                                     {category.name}
                                 </p>
-                            </dev>
+                            </div>
                             <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
                                 <span className="flex items-center gap-1 text-xs    ">
                                     <span className="text-xs text-gray-400">Created:</span>
@@ -178,7 +178,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                                 style={{ background: "white" }}
                             >
                                 <span className="font-semibold text-indigo-700 text-base">
-                                    Create a new Note
+                                    Add a new Note
                                 </span>
                             </div>
                         </div>
