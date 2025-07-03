@@ -36,6 +36,10 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
         navigate(`/profile/${userId}`);
     };
 
+    const handleCreateNote = () => {
+        navigate("/CreateNote");
+    };
+
     // When deleting a category, also delete all notes in it
     const handleDeleteCategory = async () => {
         setDeleting(true);
@@ -137,7 +141,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                                     Category :
                                 </p>
 
-                                <p className="text-lg font-bold break-words text-center px-2">
+                                <p className="text-lg font-bold break-words text-center px-2" style={{ wordBreak: "break-all" }}>
                                     {category.name}
                                 </p>
                             </dev>
@@ -166,6 +170,16 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                                         )}
                                     </button>
                                 )}
+                            </div>
+                            <div
+                                type="button"
+                                onClick={handleCreateNote}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-none border border-dashed border-black shadow transition cursor-pointer"
+                                style={{ background: "white" }}
+                            >
+                                <span className="font-semibold text-indigo-700 text-base">
+                                    Create a new Note
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -197,7 +211,7 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
                             ))}
                         </ul>
                     ) : (
-                        <p className="text-gray-400 italic">No notes in this category.</p>
+                        <p className="text-gray-400 italic text-center">No notes in this category.</p>
                     )}
                 </div>
             </div>

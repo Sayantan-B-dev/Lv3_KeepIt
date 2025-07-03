@@ -319,8 +319,8 @@ const MyProfile = () => {
                 </>
               )}
             </div>
-            <div className="w-full flex-1">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 flex items-center gap-2 flex-wrap">
+            <div className="w-full flex-1 justify-center">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900 flex items-center gap-2 flex-wrap text-center justify-center" style={{wordBreak: "break-all"}}>
                 {profile.username}
                 <span
                   className={`ml-2 px-2 py-1 rounded-full text-xs font-semibold ${profile.isVerified
@@ -330,8 +330,8 @@ const MyProfile = () => {
                 >
                   {profile.isVerified ? "Verified" : "Unverified"}
                 </span>
-              </h1>
-              <div className="flex gap-2 mt-2 sm:mt-3 text-base text-gray-600 font-medium">
+              </h3>
+              <div className="flex gap-2 mt-2 sm:mt-3 text-base text-gray-600 font-medium justify-center">
                 <span className="flex items-center gap-1">
                   <svg
                     className="w-4 h-4 text-indigo-400"
@@ -362,7 +362,7 @@ const MyProfile = () => {
                 </span>
               </div>
               {/* Add Create Note Button here */}
-              <div className="mt-4 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-2 justify-center">
                 <div
                   type="button"
                   onClick={handleCreateNote}
@@ -398,7 +398,7 @@ const MyProfile = () => {
                   />
                 ) : (
                   <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-full sm:w-fit">
-                    <p className="text-black">
+                    <p className="text-black"  style={{ wordBreak: "break-all" }}>
                       {profile.bio ? (
                         `"${profile.bio}"`
                       ) : (
@@ -431,6 +431,7 @@ const MyProfile = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-black break-all"
+                        style={{ wordBreak: "break-all" }}
                       >
                         {profile.website}
                       </a>

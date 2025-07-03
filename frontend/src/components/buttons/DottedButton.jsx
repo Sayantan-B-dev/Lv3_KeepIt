@@ -1,5 +1,4 @@
 
-
 const DottedButton = ({ text, onClick, className, style }) => {
     const buttonClass = `
         rounded-2xl 
@@ -26,7 +25,7 @@ const DottedButton = ({ text, onClick, className, style }) => {
     return (
         <button
             className={combinedClass}
-            style={{ backgroundColor: "white", borderColor: "black", ...style }}
+            style={{ backgroundColor: "white", borderColor: "black", ...style, wordBreak: "break-all" }}
             onClick={onClick}
         >
             {text}

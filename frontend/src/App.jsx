@@ -79,7 +79,7 @@ function App() {
 
   return (
     <>
-      <BrowserRouter>
+      <BrowserRouter >
         <StickyNavbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
 
         {/* background */}
