@@ -55,7 +55,8 @@ export const aiModeration = async (req, res, next) => {
         const lowerValue = String(value).toLowerCase();
 
         for (const word of bannedWords) {
-          if (lowerValue.includes(word.toLowerCase())) {
+          const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+          if (wordRegex.test(lowerValue)) {
             return res.status(400).json({ error: `Inappropriate content detected in ${field}.` });
           }
         }

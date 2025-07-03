@@ -10,16 +10,38 @@ import helmet from "helmet"
 import cors from "cors";
 import dotenv from 'dotenv';
 import User from "./models/user.js"
+import rateLimit from "express-rate-limit";
+import errorHandler from './middlewares/errorHandler.js';
 
 // Load environment variables
 dotenv.config();
 
 const app = express()
 
-// CORS configuration
+// Rate limiting
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // limit each IP to 10 login requests per windowMs
+  message: { error: "Too many login attempts. Please try again later." }
+});
+const noteLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 20, // limit each IP to 20 note creations per windowMs
+  message: { error: "Too many notes created. Please try again later." }
+});
+
+// CORS: allow only trusted origins
+const allowedOrigins = process.env.FRONTEND_URL;
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error('CORS policy: Not allowed by CORS'), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
 }));
 
 // Middlewares
@@ -128,7 +150,11 @@ import globalRoutes from './routes/globalRoutes.js';
 app.use('/api/profile', profileRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
-app.use('/api/notes', noteRoutes);
+app.use('/api/notes', noteLimiter, noteRoutes);
 app.use('/api/global', globalRoutes);
+
+app.use('/api/auth/login', loginLimiter, authRoutes);
+
+app.use(errorHandler);
 
 export default app;
