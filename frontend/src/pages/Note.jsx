@@ -10,7 +10,6 @@ import EncryptButton from "../components/buttons/EncryptButton";
 import { marked } from "marked";
 import DOMPurify from 'dompurify';
 
-
 const backdropStyle = {
   backdropFilter: 'blur(2px)',
   backdropShadow: '20px',
@@ -48,6 +47,15 @@ const Note = ({ user: loggedInUser }) => {
   const [updateError, setUpdateError] = useState(null);
   const [updateSuccess, setUpdateSuccess] = useState(null);
 
+  // Track if content is too large for editing
+  const [contentTooLarge, setContentTooLarge] = useState(false);
+
+  // You can adjust this limit as needed, or remove it entirely if you want no client-side limit
+  // 2000 is the original, but for large notes, you may want to increase or remove it
+  // const CONTENT_MAX_LENGTH = 2000;
+  // For no limit, set to undefined or a very large number
+  const CONTENT_MAX_LENGTH = undefined; // No client-side limit
+
   const handleUserClick = (userId) => {
     navigate(`/profile/${userId}`);
   };
@@ -74,10 +82,17 @@ const Note = ({ user: loggedInUser }) => {
   };
 
   const handleEdit = () => {
+    // If the note is very large, optionally warn or block editing
+    if (note.content && CONTENT_MAX_LENGTH && note.content.length > CONTENT_MAX_LENGTH) {
+      setContentTooLarge(true);
+      setEditMode(false);
+      return;
+    }
     setEditMode(true);
     setUpdateError(null);
     setUpdateSuccess(null);
     setEditNote({ title: note.title, content: note.content });
+    setContentTooLarge(false);
   };
 
   const handleCancel = () => {
@@ -85,11 +100,18 @@ const Note = ({ user: loggedInUser }) => {
     setUpdateError(null);
     setUpdateSuccess(null);
     setEditNote({ title: note.title, content: note.content });
+    setContentTooLarge(false);
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    // If you want to enforce a max length, do it here
+    if (name === "content" && CONTENT_MAX_LENGTH && value.length > CONTENT_MAX_LENGTH) {
+      setContentTooLarge(true);
+      return;
+    }
     setEditNote((prev) => ({ ...prev, [name]: value }));
+    setContentTooLarge(false);
   };
 
   const handleSave = async (e) => {
@@ -98,6 +120,12 @@ const Note = ({ user: loggedInUser }) => {
     setUpdateError(null);
     setUpdateSuccess(null);
     try {
+      // Optionally, check for content length before sending
+      if (CONTENT_MAX_LENGTH && editNote.content.length > CONTENT_MAX_LENGTH) {
+        setUpdateError(`Content is too long. Maximum allowed is ${CONTENT_MAX_LENGTH} characters.`);
+        setUpdateLoading(false);
+        return;
+      }
       const res = await axiosInstance.put(`/api/notes/${noteId}/edit`, {
         title: editNote.title,
         content: editNote.content,
@@ -267,15 +295,25 @@ const Note = ({ user: loggedInUser }) => {
         <div className="my-8">
           <h2 className="font-semibold text-black mb-2 text-lg">Content : </h2>
           {editMode ? (
-            <textarea
-              name="content"
-              value={editNote.content}
-              onChange={handleInputChange}
-              className="w-full h-100 border border-indigo-200 rounded-lg px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-indigo-300"
-              rows={8}
-              maxLength={2000}
-              disabled={updateLoading}
-            />
+            <>
+              {contentTooLarge && (
+                <div className="mb-2 text-red-500 text-center">
+                  {CONTENT_MAX_LENGTH
+                    ? `Content is too long to edit (max ${CONTENT_MAX_LENGTH} characters).`
+                    : "Content is too large to edit in this field."}
+                </div>
+              )}
+              <textarea
+                name="content"
+                value={editNote.content}
+                onChange={handleInputChange}
+                className="w-full h-200 border border-indigo-200 rounded-lg px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                rows={16}
+                maxLength={CONTENT_MAX_LENGTH}
+                disabled={updateLoading || contentTooLarge}
+                style={contentTooLarge ? { background: "#fef2f2" } : {}}
+              />
+            </>
           ) : (
             <div
               className="bg-white/80 rounded-xl px-5 py-4 shadow-sm border border-indigo-50 whitespace-pre-line text-gray-800"
@@ -314,7 +352,7 @@ const Note = ({ user: loggedInUser }) => {
             <button
               onClick={handleSave}
               className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black"
-              disabled={updateLoading}
+              disabled={updateLoading || contentTooLarge}
               style={{ border: "1px dashed black" }}
             >
               {updateLoading ? "Saving..." : "Save"}
