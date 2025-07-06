@@ -32,7 +32,7 @@ export const loginSchema = Joi.object({
 
 export const noteSchema = Joi.object({
     title:Joi.string().min(3).max(50).required(),
-    content:Joi.string().min(10).max(1000).required(),
+    content:Joi.string().min(10).max(10000).required(),
     category:Joi.string().min(3).max(50).required(),
     tags:Joi.array().items(Joi.string()),
     isPublic:Joi.boolean(),
