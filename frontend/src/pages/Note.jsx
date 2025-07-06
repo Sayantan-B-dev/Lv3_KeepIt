@@ -7,6 +7,8 @@ import Author from "../components/Author";
 import ConfirmPopUp from "../components/ConfirmPopUp";
 import { toast } from "react-toastify";
 import EncryptButton from "../components/buttons/EncryptButton";
+import { marked } from "marked";
+import DOMPurify from 'dompurify';
 
 
 const backdropStyle = {
@@ -177,137 +179,166 @@ const Note = ({ user: loggedInUser }) => {
         title="Delete Note"
         backdropStyle={backdropStyle}
       />
-        <div
-          className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-[70%] lg:max-w-[70%] "
-          style={{
-            ...backdropStyle,
-            borderRadius: '60px',
-            border: '1px dashed black',
-          }}
-        >
-          <Author user={user} handleUserClick={handleUserClick} />
-          {/* Note Header */}
-          <div className="flex items-center gap-6 mb-8  justify-center">
-            <div className="relative flex flex-col  justify-center">
-              <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2 text-center justify-center">
-                Title:
-              </p>
-              <div>
-                {editMode ? (
-                  <input
-                    type="text"
-                    name="title"
-                    value={editNote.title}
-                    onChange={handleInputChange}
-                    className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 border border-indigo-200 rounded px-2 py-1"
-                    maxLength={100}
-                    disabled={updateLoading}
-                  />
-                ) : (
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 flex items-center text-center justify-center gap-2" style={{ wordBreak: "break-all" }}>
-                    {note.title}
-                  </h3>
-                )}
-              </div>
-              {/* Delete button for owner, like in Category */}
-              <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
-                <span className="flex items-center gap-1 text-xs    ">
-                  <span className="text-xs text-gray-400">Created:</span>
-                  {new Date(note.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </span>
-                {isOwner && !editMode && (
-                  <button
-                    className="ml-4 p-1 rounded-full text-gray-400 hover:text-red-500 transition cursor-pointer"
-                    onClick={() => setShowDeletePopup(true)}
-                    disabled={deleting}
-                    title="Delete this note"
-                    style={{ background: "none", border: "none", outline: "none" }}
-                  >
-                    {deleting ? (
-                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                      </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m5 0H4" />
-                      </svg>
-                    )}
-                  </button>
-                )}
-              </div>
-
+      <div
+        className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-[70%] lg:max-w-[70%] "
+        style={{
+          ...backdropStyle,
+          borderRadius: '60px',
+          border: '1px dashed black',
+        }}
+      >
+        <Author user={user} handleUserClick={handleUserClick} />
+        {/* Note Header */}
+        <div className="flex items-center gap-6 mb-8  justify-center">
+          <div className="relative flex flex-col  justify-center">
+            <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2 text-center justify-center">
+              Title:
+            </p>
+            <div>
+              {editMode ? (
+                <input
+                  type="text"
+                  name="title"
+                  value={editNote.title}
+                  onChange={handleInputChange}
+                  className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 border border-indigo-200 rounded px-2 py-1"
+                  maxLength={100}
+                  disabled={updateLoading}
+                />
+              ) : (
+                <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 flex items-center text-center justify-center gap-2" style={{ wordBreak: "break-all" }}>
+                  {note.title}
+                </h3>
+              )}
             </div>
+            {/* Delete button for owner, like in Category */}
+            <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
+              <span className="flex items-center gap-1 text-xs    ">
+                <span className="text-xs text-gray-400">Created:</span>
+                {new Date(note.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </span>
+              {isOwner && !editMode && (
+                <button
+                  className="ml-4 p-1 rounded-full text-gray-400 hover:text-red-500 transition cursor-pointer"
+                  onClick={() => setShowDeletePopup(true)}
+                  disabled={deleting}
+                  title="Delete this note"
+                  style={{ background: "none", border: "none", outline: "none" }}
+                >
+                  {deleting ? (
+                    <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                    </svg>
+                  ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m5 0H4" />
+                    </svg>
+                  )}
+                </button>
+              )}
+            </div>
+
           </div>
-          {/* Category */}
-          <div className="mb-8 flex flex-col items-center gap-4">
-            <span className="block font-semibold text-gray-700">Category:</span>
-            <DottedButton
-              style={{ fontSize: "12px" }}
-              onClick={() => handleCategoryClick(category._id)}
-              text={category?.name || note.category}
-            />
-          </div>
-          {/* Content */}
-          <div className="mb-8">
-            <h2 className="font-semibold text-black mb-2 text-lg">Content</h2>
-            {editMode ? (
-              <textarea
-                name="content"
-                value={editNote.content}
-                onChange={handleInputChange}
-                className="w-full h-40 border border-indigo-200 rounded-lg px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-indigo-300"
-                rows={8}
-                maxLength={2000}
-                disabled={updateLoading}
-              />
-            ) : (
-              <div
-                className="bg-white/80 rounded-xl px-5 py-4 shadow-sm border border-indigo-50 whitespace-pre-line text-gray-800"
-                dangerouslySetInnerHTML={{ __html: linkify(note.content) }}
-              />
-            )}
-          </div>
-          {/* Likes */}
-          {/* <div className="flex items-center gap-2 mt-6">
-            <span className="font-semibold text-gray-700">Likes:</span>
-            <span className="text-indigo-600 font-bold">{note.likes ? note.likes.length : 0}</span>
-          </div> */}
-          {isOwner && !editMode && (
+        </div>
+        {/* Category */}
+        <div className="mb-8 flex flex-col items-center gap-4">
+          <span className="block font-semibold text-gray-700">Category:</span>
+          <DottedButton
+            style={{ fontSize: "12px" }}
+            onClick={() => handleCategoryClick(category._id)}
+            text={category?.name || note.category}
+          />
+        </div>
+        {isOwner && !editMode && (
+          < div className="w-full text-center justify-center ">
             <div onClick={handleEdit} className="w-full">
               <EncryptButton />
             </div>
-          )}
-          {isOwner && editMode && (
-            <div className="flex gap-3 mb-auto w-full justify-center">
-              <button
-                onClick={handleSave}
-                className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black"
-                disabled={updateLoading}
-                style={{ border: "1px dashed black" }}
-              >
-                {updateLoading ? "Saving..." : "Save"}
-              </button>
-              <button
-                onClick={handleCancel}
-                className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-red-400/20 transition"
-                disabled={updateLoading}
-                style={{ border: "1px dashed black" }}
-              >
-                Cancel
-              </button>
+            <div className="text-xs text-gray-500 mt-1">
+              <span>
+                <b>Markdown supported:</b> You can use <b>**bold**</b>, <i>*italic*</i>, <code>`inline code`</code>, <code>```code blocks```</code>, lists, headings (<code>#</code>, <code>##</code>, etc.), blockquotes (<code>&gt; quote</code>), and more.<br />
+                <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) and it will be clickable when viewing the note.<br />
+              </span>
             </div>
-          )}
-          {/* Footer */}
-          <div className="mt-10 text-center">
-            <p className="text-gray-500 text-sm italic">
-              Viewing note <span className="font-bold">{note.title}</span>.
-            </p>
           </div>
-
-          {updateError && <div className="mt-2 text-red-500 text-center">{updateError}</div>}
-          {updateSuccess && <div className="mt-2 text-green-600 text-center">{updateSuccess}</div>}
+        )}
+        {/* Content */}
+        <div className="my-8">
+          <h2 className="font-semibold text-black mb-2 text-lg">Content : </h2>
+          {editMode ? (
+            <textarea
+              name="content"
+              value={editNote.content}
+              onChange={handleInputChange}
+              className="w-full h-100 border border-indigo-200 rounded-lg px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              rows={8}
+              maxLength={2000}
+              disabled={updateLoading}
+            />
+          ) : (
+            <div
+              className="bg-white/80 rounded-xl px-5 py-4 shadow-sm border border-indigo-50 whitespace-pre-line text-gray-800"
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                  marked(note.content, {
+                    highlight: function(code, lang) {
+                      return code;
+                    }
+                  })
+                )
+                  .replace(
+                    /<pre>/g,
+                    '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;">'
+                  )
+                  .replace(
+                    /<pre[^>]*>\s*<code( class=".*?")?>/g,
+                    '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;"><code style="background: transparent; color: inherit; padding: 0; border-radius: 0; font-size: inherit;">'
+                  )
+                  .replace(
+                    /<code( class=".*?")?>/g,
+                    '<code style="background: #f3f4f6; color: #23272e; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; border: 1px solid #e5e7eb;">'
+                  )
+              }}
+            />
+          )}
         </div>
+        {/* Likes */}
+        {/* <div className="flex items-center gap-2 mt-6">
+            <span className="font-semibold text-gray-700">Likes:</span>
+            <span className="text-indigo-600 font-bold">{note.likes ? note.likes.length : 0}</span>
+          </div> */}
+
+        {isOwner && editMode && (
+          <div className="flex gap-3 mb-auto w-full justify-center">
+            <button
+              onClick={handleSave}
+              className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black"
+              disabled={updateLoading}
+              style={{ border: "1px dashed black" }}
+            >
+              {updateLoading ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={handleCancel}
+              className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-red-400/20 transition"
+              disabled={updateLoading}
+              style={{ border: "1px dashed black" }}
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+        {/* Footer */}
+        <div className="mt-10 text-center">
+          <p className="text-gray-500 text-sm italic">
+            Viewing note <span className="font-bold">{note.title}</span>.
+          </p>
+        </div>
+
+        {updateError && <div className="mt-2 text-red-500 text-center">{updateError}</div>}
+        {updateSuccess && <div className="mt-2 text-green-600 text-center">{updateSuccess}</div>}
+      </div>
     </>
   );
 };

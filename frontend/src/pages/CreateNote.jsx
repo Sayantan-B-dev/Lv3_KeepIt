@@ -122,6 +122,12 @@ const CreateNote = (props) => {
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="Write your note here... (You can add a clickable link by including a full URL, e.g. https://example.com. Links will be clickable when viewing the note.)"
                         />
+                        <div className="text-xs text-gray-500 mt-1">
+                          <span>
+                            <b>Markdown supported:</b> You can use <b>**bold**</b>, <i>*italic*</i>, <code>`inline code`</code>, <code>```code blocks```</code>, lists, headings (<code>#</code>, <code>##</code>, etc.), blockquotes (<code>&gt; quote</code>), and more.<br />
+                            <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) and it will be clickable when viewing the note.<br />
+                          </span>
+                        </div>
                     </div>
                     <div>
                         <label className="block text-gray-700 font-semibold mb-2">
