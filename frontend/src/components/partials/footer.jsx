@@ -43,7 +43,7 @@ const socialLinks = [
         />
       </svg>
     ),
-    to: "#",
+    to: "https://x.com/SayantanB_1337",
   },
   {
     name: "GitHub",
@@ -55,7 +55,7 @@ const socialLinks = [
         />
       </svg>
     ),
-    to: "#",
+    to: "https://github.com/Sayantan-B-dev",
   },
   {
     name: "LinkedIn",
@@ -67,7 +67,7 @@ const socialLinks = [
         />
       </svg>
     ),
-    to: "#",
+    to: "https://www.linkedin.com/in/sayantan-bharati-6b1b77205/",
   },
 ];
 
@@ -135,6 +135,18 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto mt-8 pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-xs text-gray-400 w-full">
         <span className="text-center">
           &copy; {new Date().getFullYear()} KeepIt. All rights reserved. @Sayantan-B-Dev
+          <span className="mx-2 hidden sm:inline">|</span>
+          <span className="block sm:inline mt-1 sm:mt-0">
+            <span className="text-gray-500">Check out more animated react components on &nbsp;</span>
+            <a
+              href="https://reactbits.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-indigo-500 hover:underline hover:text-indigo-700 transition-colors font-medium"
+            >
+              reactbits.dev
+            </a>
+          </span>
         </span>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 text-center">
           <Link to="#" className="hover:text-indigo-600 transition-colors">Privacy Policy</Link>
