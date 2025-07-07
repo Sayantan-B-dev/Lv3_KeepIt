@@ -325,6 +325,11 @@ const Note = ({ user: loggedInUser }) => {
                     }
                   })
                 )
+                  // Add target="_blank" and rel="noopener noreferrer" to all <a> tags
+                  .replace(
+                    /<a /g,
+                    '<a target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 500;" '
+                  )
                   .replace(
                     /<pre>/g,
                     '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;">'
