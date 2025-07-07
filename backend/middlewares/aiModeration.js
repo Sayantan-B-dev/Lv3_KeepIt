@@ -43,8 +43,8 @@
 
 import { bannedWords } from "../utils/bannedWords.js";
 
+
 export const aiModeration = async (req, res, next) => {
-  // List all fields you want to check
   const fieldsToCheck = ["title", "content", "bio", "username", "website", "category", "tags"];
 
   try {
@@ -57,7 +57,7 @@ export const aiModeration = async (req, res, next) => {
         for (const word of bannedWords) {
           const wordRegex = new RegExp(`\\b${word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
           if (wordRegex.test(lowerValue)) {
-            return res.status(400).json({ error: `Inappropriate content detected in ${field}.` });
+            return res.status(400).json({ error: `Inappropriate content detected in ${field}. Problematic word: "${word}".` });
           }
         }
       }
