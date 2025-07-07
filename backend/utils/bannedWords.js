@@ -496,8 +496,6 @@ export const bannedWords = [
   "spooge",
   "spunk",
   "jism",
-  "load",
-  "loads",
   "ejaculate",
   "ejaculation",
   "ejaculating",
