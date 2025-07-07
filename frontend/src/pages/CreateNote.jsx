@@ -13,34 +13,29 @@ const CreateNote = (props) => {
     const preselectedCategory = location.state?.category;
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    // If thisCategory is passed, use it as the initial value for category, otherwise empty string
-    const [category, setCategory] = useState(preselectedCategory || "");
+    const [category, setCategory] = useState(
+        preselectedCategory ? preselectedCategory : ""
+    );
     const [formError, setFormError] = useState(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
-    // If thisCategory changes, update category state accordingly
     useEffect(() => {
         if (preselectedCategory) {
             setCategory(preselectedCategory);
         }
     }, [preselectedCategory]);
 
-    // Redirect to login if not authenticated
     useEffect(() => {
         if (typeof props.isAuthenticated !== "undefined" && !props.isAuthenticated) {
             navigate("/login");
         }
     }, [props.isAuthenticated, navigate]);
 
-    // If loading authentication/user info, show loading
     if (props.loading) {
-        return (
-            <Loading />
-        );
+        return <Loading />;
     }
 
-    // If not authenticated, don't render form (redirect handled above)
     if (!props.isAuthenticated) {
         return null;
     }
@@ -50,7 +45,16 @@ const CreateNote = (props) => {
         setFormError(null);
         setSuccess(false);
 
-        if (!title.trim() || !content.trim() || !category._id) {
+        let categoryName = "";
+        let categoryId = "";
+        if (preselectedCategory) {
+            categoryName = preselectedCategory.name;
+            categoryId = preselectedCategory._id;
+        } else if (typeof category === "string") {
+            categoryName = category.trim();
+        }
+
+        if (!title.trim() || !content.trim() || !categoryName) {
             setFormError("All fields are required.");
             return;
         }
@@ -59,19 +63,30 @@ const CreateNote = (props) => {
             const response = await axiosInstance.post("/api/notes", {
                 title,
                 content,
-                category: category.name,
+                category: categoryName,
             });
-            //console.log(response.data);
 
             setSuccess(true);
             toast.success("Note created successfully");
 
             setTitle("");
             setContent("");
-            setCategory(preselectedCategory || "");
+            setCategory(preselectedCategory ? preselectedCategory : "");
 
             setTimeout(() => {
-                navigate(`/category/${category._id}`);
+                let redirectCategoryId = categoryId;
+                if (!redirectCategoryId && response.data && response.data.category) {
+                    if (typeof response.data.category === "string") {
+                        redirectCategoryId = response.data.category;
+                    } else if (typeof response.data.category === "object" && response.data.category._id) {
+                        redirectCategoryId = response.data.category._id;
+                    }
+                }
+                if (redirectCategoryId) {
+                    navigate(`/category/${redirectCategoryId}`);
+                } else {
+                    navigate("/"); 
+                }
             }, 500);
         } catch (err) {
             let errorMsg = "Failed to create note. Please try again.";
@@ -126,50 +141,54 @@ const CreateNote = (props) => {
                           <span>
                             <b>Markdown supported:</b> You can use <b>**bold**</b>, <i>*italic*</i>, <code>`inline code`</code>, <code>```code blocks```</code>, lists, headings (<code>#</code>, <code>##</code>, etc.), blockquotes (<code>&gt; quote</code>), and more.<br />
                             <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) and it will be clickable when viewing the note.<br />
-                          </span>
-                        </div>
+                        </span>
                     </div>
-                    <div>
-                        <label className="block text-gray-700 font-semibold mb-2">
-                            Category
-                        </label>
-                        <input
-                            type="text"
-                            className={
-                                preselectedCategory
-                                    ? `${textAreaStyle} bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed`
-                                    : textAreaStyle
-                            }
-                            value={category.name}
-                            onChange={
-                                preselectedCategory
-                                    ? undefined // If thisCategory is passed, disable editing
-                                    : (e) => setCategory(e.target.value)
-                            }
-                            placeholder="e.g. Personal, Work, Ideas"
-                            disabled={!!preselectedCategory}
-                        />
-                        {preselectedCategory && (
-                            <div className="text-xs text-gray-400 mt-1 ml-1">
-                                Category is preselected and cannot be changed.
-                            </div>
-                        )}
-                    </div>
-                    {formError && (
-                        <div className="text-red-500 font-medium text-center">{formError}</div>
-                    )}
-                    {success && (
-                        <div className="text-green-600 font-medium text-center">
-                            Note created! Redirecting...
-                        </div>
-                    )}
-                    <DottedButton
-                        text="Create Note"
-                        className="w-full"
-                        onClick={handleSubmit}
+                </div>
+                <div>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                        Category
+                    </label>
+                    <input
+                        type="text"
+                        className={
+                            preselectedCategory
+                                ? `${textAreaStyle} bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed`
+                                : textAreaStyle
+                        }
+                        value={
+                            preselectedCategory
+                                ? preselectedCategory.name
+                                : category
+                        }
+                        onChange={
+                            preselectedCategory
+                                ? undefined // If thisCategory is passed, disable editing
+                                : (e) => setCategory(e.target.value)
+                        }
+                        placeholder="e.g. Personal, Work, Ideas"
+                        disabled={!!preselectedCategory}
                     />
-                </form>
-            </div>
+                    {preselectedCategory && (
+                        <div className="text-xs text-gray-400 mt-1 ml-1">
+                            Category is preselected and cannot be changed.
+                        </div>
+                    )}
+                </div>
+                {formError && (
+                    <div className="text-red-500 font-medium text-center">{formError}</div>
+                )}
+                {success && (
+                    <div className="text-green-600 font-medium text-center">
+                        Note created! Redirecting...
+                    </div>
+                )}
+                <DottedButton
+                    text="Create Note"
+                    className="w-full"
+                    onClick={handleSubmit}
+                />
+            </form>
+        </div>
     );
 };
 

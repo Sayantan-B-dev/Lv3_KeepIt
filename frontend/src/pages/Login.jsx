@@ -26,7 +26,6 @@ const Login = ({ setIsAuthenticated }) => {
     try {
       await axiosInstance.post("/api/auth/login", formData, { withCredentials: true });
       const checkRes = await axiosInstance.get("/api/auth/check", { withCredentials: true });
-      console.log(checkRes.data)
       if (checkRes.data.authenticated) {
         setUser(checkRes.data.user);
         setIsAuthenticated(true);

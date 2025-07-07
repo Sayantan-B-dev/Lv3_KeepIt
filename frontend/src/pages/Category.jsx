@@ -30,10 +30,10 @@ const Category = ({ user: loggedInUser, loading: appLoading, error: appError, is
     const [showDeletePopup, setShowDeletePopup] = useState(false);
 
     const handleNoteClick = (noteId) => {
-        navigate(`/note/${noteId}`);
+        window.open(`/note/${noteId}`, "_blank", "noopener,noreferrer");
     };
     const handleUserClick = (userId) => {
-        navigate(`/profile/${userId}`);
+        window.open(`/profile/${userId}`, "_blank", "noopener,noreferrer");
     };
 
     const handleCreateNote = () => {

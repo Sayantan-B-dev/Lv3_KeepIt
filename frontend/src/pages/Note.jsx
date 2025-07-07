@@ -57,10 +57,10 @@ const Note = ({ user: loggedInUser }) => {
   const CONTENT_MAX_LENGTH = undefined; // No client-side limit
 
   const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}`);
+    window.open(`/profile/${userId}`, "_blank", "noopener,noreferrer");
   };
   const handleCategoryClick = (categoryId) => {
-    navigate(`/category/${categoryId}`);
+    window.open(`/category/${categoryId}`, "_blank", "noopener,noreferrer");
   };
 
   const handleDeleteNote = async () => {
@@ -316,31 +316,59 @@ const Note = ({ user: loggedInUser }) => {
             </>
           ) : (
             <div
-              className="bg-white/80 rounded-xl px-5 py-4 shadow-sm border border-indigo-50 whitespace-pre-line text-gray-800"
+              className="bg-white/80 rounded-xl px-5 py-4 shadow-sm border-1 border-indigo-50 whitespace-pre-line text-gray-800 "
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
                   marked(note.content, {
-                    highlight: function(code, lang) {
+                    highlight: function (code, lang) {
                       return code;
                     }
                   })
                 )
-                  // Add target="_blank" and rel="noopener noreferrer" to all <a> tags
+                  // Style <a> tags
                   .replace(
                     /<a /g,
                     '<a target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 500;" '
                   )
+                  // Style <pre> blocks
                   .replace(
                     /<pre>/g,
                     '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;">'
                   )
+                  // Style <pre><code>
                   .replace(
                     /<pre[^>]*>\s*<code( class=".*?")?>/g,
                     '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;"><code style="background: transparent; color: inherit; padding: 0; border-radius: 0; font-size: inherit;">'
                   )
+                  // Style <code>
                   .replace(
                     /<code( class=".*?")?>/g,
                     '<code style="background: #f3f4f6; color: #23272e; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; border: 1px solid #e5e7eb;">'
+                  )
+                  // Style markdown tables
+                  .replace(
+                    /<table>/g,
+                    '<table style="width:100%; border-collapse:collapse; margin:1.5em 0; font-size:0.98em; background:#f8fafc; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px 0 rgba(31,38,135,0.05);">'
+                  )
+                  .replace(
+                    /<thead>/g,
+                    '<thead style="background:#e0e7ef;">'
+                  )
+                  .replace(
+                    /<th>/g,
+                    '<th style="padding:10px 16px; border-bottom:2px solid #c7d2fe; font-weight:700; text-align:left; color:#1e293b;">'
+                  )
+                  .replace(
+                    /<tr>/g,
+                    '<tr style="border-bottom:1px solid #e5e7eb;">'
+                  )
+                  .replace(
+                    /<td>/g,
+                    '<td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; color:#334155; vertical-align:top;">'
+                  )
+                  .replace(
+                    /<\/table>/g,
+                    '</table>'
                   )
               }}
             />
