@@ -20,66 +20,43 @@ import AllUsers from "./pages/AllUsers";
 import Loading from "./components/home/Loading";
 import RotatingKeepIt from "./components/RotatingKeepIt"
 import Waiting from "./components/partials/Waiting";
+import { useAuth } from "./context/AuthContext";
 
 
 function App() {
+  const { user, loading: authLoading } = useAuth();
+  const isAuthenticated = !!user;
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        // First try to get authentication status
-        try {
-          const authRes = await axiosInstance.get("/api/auth/check");
-          const categoriesRes = await axiosInstance.get("/api/categories");
-          setCategories(categoriesRes.data);
-          if (authRes.data.authenticated) {
-            setIsAuthenticated(true);
-            setUser(authRes.data.user);
-          } else {
-            setIsAuthenticated(false);
-            setUser(null);
-          }
-        } catch (authError) {
-          setIsAuthenticated(false);
-          setUser(null);
-        }
-
-        try {
-          const notesRes = await axiosInstance.get("/api/notes/public/all");
-          setNotes(notesRes.data || []);
-        } catch (notesError) {
-          console.error("Error fetching notes:", notesError);
-          setError("Failed to load notes. Please try again later.");
-          setNotes([]);
-        }
+        const categoriesRes = await axiosInstance.get("/api/categories");
+        setCategories(categoriesRes.data);
+        const notesRes = await axiosInstance.get("/api/notes/public/all");
+        setNotes(notesRes.data || []);
       } catch (e) {
-        console.error("Error:", e);
         setError("Something went wrong. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
-  if (loading) {
+  if (authLoading || loading) {
     return <Loading />;
   }
 
   return (
     <div className="min-h-screen flex flex-col">
       <BrowserRouter >
-        <StickyNavbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} user={user} />
+        <StickyNavbar />
 
         {/* background */}
         <div
@@ -137,54 +114,29 @@ function App() {
                 element={
                   <Home
                     notes={notes}
-                    loading={loading}
-                    error={error}
-                    isAuthenticated={isAuthenticated}
-                    user={user}
                   />
                 }
               />
-              <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/logout" element={<Logout setIsAuthenticated={setIsAuthenticated} />} />
-              <Route path="/profile/MyProfile" element={<MyProfile user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories} />} />
-              <Route path="/CreateNote" element={<CreateNote user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} categories={categories} />} />
-              <Route path="/all-categories" element={<AllCategories user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-              <Route path="/all-notes" element={<AllNotes user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-              <Route path="/about" element={<About user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
-              <Route path="/all-users" element={<AllUsers user={user} loading={loading} error={error} isAuthenticated={isAuthenticated} />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route path="/profile/MyProfile" element={<MyProfile categories={categories} />} />
+              <Route path="/CreateNote" element={<CreateNote categories={categories} />} />
+              <Route path="/all-categories" element={<AllCategories />} />
+              <Route path="/all-notes" element={<AllNotes />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/all-users" element={<AllUsers />} />
               <Route
                 path="/profile/:userId"
-                element={
-                  <Profile
-                    user={user}
-                    loading={loading}
-                    error={error}
-                    isAuthenticated={isAuthenticated}
-                  />
-                }
+                element={<Profile />}
               />
               <Route
                 path="/category/:categoryId"
-                element={
-                  <Category
-                    user={user}
-                    loading={loading}
-                    error={error}
-                    isAuthenticated={isAuthenticated}
-                  />
-                }
+                element={<Category />}
               />
               <Route
                 path="/note/:noteId"
-                element={
-                  <Note
-                    user={user}
-                    loading={loading}
-                    error={error}
-                    isAuthenticated={isAuthenticated}
-                  />
-                }
+                element={<Note />}
               />
               <Route path="/CreateNote" element={<CreateNote />} />
             </Routes>

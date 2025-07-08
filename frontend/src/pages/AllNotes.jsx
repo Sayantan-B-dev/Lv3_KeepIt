@@ -4,9 +4,11 @@ import axiosInstance from '../api/axiosInstance';
 import DottedButton from '../components/buttons/DottedButton';
 import Author from '../components/Author';
 import Magnet from '../components/advance/Magnet';
+import { useAuth } from '../context/AuthContext';
 
 const AllNotes = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

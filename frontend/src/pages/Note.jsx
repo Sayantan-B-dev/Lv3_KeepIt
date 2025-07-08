@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import EncryptButton from "../components/buttons/EncryptButton";
 import { marked } from "marked";
 import DOMPurify from 'dompurify';
+import { useAuth } from '../context/AuthContext';
 
 const backdropStyle = {
   backdropFilter: 'blur(2px)',
@@ -18,16 +19,9 @@ const backdropStyle = {
   boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
 };
 
-function linkify(text) {
-  if (!text) return '';
-  const urlRegex = /(\bhttps?:\/\/[^\s]+)/g;
-  return text.replace(urlRegex, (url) => {
-    const displayUrl = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-    return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color: blue;">${displayUrl}</a>`;
-  });
-}
 
-const Note = ({ user: loggedInUser }) => {
+const Note = () => {
+  const { user: loggedInUser } = useAuth();
   const { noteId } = useParams();
   const navigate = useNavigate();
 
@@ -50,11 +44,7 @@ const Note = ({ user: loggedInUser }) => {
   // Track if content is too large for editing
   const [contentTooLarge, setContentTooLarge] = useState(false);
 
-  // You can adjust this limit as needed, or remove it entirely if you want no client-side limit
-  // 2000 is the original, but for large notes, you may want to increase or remove it
-  // const CONTENT_MAX_LENGTH = 2000;
-  // For no limit, set to undefined or a very large number
-  const CONTENT_MAX_LENGTH = undefined; // No client-side limit
+  const CONTENT_MAX_LENGTH = undefined;
 
   const handleUserClick = (userId) => {
     window.open(`/profile/${userId}`, "_blank", "noopener,noreferrer");
@@ -105,7 +95,6 @@ const Note = ({ user: loggedInUser }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    // If you want to enforce a max length, do it here
     if (name === "content" && CONTENT_MAX_LENGTH && value.length > CONTENT_MAX_LENGTH) {
       setContentTooLarge(true);
       return;

@@ -4,11 +4,12 @@ import { useNavigate, useLocation } from "react-router-dom";
 import DottedButton from "../components/buttons/DottedButton";
 import Loading from "../components/home/Loading";
 import { toast } from "react-toastify";
+import { useAuth } from '../context/AuthContext';
 
 const textAreaStyle =
     "w-full border border-gray-300 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
 
-const CreateNote = (props) => {
+const CreateNote = () => {
     const location = useLocation();
     const preselectedCategory = location.state?.category;
     const [title, setTitle] = useState("");
@@ -19,6 +20,8 @@ const CreateNote = (props) => {
     const [formError, setFormError] = useState(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
+    const { user, loading } = useAuth();
+    const isAuthenticated = !!user;
 
     useEffect(() => {
         if (preselectedCategory) {
@@ -27,16 +30,16 @@ const CreateNote = (props) => {
     }, [preselectedCategory]);
 
     useEffect(() => {
-        if (typeof props.isAuthenticated !== "undefined" && !props.isAuthenticated) {
+        if (typeof isAuthenticated !== "undefined" && !isAuthenticated) {
             navigate("/login");
         }
-    }, [props.isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate]);
 
-    if (props.loading) {
+    if (loading) {
         return <Loading />;
     }
 
-    if (!props.isAuthenticated) {
+    if (!isAuthenticated) {
         return null;
     }
 
@@ -94,6 +97,12 @@ const CreateNote = (props) => {
                 errorMsg = err.response.data.error;
             } else if (err.message) {
                 errorMsg = err.message;
+            }
+            if (
+                err.response?.data?.error &&
+                err.response.data.error.includes("note with this title")
+            ) {
+                errorMsg = "You already have a note with this title. Please choose a different title.";
             }
             setFormError(errorMsg);
         }

@@ -96,6 +96,9 @@ export const createNote = async (req, res) => {
 
         res.status(201).json(note);
     } catch (error) {
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.title && error.keyPattern.user) {
+            return res.status(400).json({ error: 'You already have a note with this title. Note titles must be unique.' });
+        }
         console.error('Error creating note:', error);
         res.status(500).json({
             error: 'Failed to create note',
@@ -106,12 +109,23 @@ export const createNote = async (req, res) => {
 
 export const updateNote=async(req,res)=>{
     const {id}=req.params
-    const note=await Note.findOneAndUpdate(
-        {_id:id,user:req.user._id},
-        req.body,
-        {new:true}
-    )
-    res.json(note);
+    try {
+        const note=await Note.findOneAndUpdate(
+            {_id:id,user:req.user._id},
+            req.body,
+            {new:true, runValidators: true}
+        )
+        res.json(note);
+    } catch (error) {
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.title && error.keyPattern.user) {
+            return res.status(400).json({ error: 'You already have a note with this title. Note titles must be unique.' });
+        }
+        console.error('Error updating note:', error);
+        res.status(500).json({
+            error: 'Failed to update note',
+            details: error.message
+        });
+    }
 }
 
 export const deleteNote=async(req,res)=>{

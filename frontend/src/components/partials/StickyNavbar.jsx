@@ -8,6 +8,7 @@ import DottedButton from "../buttons/DottedButton";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 import { toast } from "react-toastify";
+import { useAuth } from '../../context/AuthContext';
 
 const blackFont = {
   textDecoration: "none",
@@ -24,7 +25,9 @@ const blackFontClass = `
 `;
 export { blackFontClass };
 
-export function StickyNavbar({ isAuthenticated, setIsAuthenticated, user }) {
+export function StickyNavbar() {
+  const { user } = useAuth();
+  const isAuthenticated = !!user;
   const [openNav, setOpenNav] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
   const navigate = useNavigate();
@@ -216,7 +219,6 @@ export function StickyNavbar({ isAuthenticated, setIsAuthenticated, user }) {
 
                     }
                     localStorage.removeItem("user");
-                    setIsAuthenticated(false);
                     toast.success("Logged out successfully");
                     setTimeout(() => {
                       navigate("/");
@@ -265,7 +267,6 @@ export function StickyNavbar({ isAuthenticated, setIsAuthenticated, user }) {
                     } catch (err) {
                     }
                     localStorage.removeItem("user");
-                    setIsAuthenticated(false);
                     setOpenNav(false);
                     toast.success("Logged out successfully");
                     setTimeout(() => {

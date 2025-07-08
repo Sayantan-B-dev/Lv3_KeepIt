@@ -4,13 +4,10 @@ import axiosInstance from "../api/axiosInstance";
 import DottedButton from "../components/buttons/DottedButton";
 import Magnet from "../components/advance/Magnet";
 import Loading from "../components/home/Loading";
+import { useAuth } from '../context/AuthContext';
 
-const Profile = ({
-  user: loggedInUser,
-  loading: appLoading,
-  error: appError,
-  isAuthenticated,
-}) => {
+const Profile = () => {
+  const { user: loggedInUser } = useAuth();
   const { userId } = useParams();
   const navigate = useNavigate();
 
@@ -18,23 +15,6 @@ const Profile = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState([]);
-  const [followLoading, setFollowLoading] = useState(false);
-  const [followError, setFollowError] = useState(null);
-  const [isFollowing, setIsFollowing] = useState(false);
-
-  // Check if loggedInUser is following this profile
-  useEffect(() => {
-    if (
-      loggedInUser &&
-      profile &&
-      Array.isArray(profile.followers) &&
-      profile.followers.includes(loggedInUser._id)
-    ) {
-      setIsFollowing(true);
-    } else {
-      setIsFollowing(false);
-    }
-  }, [loggedInUser, profile]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -66,59 +46,6 @@ const Profile = ({
     return <Loading />;
   }
 
-  // const handleFollow = async () => {
-  //   if (!isAuthenticated || !loggedInUser || !profile) return;
-  //   setFollowLoading(true);
-  //   setFollowError(null);
-  //   try {
-  //     const res = await axiosInstance.post(`/api/profile/${profile._id}/follow`);
-  //     // Update followers in profile state
-  //     setProfile((prev) => ({
-  //       ...prev,
-  //       followers: res.data.followers,
-  //     }));
-  //     setIsFollowing(true);
-  //   } catch (err) {
-  //     setFollowError(
-  //       err.response?.data?.message ||
-  //         "Failed to follow user. Please try again later."
-  //     );
-  //   } finally {
-  //     setFollowLoading(false);
-  //   }
-  // };
-
-  // const handleUnfollow = async () => {
-  //   if (!isAuthenticated || !loggedInUser || !profile) return;
-  //   setFollowLoading(true);
-  //   setFollowError(null);
-  //   try {
-  //     const res = await axiosInstance.post(`/api/profile/${profile._id}/unfollow`);
-  //     setProfile((prev) => ({
-  //       ...prev,
-  //       followers: res.data.followers,
-  //     }));
-  //     setIsFollowing(false);
-  //   } catch (err) {
-  //     setFollowError(
-  //       err.response?.data?.message ||
-  //         "Failed to unfollow user. Please try again later."
-  //     );
-  //   } finally {
-  //     setFollowLoading(false);
-  //   }
-  // };
-
-
-
-  if (appError) {
-    return (
-      <div className="flex justify-center items-center min-h-[40vh]">
-        <span className="text-red-500">{appError}</span>
-      </div>
-    );
-  }
-
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-[40vh]">
@@ -134,13 +61,6 @@ const Profile = ({
       </div>
     );
   }
-
-  // Only show follow/unfollow if viewing someone else's profile and logged in
-  // const showFollow =
-  //   isAuthenticated &&
-  //   loggedInUser &&
-  //   profile &&
-  //   loggedInUser._id !== profile._id;
 
   return (
     <Magnet
@@ -204,42 +124,6 @@ const Profile = ({
                 <span className="ml-1 text-xs text-gray-400">Categories</span>
               </span>
             </div>
-            {/* <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
-              <span className="flex items-center gap-1">
-                {profile.followers?.length || 0}
-                <span className="ml-1 text-xs text-gray-400">Followers</span>
-              </span>
-              <span className="flex items-center gap-1">
-                {profile.following?.length || 0}
-                <span className="ml-1 text-xs text-gray-400">Following</span>
-              </span>
-            </div>
-            {showFollow && (
-              <div className="mt-4">
-                <div
-                  className={`inline-block px-6 py-2 rounded-full font-semibold text-sm cursor-pointer transition-all border border-indigo-300 shadow-md ${
-                    isFollowing
-                      ? "bg-indigo-100 text-indigo-600 hover:bg-indigo-200"
-                      : "bg-indigo-600 text-white hover:bg-indigo-700"
-                  } ${followLoading ? "opacity-60 pointer-events-none" : ""}`}
-                  onClick={isFollowing ? handleUnfollow : handleFollow}
-                  tabIndex={0}
-                  role="button"
-                  aria-disabled={followLoading}
-                >
-                  {followLoading
-                    ? isFollowing
-                      ? "Unfollowing..."
-                      : "Following..."
-                    : isFollowing
-                    ? "Unfollow"
-                    : "Follow"}
-                </div>
-                {followError && (
-                  <div className="mt-2 text-xs text-red-500">{followError}</div>
-                )}
-              </div>
-            )} */}
           </div>
         </div>
 
@@ -247,7 +131,6 @@ const Profile = ({
         <div className="flex flex-col justify-start gap-2">
             <div className="flex flex-row gap-2 items-center">
               <label className="block text-sm font-semibold text-gray-700 mb-1 text-center text-nowrap">Bio : </label>
-
                 <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-fit">
                   <p className="text-black">{profile.bio ? `"${profile.bio}"` : <span className="italic text-gray-400">No bio</span>}</p>
                 </div>
@@ -268,7 +151,6 @@ const Profile = ({
                     <span className="italic text-gray-400">No website</span>
                   )}
                 </div>
-            
             </div>
           </div>
 
@@ -284,8 +166,7 @@ const Profile = ({
               categories.map((cat) => (
                 <DottedButton
                   key={cat._id}
-              style={{fontSize:"12px"}}
-
+                  style={{fontSize:"12px"}}
                   onClick={() => handleCategoryClick(cat._id)}
                   className="px-4 py-2 border-indigo-300"
                   text={cat.name}

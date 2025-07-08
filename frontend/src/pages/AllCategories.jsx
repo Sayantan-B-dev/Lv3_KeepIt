@@ -4,9 +4,11 @@ import axiosInstance from '../api/axiosInstance';
 import DottedButton from '../components/buttons/DottedButton';
 import Author from '../components/Author';
 import Magnet from '../components/advance/Magnet'
+import { useAuth } from '../context/AuthContext';
 
 const AllCategories = () => {
   const navigate = useNavigate();
+  const { user } = useAuth(); // use user
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,6 +23,8 @@ const AllCategories = () => {
       setLoading(true);
       setError(null);
       try {
+        // Optionally, you could use user here for authenticated requests, e.g.:
+        // const res = await axiosInstance.get('/api/global/all-categories', { headers: { Authorization: `Bearer ${user?.token}` } });
         const res = await axiosInstance.get('/api/global/all-categories');
         setCategories(res.data || []);
       } catch (err) {
@@ -31,7 +35,7 @@ const AllCategories = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [user]); // depend on user
 
   // Filter categories based on search input (case-insensitive)
   const filteredCategories = categories.filter(cat =>
@@ -92,10 +96,15 @@ const AllCategories = () => {
               filteredCategories.map((cat) => (
                 <div key={cat._id || cat.name} className='flex items-center gap-2 w-[70%] m-auto'>
                   <DottedButton
-              style={{fontSize:"12px"}}
-                  
-                  key={cat._id || cat.name} text={cat.name} className='w-full' onClick={() => navigate(`/category/${cat._id}`)} />
-                  <div className='w-12 h-12'><Author user={cat.user} handleUserClick={handleUserClick} /></div>
+                    style={{fontSize:"12px"}}
+                    key={cat._id || cat.name}
+                    text={cat.name}
+                    className='w-full'
+                    onClick={() => navigate(`/category/${cat._id}`)}
+                  />
+                  <div className='w-12 h-12'>
+                    <Author user={cat.user} handleUserClick={handleUserClick} />
+                  </div>
                 </div>
               ))
             )}
