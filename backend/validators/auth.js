@@ -31,7 +31,7 @@ export const loginSchema = Joi.object({
 });
 
 export const noteSchema = Joi.object({
-    title:Joi.string().min(3).max(50).required(),
+    title:Joi.string().min(3).max(100).required(),
     content:Joi.string().min(10).max(10000).required(),
     category:Joi.string().min(3).max(50).required(),
     tags:Joi.array().items(Joi.string()),
