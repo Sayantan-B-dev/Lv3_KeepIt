@@ -316,7 +316,7 @@ const Note = ({ user: loggedInUser }) => {
             </>
           ) : (
             <div
-              className="bg-white/80 rounded-xl px-5 py-4 shadow-sm border-1 border-indigo-50 whitespace-pre-line text-gray-800 "
+              className="bg-white/40 rounded-xl px-5 py-4 shadow-lg  border-1 border-black whitespace-pre-line text-gray-800"
               dangerouslySetInnerHTML={{
                 __html: DOMPurify.sanitize(
                   marked(note.content, {
