@@ -12,7 +12,13 @@ import {
 } from '../controllers/noteController.js'
 import {isLoggedIn} from '../middlewares/isAuthenticated.js'
 import { aiModeration } from '../middlewares/aiModeration.js'
+import rateLimit from 'express-rate-limit';
 
+const noteLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 20, // limit each IP to 20 note creations per windowMs
+  message: { error: "Too many notes created. Please try again later." }
+});
 
 const router=express.Router()
 
@@ -21,7 +27,7 @@ router.get('/public/all',getAllPublicNotes)
 router.get('/public/:userId',isLoggedIn,getPublicNotesbyUser)
 
 router.get('/',isLoggedIn,getUserNotes)
-router.post('/',isLoggedIn,validateBody(noteSchema),aiModeration,createNote)
+router.post('/', noteLimiter, isLoggedIn, validateBody(noteSchema), aiModeration, createNote);
 
 router.get('/:id', isLoggedIn, getNotesById);
 router.put('/:id',isLoggedIn,validateBody(noteSchema || categorySchema),aiModeration,updateNote)
