@@ -159,7 +159,7 @@ const Profile = () => {
           <h2 className="text-lg font-semibold text-black text-center mb-2 mt-8">
             Categories :
           </h2>
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-col flex-wrap gap-4 justify-center">
             {categories.length === 0 ? (
               <span className="text-gray-400">No categories found.</span>
             ) : (

@@ -334,10 +334,10 @@ const Note = () => {
                     /<code( class=".*?")?>/g,
                     '<code style="background: #f3f4f6; color: #23272e; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; border: 1px solid #e5e7eb;">'
                   )
-                  // Style markdown tables
+                  // Style markdown tables - make them horizontally scrollable on small screens
                   .replace(
                     /<table>/g,
-                    '<table style="width:100%; border-collapse:collapse; margin:1.5em 0; font-size:0.98em; background:#f8fafc; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px 0 rgba(31,38,135,0.05);">'
+                    '<div style="overflow-x:auto; max-width:100vw;"><table style="min-width:400px; width:100%; border-collapse:collapse; margin:1.5em 0; font-size:0.98em; background:#f8fafc; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px 0 rgba(31,38,135,0.05);">'
                   )
                   .replace(
                     /<thead>/g,
@@ -355,9 +355,10 @@ const Note = () => {
                     /<td>/g,
                     '<td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; color:#334155; vertical-align:top;">'
                   )
+                  // Close the wrapping div after </table>
                   .replace(
                     /<\/table>/g,
-                    '</table>'
+                    '</table></div>'
                   )
               }}
             />

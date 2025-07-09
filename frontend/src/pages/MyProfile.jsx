@@ -456,7 +456,7 @@ const MyProfile = () => {
               <h2 className="text-xl sm:text-2xl font-bold text-black mb-4 mt-8 text-center">
                 Your Categories :
               </h2>
-              <div className="flex flex-wrap gap-3 sm:gap-4 justify-center">
+              <div className="flex flex-col flex-wrap gap-3 sm:gap-4 justify-center">
                 {categories.length === 0 ? (
                   <span className="text-gray-400">No categories found.</span>
                 ) : (
