@@ -275,7 +275,7 @@ const Note = () => {
             <div className="text-xs text-gray-500 mt-1">
               <span>
                 <b>Markdown supported:</b> You can use <b>**bold**</b>, <i>*italic*</i>, <code>`inline code`</code>, <code>```code blocks```</code>, lists, headings (<code>#</code>, <code>##</code>, etc.), blockquotes (<code>&gt; quote</code>), and more.<br />
-                <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) and it will be clickable when viewing the note.<br />
+                <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) or Use [TextToClick](Link) for shorter more user friendly view and it will be clickable when viewing the note.<br />
               </span>
             </div>
           </div>
@@ -314,10 +314,10 @@ const Note = () => {
                     }
                   })
                 )
-                  // Style <a> tags
+                  // Style <a> tags and ensure long links break inside the box
                   .replace(
                     /<a /g,
-                    '<a target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 500;" '
+                    '<a target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 500; word-break: break-all; overflow-wrap: anywhere;" '
                   )
                   // Style <pre> blocks
                   .replace(
