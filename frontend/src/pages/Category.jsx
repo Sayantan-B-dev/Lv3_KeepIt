@@ -7,6 +7,7 @@ import Author from "../components/Author";
 import ConfirmPopUp from "../components/ConfirmPopUp";
 import Loading from "../components/home/Loading";
 import { toast } from "react-toastify";
+import { useAuth } from '../context/AuthContext';
 
 const backdropStyle = {
     backdropFilter: 'blur(2px)',
@@ -16,7 +17,8 @@ const backdropStyle = {
     boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
 };
 
-const Category = ({ user: loggedInUser, loading: appLoading, error: appError, isAuthenticated }) => {
+const Category = () => {
+    const { user: loggedInUser } = useAuth();
     const { categoryId } = useParams();
 
     const navigate = useNavigate();
