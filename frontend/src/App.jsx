@@ -49,10 +49,6 @@ function App() {
     fetchData();
   }, []);
 
-  if (authLoading || loading) {
-    return <Loading />;
-  }
-
   return (
     <div className="min-h-screen flex flex-col">
       <BrowserRouter >
@@ -85,7 +81,7 @@ function App() {
             returnDuration={2.0}
           />
         </div>
-        <div className="flex-1 flex flex-col">
+        {(authLoading || loading)?<Loading />:        <div className="flex-1 flex flex-col">
           {error ? (
             <Routes>
               <Route
@@ -141,7 +137,8 @@ function App() {
               <Route path="/CreateNote" element={<CreateNote />} />
             </Routes>
           )}
-        </div>
+        </div>}
+
 
 
         <RotatingKeepIt />
