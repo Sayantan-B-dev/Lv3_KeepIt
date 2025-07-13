@@ -2,13 +2,16 @@ import React from "react";
 import { MoonLoader } from "react-spinners";
 
 const Loading = ({ message = "Loading..." }) => (
-  <div className="flex items-center justify-center h-[300px] p-10 w-fit mx-auto my-auto border-2 border-black border-dashed rounded-xl"
-  style={{
-    backdropFilter: 'blur(2px)',
-    backdropShadow: '20px',
-    WebkitBackdropFilter: 'blur(12px)',
-    boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-  }}
+  <div className="flex items-center justify-center h-[300px] p-10 w-[90%] xl:w-fit mx-auto my-auto shadow-2xl rounded-2xl border-2 border-black border-dashed
+    mt-8 sm:mt-20"
+    style={{
+      backdropFilter: 'blur(2px)',
+      backdropShadow: '20px',
+      background: 'rgba(255, 255, 255, 0.01)',
+      WebkitBackdropFilter: 'blur(12px)',
+      boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
+      borderRadius: '60px',
+    }}
   >
     <div className="flex flex-col items-center gap-4">
       <MoonLoader
