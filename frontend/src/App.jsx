@@ -9,6 +9,7 @@ import Note from "./pages/Note";
 import Logout from "./pages/Logout";
 import axiosInstance from "./api/axiosInstance";
 import DotGrid from './components/advance/Background';
+import Squares from "./components/advance/Squares";
 import Footer from "./components/partials/footer";
 import MyProfile from "./pages/MyProfile";
 import { StickyNavbar } from "./components/partials/StickyNavbar";
@@ -21,6 +22,7 @@ import Loading from "./components/home/Loading";
 import RotatingKeepIt from "./components/RotatingKeepIt"
 import Waiting from "./components/partials/Waiting";
 import { useAuth } from "./context/AuthContext";
+
 
 
 function App() {
@@ -69,7 +71,13 @@ function App() {
             pointerEvents: 'none',
           }}
         >
-          <DotGrid
+          <Squares
+            speed={0.5}
+            squareSize={20}
+            direction='down'
+            borderColor='#ccc'
+          />
+          {/* <DotGrid
             dotSize={2}
             gap={20}
             baseColor="#1a1a2e"
@@ -79,9 +87,9 @@ function App() {
             shockStrength={3}
             resistance={600}
             returnDuration={2.0}
-          />
+          /> */}
         </div>
-        {(authLoading || loading)?<Loading />:        <div className="flex-1 flex flex-col">
+        {(authLoading || loading) ? <Loading /> : <div className="flex-1 flex flex-col">
           {error ? (
             <Routes>
               <Route
