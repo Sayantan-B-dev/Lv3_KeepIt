@@ -7,6 +7,7 @@ const ProfileHeader = ({
   handleProfileImageClick,
   fileInputRef,
   handleProfileImageChange,
+  handleCreateNote,
 }) => {
   return (
     <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 mb-8 md:mb-10">
@@ -92,7 +93,7 @@ const ProfileHeader = ({
         <div className="mt-4 flex flex-wrap gap-2 justify-center">
           <div
             type="button"
-            onClick={profile.handleCreateNote}
+            onClick={handleCreateNote}
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-none border border-dashed border-black shadow transition cursor-pointer"
             style={{ background: "white" }}
           >
