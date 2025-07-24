@@ -1,45 +1,37 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
+import DottedButton from '../components/buttons/DottedButton';
 import DottedButton2 from '../components/buttons/DottedButton2';
-import Author from '../components/Author';
-import Magnet from '../components/advance/Magnet'
-import { useAuth } from '../context/AuthContext';
+import Magnet from '../components/advance/Magnet';
 
-const AllCategories = () => {
+const AllTags = () => {
   const navigate = useNavigate();
-  const { user } = useAuth(); // use user
-  const [categories, setCategories] = useState([]);
+  const [tags, setTags] = useState([]); // [{ tag: 'example', count: 3 }, ...]
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
 
-  const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}`);
-  }
-
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchTags = async () => {
       setLoading(true);
       setError(null);
       try {
-        // Optionally, you could use user here for authenticated requests, e.g.:
-        // const res = await axiosInstance.get('/api/global/all-categories', { headers: { Authorization: `Bearer ${user?.token}` } });
-        const res = await axiosInstance.get('/api/global/all-categories');
-        setCategories(res.data || []);
+        const res = await axiosInstance.get('/api/notes/tags');
+        setTags(res.data || []);
       } catch (err) {
-        setError('Failed to load categories.');
-        setCategories([]);
+        setError('Failed to load tags.');
+        setTags([]);
       } finally {
         setLoading(false);
       }
     };
-    fetchCategories();
-  }, [user]); // depend on user
+    fetchTags();
+  }, []);
 
-  // Filter categories based on search input (case-insensitive)
-  const filteredCategories = categories.filter(cat =>
-    cat.name && cat.name.toLowerCase().includes(search.toLowerCase())
+  // Filter tags based on search input (case-insensitive)
+  const filteredTags = tags.filter(tagObj =>
+    tagObj.tag && tagObj.tag.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -53,7 +45,7 @@ const AllCategories = () => {
           boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
           borderRadius: '60px',
         }}>
-        <h2 className='text-2xl font-bold text-center mb-4 text-black mb-8'>All Categories</h2>
+        <h2 className='text-2xl font-bold text-center mb-4 text-black mb-8'>All Tags</h2>
         <div className="flex items-center gap-3 w-full mb-6">
           <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-100">
             <svg
@@ -73,7 +65,7 @@ const AllCategories = () => {
           </div>
           <input
             type="text"
-            placeholder="Search categories"
+            placeholder="Search tags"
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="flex-1 h-10 px-4 rounded-md border-1 border-gray-300 text-black focus:outline-none focus:border-black"
@@ -86,24 +78,24 @@ const AllCategories = () => {
             }}
           />
         </div>
-        {loading && <div>Loading categories...</div>}
+        {loading && <div>Loading tags...</div>}
         {error && <div style={{ color: '#e63946' }}>{error}</div>}
         {!loading && !error && (
           <div style={{ listStyle: 'none', padding: 0 }} className='flex flex-col gap-2'>
-            {filteredCategories.length === 0 ? (
-              <div className='text-center text-red-500'>No categories found.</div>
+            {filteredTags.length === 0 ? (
+              <div className='text-center text-red-500'>No tags found.</div>
             ) : (
-              filteredCategories.map((cat) => (
-                <div key={cat._id || cat.name} className='flex items-center gap-2 w-[70%] m-auto'>
+              filteredTags.map((tagObj) => (
+                <div key={tagObj.tag} className='flex items-center gap-2 w-[70%] m-auto'>
                   <DottedButton2
-                    style={{fontSize:"12px"}}
-                    key={cat._id || cat.name}
-                    text={cat.name}
+                    style={{ fontSize: "12px" }}
+                    key={tagObj.tag}
+                    text={`#${tagObj.tag}`}
                     className='w-full'
-                    onClick={() => navigate(`/category/${cat._id}`)}
+                    onClick={() => navigate(`/tag/${encodeURIComponent(tagObj.tag)}`)}
                   />
-                  <div className='w-12 h-12'>
-                    <Author user={cat.user} handleUserClick={handleUserClick} />
+                  <div className='text-xs text-gray-500 font-semibold px-2 whitespace-nowrap'>
+                    {tagObj.count} note{tagObj.count !== 1 ? 's' : ''}
                   </div>
                 </div>
               ))
@@ -115,4 +107,4 @@ const AllCategories = () => {
   );
 };
 
-export default AllCategories;
+export default AllTags; 

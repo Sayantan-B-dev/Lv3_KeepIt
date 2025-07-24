@@ -9,7 +9,8 @@ import {
     updateNote,
     deleteNote,
     getNotesById,
-    getNotesByTag
+    getNotesByTag,
+    getAllTags
 } from '../controllers/noteController.js'
 import {isLoggedIn} from '../middlewares/isAuthenticated.js'
 import { aiModeration } from '../middlewares/aiModeration.js'
@@ -29,6 +30,7 @@ router.get('/public/:userId',isLoggedIn,getPublicNotesbyUser)
 
 router.get('/', getNotesByTag)
 router.post('/', noteLimiter, isLoggedIn, validateBody(noteSchema), aiModeration, createNote);
+router.get('/tags', getAllTags)
 
 router.get('/:id', isLoggedIn, getNotesById);
 router.put('/:id',isLoggedIn,validateBody(noteSchema || categorySchema),aiModeration,updateNote)

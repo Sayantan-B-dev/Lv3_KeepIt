@@ -48,7 +48,7 @@ export const getNotesByTag = async (req, res) => {
                 tags: { $elemMatch: { $regex: `^${tag}$`, $options: 'i' } }
             })
             .populate('category')
-            .populate('user', 'username')
+            .populate('user', 'username profileImage email')
             .sort({ createdAt: -1 });
             return res.json(notes);
         } catch (error) {
@@ -60,13 +60,36 @@ export const getNotesByTag = async (req, res) => {
         try {
             const notes = await Note.find({ isPrivate: false })
                 .populate('category')
-                .populate('user', 'username')
+                .populate('user', 'username profileImage email')
                 .sort({ createdAt: -1 });
             return res.json(notes);
         } catch (error) {
             console.error('Error fetching public notes:', error);
             return res.status(500).json({ error: 'Failed to fetch public notes' });
         }
+    }
+};
+
+export const getAllTags = async (req, res) => {
+    try {
+        // Find all public notes
+        const notes = await Note.find({ isPrivate: false }, 'tags');
+        // Flatten all tags into a single array
+        const allTags = notes.flatMap(note => Array.isArray(note.tags) ? note.tags : []);
+        // Count occurrences
+        const tagCounts = {};
+        allTags.forEach(tag => {
+            const lower = tag.toLowerCase();
+            tagCounts[lower] = (tagCounts[lower] || 0) + 1;
+        });
+        // Convert to array and sort by count desc, then alphabetically
+        const tagsArr = Object.entries(tagCounts)
+            .map(([tag, count]) => ({ tag, count }))
+            .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+        res.json(tagsArr);
+    } catch (error) {
+        console.error('Error fetching tags:', error);
+        res.status(500).json({ error: 'Failed to fetch tags' });
     }
 };
 

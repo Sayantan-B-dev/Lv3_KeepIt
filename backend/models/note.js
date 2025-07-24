@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const noteSchema =new mongoose.Schema({
     title:{type:String,required:true,maxLength:100},
     content:{type:String},
-    isPrivate:{type:Boolean,required:true},
+    isPrivate:{type:Boolean,required:true,default:false},
     category:{
         type:mongoose.Schema.Types.ObjectId,
         ref:'Category',

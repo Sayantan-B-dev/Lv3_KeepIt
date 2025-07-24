@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import Loading from '../components/home/Loading';
+import Magnet from '../components/advance/Magnet';
+import DottedButton from '../components/buttons/DottedButton';
+import Author from '../components/Author';
 
 const TagNotes = () => {
   const { tagname } = useParams();
@@ -9,6 +12,7 @@ const TagNotes = () => {
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -26,30 +30,88 @@ const TagNotes = () => {
     fetchNotes();
   }, [tagname]);
 
+  // Filter notes by title (case-insensitive)
+  const filteredNotes = notes.filter(note =>
+    note.title && note.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleUserClick = (userId) => {
+    navigate(`/profile/${userId}`);
+  };
+
   return (
-    <div className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl rounded-3xl">
-      <h2 className="text-2xl font-bold mb-6 text-indigo-700 text-center">Notes tagged with <span className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-base">#{tagname}</span></h2>
-      {loading ? (
-        <Loading />
-      ) : error ? (
-        <div className="text-red-500 text-center py-8">{error}</div>
-      ) : notes.length === 0 ? (
-        <div className="text-gray-400 text-center py-8">No notes found with this tag.</div>
-      ) : (
-        <ul className="divide-y divide-indigo-50">
-          {notes.map(note => (
-            <li
-              key={note._id}
-              className="py-4 px-2 hover:bg-indigo-50 rounded cursor-pointer transition"
-              onClick={() => navigate(`/note/${note._id}`)}
+    <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
+      <div className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-22 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
+        style={{
+          backdropFilter: 'blur(2px)',
+          backdropShadow: '20px',
+          background: 'rgba(255, 255, 255, 0.01)',
+          WebkitBackdropFilter: 'blur(12px)',
+          boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
+          borderRadius: '60px',
+        }}
+      >
+        <h2 className="text-2xl font-bold text-center mb-4 text-black mb-8">
+          Notes tagged with <span className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-base">#{tagname}</span>
+        </h2>
+        <div className="flex items-center gap-3 w-full mb-6">
+          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-100">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-6 h-6 text-black"
             >
-              <div className="font-semibold text-indigo-700 truncate text-lg">{note.title}</div>
-              <div className="text-xs text-gray-500 truncate">{note.content?.slice(0, 80) || "No content"}</div>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607Z"
+              />
+            </svg>
+          </div>
+          <input
+            type="text"
+            placeholder="Search notes by title"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="flex-1 h-10 px-4 rounded-md border-1 border-gray-300 text-black focus:outline-none focus:border-black"
+            style={{
+              backdropFilter: 'blur(2px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
+              borderRadius: '60px',
+            }}
+          />
+        </div>
+        {loading && <div> <Loading /> </div>}
+        {error && <div style={{ color: '#e63946' }}>{error}</div>}
+        {!loading && !error && (
+          <div style={{ listStyle: 'none', padding: 0 }} className="flex flex-col gap-2">
+            {filteredNotes.length === 0 ? (
+              <div className="text-center text-red-500">No notes found with this tag.</div>
+            ) : (
+              filteredNotes.map((note) => (
+                <div key={note._id || note.title} className="flex items-center gap-2 w-[70%] m-auto">
+                  <DottedButton
+                    style={{ fontSize: "12px" }}
+                    key={note._id || note.title}
+                    text={note.title}
+                    className="w-full"
+                    onClick={() => navigate(`/note/${note._id}`)}
+                  />
+                  <div className="w-12 h-12">
+                    <Author user={note.user} handleUserClick={handleUserClick} />
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </Magnet>
   );
 };
 

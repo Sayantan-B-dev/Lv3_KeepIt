@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import UserBox from '../components/home/UserBox';
 import Magnet from '../components/advance/Magnet';
+import DottedButton2 from '../components/buttons/DottedButton2';
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);

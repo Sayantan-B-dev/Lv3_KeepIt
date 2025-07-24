@@ -16,7 +16,7 @@ const Author = ({ user, handleUserClick }) => {
                         <motion.img
                             src={user.profileImage.url}
                             alt={user.username}
-                            className="w-12 h-12 rounded-full object-cover cursor-pointer border-2 border-indigo-200 shadow-2xl"
+                            className="w-12 h-12 rounded-full object-cover cursor-pointer border-2 border-black shadow-2xl"
                             whileHover={{
                                 scale: 1.3,
                                 rotate: 5,

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import DottedButton from '../components/buttons/DottedButton';
+import DottedButton2 from '../components/buttons/DottedButton2';
 import Author from '../components/Author';
 import Magnet from '../components/advance/Magnet';
 import { useAuth } from '../context/AuthContext';
@@ -94,7 +95,7 @@ const AllNotes = () => {
             ) : (
               filteredNotes.map((note) => (
                 <div key={note._id || note.title} className="flex items-center gap-2  w-[70%] m-auto">
-                  <DottedButton
+                  <DottedButton2
               style={{fontSize:"12px"}}
 
                     key={note._id || note.title}

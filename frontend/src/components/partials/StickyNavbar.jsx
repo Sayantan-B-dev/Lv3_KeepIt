@@ -120,6 +120,17 @@ export function StickyNavbar() {
       ),
     },
     {
+      label: "All Tags",
+      href: "/all-tags",
+      icon: (
+        <svg width="18" height="18" fill="none" viewBox="0 0 20 20">
+          <circle cx="10" cy="10" r="8" stroke="#90A4AE" strokeWidth="2" />
+          <rect x="7" y="9" width="6" height="2" rx="1" fill="#90A4AE" />
+          <rect x="9" y="7" width="2" height="6" rx="1" fill="#90A4AE" />
+        </svg>
+      ),
+    },
+    {
       label: "All Users",
       href: "/all-users",
       icon: (
@@ -181,59 +192,6 @@ export function StickyNavbar() {
         </Typography>
         {/* Desktop Nav */}
         <div className="hidden lg:flex flex-1 justify-center">{navList}</div>
-        {/* Tag Search */}
-        <div className="relative flex items-center ml-2">
-          <form onSubmit={handleTagSearch} className="flex items-center gap-1">
-            <input
-              ref={tagInputRef}
-              type="text"
-              className="border border-gray-300 rounded-full px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition w-36 md:w-48"
-              placeholder="Search by tag..."
-              value={tagSearch}
-              onChange={e => setTagSearch(e.target.value)}
-              onFocus={() => setShowTagPopup(false)}
-              maxLength={30}
-              aria-label="Search notes by tag"
-            />
-            <button type="submit" className="p-1 rounded-full hover:bg-indigo-100 transition" aria-label="Search">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="#6366F1" strokeWidth="2"/><path d="M20 20l-3.5-3.5" stroke="#6366F1" strokeWidth="2" strokeLinecap="round"/></svg>
-            </button>
-          </form>
-          {/* Tag search popup */}
-          {showTagPopup && (
-            <div ref={tagPopupRef} className="absolute z-50 top-10 left-0 w-72 max-w-[90vw] bg-white border border-indigo-200 rounded-xl shadow-xl p-4 animate-fadeInTagSearch">
-              {tagLoading ? (
-                <div className="text-center text-indigo-500 py-4">Searching...</div>
-              ) : tagError ? (
-                <div className="text-center text-red-500 py-4">{tagError}</div>
-              ) : tagResults.length === 0 ? (
-                <div className="text-center text-gray-400 py-4">No notes found for this tag.</div>
-              ) : (
-                <ul className="divide-y divide-indigo-50 max-h-64 overflow-y-auto">
-                  {tagResults.map(note => (
-                    <li
-                      key={note._id}
-                      className="py-2 px-2 hover:bg-indigo-50 rounded cursor-pointer transition"
-                      onClick={() => { setShowTagPopup(false); setTagSearch(""); setTagResults([]); navigate(`/note/${note._id}`); }}
-                    >
-                      <div className="font-semibold text-indigo-700 truncate">{note.title}</div>
-                      <div className="text-xs text-gray-500 truncate">{note.content?.slice(0, 60) || "No content"}</div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-          <style>{`
-            .animate-fadeInTagSearch {
-              animation: fadeInTagSearch 0.18s ease;
-            }
-            @keyframes fadeInTagSearch {
-              from { opacity: 0; transform: translateY(-10px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-          `}</style>
-        </div>
         {/* Desktop Auth Buttons/Profile */}
 
         <div className="flex items-center gap-x-3">

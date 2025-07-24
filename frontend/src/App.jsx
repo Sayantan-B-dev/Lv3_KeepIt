@@ -23,6 +23,7 @@ import RotatingKeepIt from "./components/RotatingKeepIt"
 import Waiting from "./components/partials/Waiting";
 import { useAuth } from "./context/AuthContext";
 import TagNotes from "./pages/TagNotes";
+import AllTags from "./pages/AllTags";
 
 
 function App() {
@@ -130,6 +131,7 @@ function App() {
               <Route path="/all-notes" element={<AllNotes />} />
               <Route path="/about" element={<About />} />
               <Route path="/all-users" element={<AllUsers />} />
+              <Route path="/all-tags" element={<AllTags />} />
               <Route
                 path="/profile/:userId"
                 element={<Profile />}
