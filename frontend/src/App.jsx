@@ -22,7 +22,7 @@ import Loading from "./components/home/Loading";
 import RotatingKeepIt from "./components/RotatingKeepIt"
 import Waiting from "./components/partials/Waiting";
 import { useAuth } from "./context/AuthContext";
-
+import TagNotes from "./pages/TagNotes";
 
 
 function App() {
@@ -141,6 +141,10 @@ function App() {
               <Route
                 path="/note/:noteId"
                 element={<Note />}
+              />
+              <Route
+                path="/tag/:tagname"
+                element={<TagNotes />}
               />
               <Route path="/CreateNote" element={<CreateNote />} />
             </Routes>

@@ -8,7 +8,8 @@ import {
     createNote,
     updateNote,
     deleteNote,
-    getNotesById
+    getNotesById,
+    getNotesByTag
 } from '../controllers/noteController.js'
 import {isLoggedIn} from '../middlewares/isAuthenticated.js'
 import { aiModeration } from '../middlewares/aiModeration.js'
@@ -26,7 +27,7 @@ const router=express.Router()
 router.get('/public/all',getAllPublicNotes)
 router.get('/public/:userId',isLoggedIn,getPublicNotesbyUser)
 
-router.get('/',isLoggedIn,getUserNotes)
+router.get('/', getNotesByTag)
 router.post('/', noteLimiter, isLoggedIn, validateBody(noteSchema), aiModeration, createNote);
 
 router.get('/:id', isLoggedIn, getNotesById);

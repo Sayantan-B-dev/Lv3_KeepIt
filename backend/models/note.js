@@ -17,6 +17,7 @@ const noteSchema =new mongoose.Schema({
     createdAt:{type:Date,default:Date.now},
     updatedAt:{type:Date,default:Date.now},
     likes:[{type:mongoose.Schema.Types.ObjectId,ref:'User'}],
+    tags: [{ type: String, trim: true, maxlength: 30 }],
 
 },{timestamps:true})
 

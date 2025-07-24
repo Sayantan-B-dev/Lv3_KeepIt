@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axiosInstance";
 import { toast } from "react-toastify";
 import { useAuth } from '../../context/AuthContext';
+import { useRef, useState } from 'react';
 
 const blackFont = {
   textDecoration: "none",
@@ -31,6 +32,48 @@ export function StickyNavbar() {
   const [openNav, setOpenNav] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
   const navigate = useNavigate();
+  const [tagSearch, setTagSearch] = useState("");
+  const [showTagPopup, setShowTagPopup] = useState(false);
+  const [tagResults, setTagResults] = useState([]);
+  const [tagLoading, setTagLoading] = useState(false);
+  const [tagError, setTagError] = useState(null);
+  const tagInputRef = useRef(null);
+  const tagPopupRef = useRef(null);
+
+  // Close popup on outside click
+  React.useEffect(() => {
+    function handleClickOutside(event) {
+      if (tagPopupRef.current && !tagPopupRef.current.contains(event.target) && tagInputRef.current && !tagInputRef.current.contains(event.target)) {
+        setShowTagPopup(false);
+        setTagSearch("");
+        setTagResults([]);
+        setTagError(null);
+      }
+    }
+    if (showTagPopup) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showTagPopup]);
+
+  const handleTagSearch = async (e) => {
+    e.preventDefault();
+    if (!tagSearch.trim()) return;
+    setTagLoading(true);
+    setTagError(null);
+    setTagResults([]);
+    setShowTagPopup(true);
+    try {
+      const res = await axiosInstance.get(`/api/notes?tag=${encodeURIComponent(tagSearch.trim())}`);
+      setTagResults(res.data || []);
+    } catch (err) {
+      setTagError("Failed to fetch notes for this tag.");
+    } finally {
+      setTagLoading(false);
+    }
+  };
 
   React.useEffect(() => {
     const onScroll = () => {
@@ -138,6 +181,59 @@ export function StickyNavbar() {
         </Typography>
         {/* Desktop Nav */}
         <div className="hidden lg:flex flex-1 justify-center">{navList}</div>
+        {/* Tag Search */}
+        <div className="relative flex items-center ml-2">
+          <form onSubmit={handleTagSearch} className="flex items-center gap-1">
+            <input
+              ref={tagInputRef}
+              type="text"
+              className="border border-gray-300 rounded-full px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 transition w-36 md:w-48"
+              placeholder="Search by tag..."
+              value={tagSearch}
+              onChange={e => setTagSearch(e.target.value)}
+              onFocus={() => setShowTagPopup(false)}
+              maxLength={30}
+              aria-label="Search notes by tag"
+            />
+            <button type="submit" className="p-1 rounded-full hover:bg-indigo-100 transition" aria-label="Search">
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" stroke="#6366F1" strokeWidth="2"/><path d="M20 20l-3.5-3.5" stroke="#6366F1" strokeWidth="2" strokeLinecap="round"/></svg>
+            </button>
+          </form>
+          {/* Tag search popup */}
+          {showTagPopup && (
+            <div ref={tagPopupRef} className="absolute z-50 top-10 left-0 w-72 max-w-[90vw] bg-white border border-indigo-200 rounded-xl shadow-xl p-4 animate-fadeInTagSearch">
+              {tagLoading ? (
+                <div className="text-center text-indigo-500 py-4">Searching...</div>
+              ) : tagError ? (
+                <div className="text-center text-red-500 py-4">{tagError}</div>
+              ) : tagResults.length === 0 ? (
+                <div className="text-center text-gray-400 py-4">No notes found for this tag.</div>
+              ) : (
+                <ul className="divide-y divide-indigo-50 max-h-64 overflow-y-auto">
+                  {tagResults.map(note => (
+                    <li
+                      key={note._id}
+                      className="py-2 px-2 hover:bg-indigo-50 rounded cursor-pointer transition"
+                      onClick={() => { setShowTagPopup(false); setTagSearch(""); setTagResults([]); navigate(`/note/${note._id}`); }}
+                    >
+                      <div className="font-semibold text-indigo-700 truncate">{note.title}</div>
+                      <div className="text-xs text-gray-500 truncate">{note.content?.slice(0, 60) || "No content"}</div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+          <style>{`
+            .animate-fadeInTagSearch {
+              animation: fadeInTagSearch 0.18s ease;
+            }
+            @keyframes fadeInTagSearch {
+              from { opacity: 0; transform: translateY(-10px); }
+              to { opacity: 1; transform: translateY(0); }
+            }
+          `}</style>
+        </div>
         {/* Desktop Auth Buttons/Profile */}
 
         <div className="flex items-center gap-x-3">

@@ -38,6 +38,38 @@ export const getAllPublicNotes=async(req,res)=>{
     }
 }
 
+export const getNotesByTag = async (req, res) => {
+    const { tag } = req.query;
+    if (tag) {
+        try {
+            // Case-insensitive, exact match
+            const notes = await Note.find({
+                isPrivate: false,
+                tags: { $elemMatch: { $regex: `^${tag}$`, $options: 'i' } }
+            })
+            .populate('category')
+            .populate('user', 'username')
+            .sort({ createdAt: -1 });
+            return res.json(notes);
+        } catch (error) {
+            console.error('Error fetching notes by tag:', error);
+            return res.status(500).json({ error: 'Failed to fetch notes by tag' });
+        }
+    } else {
+        // fallback: return all public notes (for search page)
+        try {
+            const notes = await Note.find({ isPrivate: false })
+                .populate('category')
+                .populate('user', 'username')
+                .sort({ createdAt: -1 });
+            return res.json(notes);
+        } catch (error) {
+            console.error('Error fetching public notes:', error);
+            return res.status(500).json({ error: 'Failed to fetch public notes' });
+        }
+    }
+};
+
 export const createNote = async (req, res) => {
     try {
         const lastNote = await Note.findOne({ user: req.user._id }).sort({ createdAt: -1 });
@@ -59,7 +91,7 @@ export const createNote = async (req, res) => {
             return res.status(429).json({ error: "Note creation limit reached: Only 5 notes per hour allowed." });
         }
 
-        const { title, content, category } = req.body;
+        const { title, content, category, tags } = req.body;
 
         let categoryDoc = await Category.findOne({
             name: category,
@@ -84,7 +116,8 @@ export const createNote = async (req, res) => {
             content,
             category: categoryDoc._id,
             user: req.user._id,
-            isPrivate: false
+            isPrivate: false,
+            tags: Array.isArray(tags) ? tags.map(tag => tag.trim()).filter(tag => tag.length > 0) : []
         });
 
         await note.save();
@@ -110,9 +143,14 @@ export const createNote = async (req, res) => {
 export const updateNote=async(req,res)=>{
     const {id}=req.params
     try {
+        // Only allow updating tags if provided
+        const updateData = { ...req.body };
+        if (updateData.tags) {
+            updateData.tags = Array.isArray(updateData.tags) ? updateData.tags.map(tag => tag.trim()).filter(tag => tag.length > 0) : [];
+        }
         const note=await Note.findOneAndUpdate(
             {_id:id,user:req.user._id},
-            req.body,
+            updateData,
             {new:true, runValidators: true}
         )
         res.json(note);
@@ -143,6 +181,7 @@ export const sanitizeNoteInput = (req, res, next) => {
   if (req.body.title) req.body.title = sanitize(req.body.title);
   if (req.body.content) req.body.content = sanitize(req.body.content);
   if (req.body.category) req.body.category = sanitize(req.body.category);
+  if (req.body.tags && Array.isArray(req.body.tags)) req.body.tags = req.body.tags.map(tag => sanitize(tag));
 
   next();
 };

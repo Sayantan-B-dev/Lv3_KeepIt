@@ -228,6 +228,21 @@ const Note = () => {
                 </h3>
               )}
             </div>
+            {/* Tags under title */}
+            {Array.isArray(note.tags) && note.tags.length > 0 && !editMode && (
+              <div className="flex flex-wrap gap-2 mt-3 justify-center">
+                {note.tags.map((tag, idx) => (
+                  <span
+                    key={tag + idx}
+                    className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-indigo-200 transition"
+                    onClick={() => navigate(`/tag/${encodeURIComponent(tag)}`)}
+                    title={`View all notes with tag: ${tag}`}
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
             {/* Delete button for owner, like in Category */}
             <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
               <span className="flex items-center gap-1 text-xs    ">

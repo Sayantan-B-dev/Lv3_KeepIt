@@ -5,6 +5,7 @@ import DottedButton from "../components/buttons/DottedButton";
 import Loading from "../components/home/Loading";
 import { toast } from "react-toastify";
 import { useAuth } from '../context/AuthContext';
+import TagInput from '../components/TagInput';
 
 const textAreaStyle =
     "w-full border border-gray-300 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
@@ -17,6 +18,7 @@ const CreateNote = () => {
     const [category, setCategory] = useState(
         preselectedCategory ? preselectedCategory : ""
     );
+    const [tags, setTags] = useState([]);
     const [formError, setFormError] = useState(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
@@ -67,6 +69,7 @@ const CreateNote = () => {
                 title,
                 content,
                 category: categoryName,
+                tags,
             });
 
             setSuccess(true);
@@ -75,6 +78,7 @@ const CreateNote = () => {
             setTitle("");
             setContent("");
             setCategory(preselectedCategory ? preselectedCategory : "");
+            setTags([]);
 
             setTimeout(() => {
                 let redirectCategoryId = categoryId;
@@ -88,7 +92,7 @@ const CreateNote = () => {
                 if (redirectCategoryId) {
                     navigate(`/category/${redirectCategoryId}`);
                 } else {
-                    navigate("/"); 
+                    navigate("/");
                 }
             }, 500);
         } catch (err) {
@@ -182,6 +186,19 @@ const CreateNote = () => {
                             Category is preselected and cannot be changed.
                         </div>
                     )}
+                </div>
+                <div>
+                    <label className="block text-gray-700 font-semibold mb-2">
+                        Tags
+                    </label>
+                    <TagInput
+                        value={tags}
+                        onChange={setTags}
+                        placeholder="Add tags (press Enter or comma)"
+                    />
+                    <div className="text-xs text-gray-500 mt-1">
+                        Add multiple tags to help organize and search your notes. Max 30 chars per tag.
+                    </div>
                 </div>
                 {formError && (
                     <div className="text-red-500 font-medium text-center">{formError}</div>
