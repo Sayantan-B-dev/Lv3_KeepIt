@@ -2,7 +2,7 @@ import express from "express"
 import session from "express-session"
 import MongoStore from "connect-mongo"
 import passport from "passport"
-import LocalStrategy from "passport-local"
+import { Strategy as LocalStrategy } from "passport-local";
 import flash from "connect-flash"
 import methodOverride from "method-override"
 import sanitize from 'mongo-sanitize';
@@ -27,16 +27,21 @@ const loginLimiter = rateLimit({
 
 // CORS: allow only trusted origins
 const allowedOrigins = [process.env.FRONTEND_URL];
+//console.log("ALLOWED ORIGINS:", allowedOrigins);
+
 
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    return callback(new Error('Not allowed by CORS'));
-  },
-  credentials: true
+    origin: function (origin, callback) {
+        //console.log("Incoming Origin:", origin);
+        if (!origin) return callback(null, true);
+        const cleanOrigin = origin.replace(/\/$/, '');
+        if (allowedOrigins.includes(cleanOrigin)) {
+          return callback(null, true);
+        }
+        return callback(new Error('Not allowed by CORS'));
+      }
+      ,
+      credentials: true
 }));
 
 

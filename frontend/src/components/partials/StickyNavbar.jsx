@@ -276,6 +276,7 @@ export function StickyNavbar() {
                     toast.success("Logged out successfully");
                     setTimeout(() => {
                       navigate("/");
+                      window.location.reload();
                     }, 3000);
                   }}
                 />

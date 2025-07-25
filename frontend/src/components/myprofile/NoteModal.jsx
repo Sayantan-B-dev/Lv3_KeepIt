@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const NoteModal = ({ noteModalOpen, openNote, closeNoteModal, noteContentHtml }) => {
+  const navigate = useNavigate();
   if (!noteModalOpen || !openNote) return null;
 
   // Close when clicking the backdrop (but not the modal itself)
@@ -9,6 +11,22 @@ const NoteModal = ({ noteModalOpen, openNote, closeNoteModal, noteContentHtml })
       closeNoteModal();
     }
   };
+
+  // Prepare tags display
+  const tags = openNote.tags && openNote.tags.length > 0
+    ? openNote.tags.map((tag, idx) => (
+        <span
+          key={idx}
+          className="inline-block bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs font-semibold mr-2 mb-1 cursor-pointer hover:bg-indigo-200 transition"
+          onClick={() => {
+            closeNoteModal();
+            navigate(`/tag/${encodeURIComponent(tag)}`);
+          }}
+        >
+          #{tag}
+        </span>
+      ))
+    : <span className="text-gray-400 text-xs">No tags</span>;
 
   return (
     <div
@@ -40,6 +58,8 @@ const NoteModal = ({ noteModalOpen, openNote, closeNoteModal, noteContentHtml })
         </button>
         <div className="mb-4 mt-6 sm:mt-0">
           <h2 className="text-xl font-bold text-gray-900 mb-2" style={{ wordBreak: "break-all" }}>{openNote.title}</h2>
+          {/* Tags under the title */}
+          <div className="mb-2 flex flex-wrap items-center gap-1">{tags}</div>
           <div className="text-xs text-gray-500 mb-2">Created: {new Date(openNote.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
         </div>
         <div className="mb-4 flex-1">

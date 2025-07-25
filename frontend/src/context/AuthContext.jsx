@@ -21,6 +21,9 @@ const AuthProvider = ({ children }) => {
           setUser(null);
         }
       } catch (err) {
+        if (err.response && err.response.status !== 401) {
+          console.error(err);
+        }
         setUser(null);
       } finally {
         setLoading(false);

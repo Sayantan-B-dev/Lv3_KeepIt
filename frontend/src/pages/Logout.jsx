@@ -11,16 +11,9 @@ const Logout = ({ setIsAuthenticated }) => {
     const handleLogout = async () => {
       try {
         await axiosInstance.post("/api/auth/logout");
-        
         setUser(null);
         setIsAuthenticated(false);
-        
         localStorage.removeItem("user");
-        
-        navigate("/");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
       } catch (error) {
         console.error("Logout error:", error);
         setUser(null);

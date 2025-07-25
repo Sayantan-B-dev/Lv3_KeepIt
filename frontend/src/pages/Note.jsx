@@ -46,6 +46,9 @@ const Note = () => {
 
   const CONTENT_MAX_LENGTH = undefined;
 
+  const [editTags, setEditTags] = useState([]);
+  const [newTag, setNewTag] = useState("");
+
   const handleUserClick = (userId) => {
     window.open(`/profile/${userId}`, "_blank", "noopener,noreferrer");
   };
@@ -82,6 +85,8 @@ const Note = () => {
     setUpdateError(null);
     setUpdateSuccess(null);
     setEditNote({ title: note.title, content: note.content });
+    setEditTags(Array.isArray(note.tags) ? note.tags : []);
+    setNewTag("");
     setContentTooLarge(false);
   };
 
@@ -93,10 +98,26 @@ const Note = () => {
     setContentTooLarge(false);
   };
 
+  const handleAddTag = () => {
+    const tag = newTag.trim();
+    if (tag && !editTags.includes(tag)) {
+      setEditTags([...editTags, tag]);
+    }
+    setNewTag("");
+  };
+
+  const handleRemoveTag = (tagToRemove) => {
+    setEditTags(editTags.filter(tag => tag !== tagToRemove));
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name === "content" && CONTENT_MAX_LENGTH && value.length > CONTENT_MAX_LENGTH) {
       setContentTooLarge(true);
+      return;
+    }
+    if (name === "newTag") {
+      setNewTag(value);
       return;
     }
     setEditNote((prev) => ({ ...prev, [name]: value }));
@@ -118,7 +139,8 @@ const Note = () => {
       const res = await axiosInstance.put(`/api/notes/${noteId}/edit`, {
         title: editNote.title,
         content: editNote.content,
-        category: note.category?._id || note.category
+        category: note.category?._id || note.category,
+        tags: editTags,
       });
       setNote((prev) => ({ ...prev, ...res.data }));
       setEditMode(false);
@@ -146,6 +168,7 @@ const Note = () => {
         const res = await axiosInstance.get(`/api/notes/${noteId}`);
         setNote(res.data);
         setEditNote({ title: res.data.title, content: res.data.content });
+        setEditTags(Array.isArray(res.data.tags) ? res.data.tags : []);
 
         const category = await axiosInstance.get(`/api/categories/${res.data.category}`);
         setCategory(category.data);
@@ -218,30 +241,113 @@ const Note = () => {
                   name="title"
                   value={editNote.title}
                   onChange={handleInputChange}
-                  className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 border border-indigo-200 rounded px-2 py-1"
+                  className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 border border-grayi5digo-200 rounded px-2 py-1"
                   maxLength={100}
                   disabled={updateLoading}
                 />
               ) : (
-                <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 flex items-center text-center justify-center gap-2" style={{ wordBreak: "break-all" }}>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 flex ienter text-center justify-center gap-2" style={{ wordBreak: "break-all" }}>
                   {note.title}
                 </h3>
               )}
             </div>
             {/* Tags under title */}
-            {Array.isArray(note.tags) && note.tags.length > 0 && !editMode && (
-              <div className="flex flex-wrap gap-2 mt-3 justify-center">
-                {note.tags.map((tag, idx) => (
-                  <span
-                    key={tag + idx}
-                    className="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-indigo-200 transition"
-                    onClick={() => navigate(`/tag/${encodeURIComponent(tag)}`)}
-                    title={`View all notes with tag: ${tag}`}
+            {editMode ? (
+              <div className="flex flex-col gap-2 mt-3 justify-center items-center">
+                <div className="flex flex-wrap gap-2 justify-center">
+                  {editTags.length === 0 && (
+                    <span className="text-gray-400 text-xs">No tags</span>
+                  )}
+                  {editTags.map((tag, idx) => (
+                    <span
+                      key={tag + idx}
+                      className="backdrop-blur-md bg-white/20 border border-black px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 text-black shadow-sm"
+                      style={{
+                        boxShadow: '0 2px 8px 0 rgba(31,38,135,0.05)',
+                        fontWeight: 500,
+                        letterSpacing: '0.02em',
+                      }}
+                    >
+                      #{tag}
+                      <button
+                        type="button"
+                        className="ml-1 text-black hover:text-red-600 text-xs font-bold focus:outline-none"
+                        onClick={() => handleRemoveTag(tag)}
+                        aria-label={`Remove tag ${tag}`}
+                        style={{ background: 'none', border: 'none', padding: 0, margin: 0 }}
+                      >
+                        &times;
+                      </button>
+                    </span>
+                  ))}
+                </div>
+                <div className="flex gap-2 mt-2 items-center">
+                  <input
+                    type="text"
+                    name="newTag"
+                    value={newTag}
+                    onChange={handleInputChange}
+                    className="border border-black rounded-full px-3 py-1 text-xs focus:outline-none focus:ring focus:border-black bg-white/20 backdrop-blur-md text-black shadow-sm"
+                    placeholder="Add tag"
+                    autoComplete="off"
+                    onKeyDown={e => {
+                      if (e.key === "Enter") e.preventDefault();
+                    }}
+                    disabled={updateLoading}
+                    style={{
+                      background: 'rgba(255,255,255,0.15)',
+                      boxShadow: '0 2px 8px 0 rgba(31,38,135,0.05)',
+                      fontWeight: 500,
+                      letterSpacing: '0.02em',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddTag}
+                    disabled={updateLoading || !newTag.trim()}
+                    aria-label="Add tag"
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      border: "1px solid #000",
+                      background: "white",
+                      color: "#000",
+                      fontSize: "14px",
+                      fontWeight: "bold",
+                      padding: 0,
+                      margin: 0,
+                      lineHeight: 1,
+                      cursor: updateLoading || !newTag.trim() ? "not-allowed" : "pointer",
+                    }}
                   >
-                    #{tag}
-                  </span>
-                ))}
+                    +
+                  </button>
+                </div>
               </div>
+            ) : (
+              Array.isArray(note.tags) && note.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-3 justify-center">
+                  {note.tags.map((tag, idx) => (
+                    <span
+                      key={tag + idx}
+                      className="backdrop-blur-md bg-white/20 border border-black px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-black/10 transition text-black shadow-sm"
+                      style={{
+                        boxShadow: '0 2px 8px 0 rgba(31,38,135,0.05)',
+                        fontWeight: 500,
+                        letterSpacing: '0.02em',
+                      }}
+                      onClick={() => navigate(`/tag/${encodeURIComponent(tag)}`)}
+                      title={`View all notes with tag: ${tag}`}
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )
             )}
             {/* Delete button for owner, like in Category */}
             <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">

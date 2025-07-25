@@ -3,18 +3,30 @@ import User from "../models/user.js";
 
 export const getCategoryById = async (req, res) => {
     const {id}=req.params;
-    const category=await Category.findById(id)
-        .populate('notes')
-        .populate('user', 'username profileImage bio location website')
-    res.json(category)
+    try {
+        //console.log("getCategoryById: req.user =", req.user);
+        const category=await Category.findById(id)
+            .populate('notes')
+            .populate('user', 'username profileImage bio location website')
+        res.json(category)
+    } catch (err) {
+        console.error('Error in getCategoryById:', err);
+        res.status(500).json({ error: 'Failed to fetch category', details: err.message });
+    }
 }
 
 export const getUserCategories = async (req, res) => {
-    if (!req.user) {
-        return res.status(401).json({ error: "Unauthorized" });
+    try {
+        //console.log("getUserCategories: req.user =", req.user);
+        if (!req.user) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        const categories = await Category.find({ user: req.user._id });
+        res.json(categories);
+    } catch (err) {
+        console.error('Error in getUserCategories:', err);
+        res.status(500).json({ error: 'Failed to fetch user categories', details: err.message });
     }
-    const categories = await Category.find({ user: req.user._id });
-    res.json(categories);
 }
 
 
