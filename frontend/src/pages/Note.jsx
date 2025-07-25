@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import DottedButton from "../components/buttons/DottedButton";
+import DottedButton2 from "../components/buttons/DottedButton2";
 import Loading from "../components/home/Loading";
 import Author from "../components/Author";
 import ConfirmPopUp from "../components/ConfirmPopUp";
@@ -230,7 +230,7 @@ const Note = () => {
         <Author user={user} handleUserClick={handleUserClick} />
         {/* Note Header */}
         <div className="flex items-center gap-6 mb-8  justify-center">
-          <div className="relative flex flex-col  justify-center">
+          <div className="relative flex flex-col  justify-center  border-2 border-black rounded-xl p-10">
             <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2 text-center justify-center">
               Title:
             </p>
@@ -261,7 +261,7 @@ const Note = () => {
                   {editTags.map((tag, idx) => (
                     <span
                       key={tag + idx}
-                      className="backdrop-blur-md bg-white/20 border border-black px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 text-black shadow-sm"
+                      className="backdrop-blur-md bg-black/80 border border-black px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 text-white shadow-sm"
                       style={{
                         boxShadow: '0 2px 8px 0 rgba(31,38,135,0.05)',
                         fontWeight: 500,
@@ -271,7 +271,7 @@ const Note = () => {
                       #{tag}
                       <button
                         type="button"
-                        className="ml-1 text-black hover:text-red-600 text-xs font-bold focus:outline-none"
+                        className="ml-1 text-white hover:text-red-600 text-xs font-bold focus:outline-none"
                         onClick={() => handleRemoveTag(tag)}
                         aria-label={`Remove tag ${tag}`}
                         style={{ background: 'none', border: 'none', padding: 0, margin: 0 }}
@@ -287,7 +287,7 @@ const Note = () => {
                     name="newTag"
                     value={newTag}
                     onChange={handleInputChange}
-                    className="border border-black rounded-full px-3 py-1 text-xs focus:outline-none focus:ring focus:border-black bg-white/20 backdrop-blur-md text-black shadow-sm"
+                    className="border border-blue rounded-full px-3 py-1 text-xs focus:outline-none focus:ring focus:border-black bg-white/20 backdrop-blur-md text-black shadow-sm"
                     placeholder="Add tag"
                     autoComplete="off"
                     onKeyDown={e => {
@@ -334,7 +334,7 @@ const Note = () => {
                   {note.tags.map((tag, idx) => (
                     <span
                       key={tag + idx}
-                      className="backdrop-blur-md bg-white/20 border border-black px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-black/10 transition text-black shadow-sm"
+                      className="backdrop-blur-md bg-black/80 border border-black px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-black/10 transition text-white hover:text-black  shadow-sm"
                       style={{
                         boxShadow: '0 2px 8px 0 rgba(31,38,135,0.05)',
                         fontWeight: 500,
@@ -347,10 +347,11 @@ const Note = () => {
                     </span>
                   ))}
                 </div>
+                
               )
             )}
             {/* Delete button for owner, like in Category */}
-            <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
+            <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium justify-between w-full">
               <span className="flex items-center gap-1 text-xs    ">
                 <span className="text-xs text-gray-400">Created:</span>
                 {new Date(note.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -376,18 +377,19 @@ const Note = () => {
                 </button>
               )}
             </div>
-
-          </div>
-        </div>
         {/* Category */}
-        <div className="mb-8 flex flex-col items-center gap-4">
+        <div className="flex items-center gap-4 m-auto ">
           <span className="block font-semibold text-gray-700">Category:</span>
-          <DottedButton
+          <DottedButton2
             style={{ fontSize: "12px" }}
             onClick={() => handleCategoryClick(category._id)}
             text={category?.name || note.category}
           />
         </div>
+          </div>
+          
+        </div>
+
         {isOwner && !editMode && (
           < div className="w-full text-center justify-center ">
             <div onClick={handleEdit} className="w-full">

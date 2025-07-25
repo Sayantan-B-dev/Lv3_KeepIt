@@ -51,9 +51,14 @@ const TagNotes = () => {
           borderRadius: '60px',
         }}
       >
-        <h2 className="text-2xl font-bold text-center mb-4 text-black mb-8">
-          Notes tagged with <span className="bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-base">#{tagname}</span>
-        </h2>
+        <div className="flex flex-col items-center justify-center mb-8">
+          <h2 className="text-2xl font-bold text-black text-center mb-4">
+            Notes tagged with
+          </h2>
+          <span className="backdrop-blur-md bg-black/80 border border-black px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-black/10 transition text-white hover:text-black shadow-sm mt-2 text-center">
+            #{tagname}
+          </span>
+        </div>
         <div className="flex items-center gap-3 w-full mb-6">
           <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-100">
             <svg

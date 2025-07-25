@@ -17,7 +17,12 @@ const NoteModal = ({ noteModalOpen, openNote, closeNoteModal, noteContentHtml })
     ? openNote.tags.map((tag, idx) => (
         <span
           key={idx}
-          className="inline-block bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-xs font-semibold mr-2 mb-1 cursor-pointer hover:bg-indigo-200 transition"
+          className="backdrop-blur-md bg-black/80 border border-black px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-black/10 transition text-white hover:text-black  shadow-sm"
+          style={{
+            boxShadow: '0 2px 8px 0 rgba(31,38,135,0.05)',
+            fontWeight: 500,
+            letterSpacing: '0.02em',
+          }}
           onClick={() => {
             closeNoteModal();
             navigate(`/tag/${encodeURIComponent(tag)}`);
