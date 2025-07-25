@@ -103,7 +103,7 @@ function App() {
                         if (typeof window !== "undefined") {
                           setTimeout(() => {
                             window.location.reload();
-                          }, 10000);
+                          }, 10000000);
                         }
                         return null;
                       })()

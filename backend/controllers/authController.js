@@ -133,6 +133,7 @@ export const checkAuth = (req, res) => {
                 email: req.user.email,
                 profileImage: req.user.profileImage
             }
+            
         });
     } else {
         res.status(401).json({ authenticated: false });

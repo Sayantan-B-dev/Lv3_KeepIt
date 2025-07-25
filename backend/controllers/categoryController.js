@@ -10,8 +10,11 @@ export const getCategoryById = async (req, res) => {
 }
 
 export const getUserCategories = async (req, res) => {
-    const categories = await Category.find({ user: req.user._id })
-    res.json(categories)
+    if (!req.user) {
+        return res.status(401).json({ error: "Unauthorized" });
+    }
+    const categories = await Category.find({ user: req.user._id });
+    res.json(categories);
 }
 
 

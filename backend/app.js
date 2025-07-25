@@ -26,18 +26,19 @@ const loginLimiter = rateLimit({
 });
 
 // CORS: allow only trusted origins
-const allowedOrigins = process.env.FRONTEND_URL;
+const allowedOrigins = [process.env.FRONTEND_URL];
+
 app.use(cors({
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS policy: Not allowed by CORS'), false);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    return callback(new Error('Not allowed by CORS'));
   },
   credentials: true
 }));
+
 
 // Middlewares
 app.use(express.json())
@@ -109,6 +110,7 @@ passport.deserializeUser(User.deserializeUser());
 
 // 🔹 Flash Messages Middleware (After Passport)
 app.use((req, res, next) => {
+
     res.locals.currentUser = req.user
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
