@@ -1,5 +1,5 @@
 
-const DottedButton = ({ text, onClick, className, style }) => {
+const DottedButton = ({ text, onClick, className, style, tags }) => {
     const buttonClass = `
         rounded-2xl
         border-2
@@ -41,10 +41,26 @@ const DottedButton = ({ text, onClick, className, style }) => {
                 transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)",
                 ...style,
                 wordBreak: "break-all",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-between",
             }}
             onClick={onClick}
         >
-            {text}
+            <span>{text}</span>
+            {Array.isArray(tags) && tags.length > 0 && (
+                <span className="ml-1 flex flex-nowrap gap-0.5 items-center" style={{ height: "20px", minHeight: "20px", maxHeight: "20px" }}>
+                    {[...tags].sort((a, b) => a.localeCompare(b)).map((tag, idx) => (
+                        <span
+                            key={idx}
+                            className="inline-block bg-white text-black text-[10px] font-normal px-2 py-0 rounded-xl border-1 border-black whitespace-nowrap"
+                            style={{ height: "16px", lineHeight: "16px", minHeight: "16px", maxHeight: "16px", display: "flex", alignItems: "center" }}
+                        >
+                            #{tag}
+                        </span>
+                    ))}
+                </span>
+            )}
         </button>
     );
 };

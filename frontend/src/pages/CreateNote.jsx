@@ -145,10 +145,10 @@ const CreateNote = () => {
                             Content
                         </label>
                         <textarea
-                            className={`${textAreaStyle} h-32`}
+                            className={`${textAreaStyle} h-75`}
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
-                            placeholder="Write your note here... (You can add a clickable link by including a full URL, e.g. https://example.com. Links will be clickable when viewing the note.)"
+                            placeholder="Write your note here... (You can adjast the size of the text area by dragging the bottom right corner)"
                         />
                         <div className="text-xs text-gray-500 mt-1">
                           <span>

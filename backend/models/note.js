@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const noteSchema =new mongoose.Schema({
-    title:{type:String,required:true,maxLength:100},
+    title:{type:String,required:true,maxLength:200},
     content:{type:String},
     isPrivate:{type:Boolean,required:true,default:false},
     category:{

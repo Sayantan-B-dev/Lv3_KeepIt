@@ -434,7 +434,10 @@ const Note = () => {
                   marked(note.content, {
                     highlight: function (code, lang) {
                       return code;
-                    }
+                    },
+                    // This disables the default renderer for lists so that * and - work as in ChatGPT
+                    // (marked already does this by default, but we ensure no extra <pre> or <code> for lists)
+                    // No need to override unless you want to change the output
                   })
                 )
                   // Style <a> tags and ensure long links break inside the box
@@ -482,6 +485,19 @@ const Note = () => {
                   .replace(
                     /<\/table>/g,
                     '</table></div>'
+                  )
+                  // Style <ul> and <ol> for ChatGPT-like look
+                  .replace(
+                    /<ul>/g,
+                    '<ul style="margin-left: 1.5em; margin-bottom: 1em; list-style-type: disc; padding-left: 1.2em;">'
+                  )
+                  .replace(
+                    /<ol>/g,
+                    '<ol style="margin-left: 1.5em; margin-bottom: 1em; list-style-type: decimal; padding-left: 1.2em;">'
+                  )
+                  .replace(
+                    /<li>/g,
+                    '<li style="margin-bottom: 0.3em; font-size: 1em; line-height: 1.7;">'
                   )
               }}
             />

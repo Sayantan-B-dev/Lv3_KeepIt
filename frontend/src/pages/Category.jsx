@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import DottedButton from "../components/buttons/DottedButton";
+import DottedButton2 from "../components/buttons/DottedButton2";
 import Magnet from "../components/advance/Magnet";
 import Author from "../components/Author";
 import ConfirmPopUp from "../components/ConfirmPopUp";
@@ -204,11 +204,12 @@ const Category = () => {
                             {notes.map((note, index) => (
                                 <Magnet key={note._id} padding={5} disabled={false} magnetStrength={20} className="w-full">
                                     <li key={note._id}>
-                                        <DottedButton
+                                        <DottedButton2
                                             style={{ fontSize: "12px" }}
                                             className="w-full text-left"
                                             onClick={() => handleNoteClick(note._id)}
                                             text={index + 1 + ". " + note.title}
+                                            tags={note.tags}
                                         />
                                     </li>
                                 </Magnet>
