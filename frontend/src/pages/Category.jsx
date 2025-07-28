@@ -78,7 +78,9 @@ const Category = () => {
             try {
                 const res = await axiosInstance.get(`/api/categories/${categoryId}`);
                 setCategory(res.data);
-                setNotes(res.data.notes || []);
+                // Sort notes by title (case-insensitive)
+                const sortedNotes = (res.data.notes || []).slice().sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+                setNotes(sortedNotes);
                 setUser(res.data.user);
                 setProfile(res.data.user);
             } catch (err) {

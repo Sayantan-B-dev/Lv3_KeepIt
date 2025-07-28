@@ -249,7 +249,9 @@ const MyProfile = () => {
       setNotesError((prev) => ({ ...prev, [catId]: null }));
       try {
         const res = await axiosInstance.get(`/api/categories/${catId}`);
-        setCategoryNotes((prev) => ({ ...prev, [catId]: res.data.notes || [] }));
+        // Sort notes by title (case-insensitive)
+        const sortedNotes = (res.data.notes || []).slice().sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+        setCategoryNotes((prev) => ({ ...prev, [catId]: sortedNotes }));
       } catch (err) {
         setNotesError((prev) => ({ ...prev, [catId]: err?.response?.data?.message || "Failed to load notes." }));
       } finally {
