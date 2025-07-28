@@ -257,8 +257,8 @@ export function StickyNavbar() {
           <div className="hidden lg:flex items-center gap-x-3">
             {!isAuthenticated && (
               <>
-                <DottedButton text="Log In" onClick={() => navigate("/login")} />
-                <DottedButton text="Sign in" onClick={() => navigate("/register")} />
+                <DottedButton text="LOG IN" onClick={() => navigate("/login")} />
+                <DottedButton text="SIGN IN" onClick={() => navigate("/register")} />
               </>
             )}
             {isAuthenticated && (
@@ -314,7 +314,7 @@ export function StickyNavbar() {
             {isAuthenticated && (
               <>
                 <DottedButton
-                  text="Log Out"
+                  text="LOG OUT"
                   className="w-full sm:w-auto"
                   onClick={async () => {
                     try {
