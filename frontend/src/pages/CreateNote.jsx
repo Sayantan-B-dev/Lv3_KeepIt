@@ -195,6 +195,7 @@ const CreateNote = () => {
                         value={tags}
                         onChange={setTags}
                         placeholder="Add tags (press Enter or comma)"
+
                     />
                     <div className="text-xs text-gray-500 mt-1">
                         Add multiple tags to help organize and search your notes. Max 30 chars per tag.

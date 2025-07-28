@@ -33,6 +33,8 @@ const AllTags = () => {
   const filteredTags = tags.filter(tagObj =>
     tagObj.tag && tagObj.tag.toLowerCase().includes(search.toLowerCase())
   );
+  // Sort by tag name (case-insensitive)
+  const sortedTags = filteredTags.sort((a, b) => a.tag.localeCompare(b.tag, undefined, { sensitivity: 'base' }));
 
   return (
     <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
@@ -82,10 +84,10 @@ const AllTags = () => {
         {error && <div style={{ color: '#e63946' }}>{error}</div>}
         {!loading && !error && (
           <div style={{ listStyle: 'none', padding: 0 }} className='flex flex-col gap-2'>
-            {filteredTags.length === 0 ? (
+            {sortedTags.length === 0 ? (
               <div className='text-center text-red-500'>No tags found.</div>
             ) : (
-              filteredTags.map((tagObj) => (
+              sortedTags.map((tagObj) => (
                 <div key={tagObj.tag} className='flex items-center gap-2 w-[70%] m-auto'>
                   <DottedButton2
                     style={{ fontSize: "12px" }}

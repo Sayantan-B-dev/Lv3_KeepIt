@@ -56,13 +56,14 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled 
       {value.map((tag, idx) => (
         <span
           key={tag + idx}
-          className="flex items-center bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-sm font-medium mr-1 mb-1 animate-fadeIn"
+                                 className="backdrop-blur-md bg-black/70 border border-black px-3 py-1 rounded-full text-xs font-semibold flex items-center text-white shadow-sm animate-fadeIn"
         >
           {tag}
           {!disabled && (
             <button
               type="button"
-              className="ml-1 text-indigo-400 hover:text-red-500 focus:outline-none transition-colors"
+              className="ml-1 text-indigo-400 hover:text-red-500 focus:outline-none transition-colors rounded-full text-xs flex items-center justify-center"
+              style={{ minWidth: "20px", minHeight: "20px", width: "20px", height: "20px", lineHeight: "1" }}
               onClick={e => { e.stopPropagation(); removeTag(idx); }}
               aria-label={`Remove tag ${tag}`}
             >

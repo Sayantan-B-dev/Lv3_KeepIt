@@ -41,6 +41,8 @@ const AllCategories = () => {
   const filteredCategories = categories.filter(cat =>
     cat.name && cat.name.toLowerCase().includes(search.toLowerCase())
   );
+  // Sort by name (case-insensitive)
+  const sortedCategories = filteredCategories.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
   return (
     <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
@@ -90,10 +92,10 @@ const AllCategories = () => {
         {error && <div style={{ color: '#e63946' }}>{error}</div>}
         {!loading && !error && (
           <div style={{ listStyle: 'none', padding: 0 }} className='flex flex-col gap-2'>
-            {filteredCategories.length === 0 ? (
+            {sortedCategories.length === 0 ? (
               <div className='text-center text-red-500'>No categories found.</div>
             ) : (
-              filteredCategories.map((cat) => (
+              sortedCategories.map((cat) => (
                 <div key={cat._id || cat.name} className='flex items-center gap-2 w-[70%] m-auto'>
                   <DottedButton2
                     style={{fontSize:"12px"}}

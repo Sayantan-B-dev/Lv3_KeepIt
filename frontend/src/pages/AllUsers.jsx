@@ -34,6 +34,12 @@ const AllUsers = () => {
       (user.name && user.name.toLowerCase().includes(searchLower))
     );
   });
+  // Sort by username or name (case-insensitive)
+  const sortedUsers = filteredUsers.sort((a, b) => {
+    const aName = a.username || a.name || '';
+    const bName = b.username || b.name || '';
+    return aName.localeCompare(bName, undefined, { sensitivity: 'base' });
+  });
 
   if (loading) {
     return <div>Loading...</div>;
@@ -90,10 +96,10 @@ const AllUsers = () => {
           />
         </div>
         <div id="explore-users" >
-          {filteredUsers.length === 0 ? (
+          {sortedUsers.length === 0 ? (
             <div className="text-center text-red-500">No users found.</div>
           ) : (
-            <UserBox users={filteredUsers} />
+            <UserBox users={sortedUsers} />
           )}
         </div>
       </div>
