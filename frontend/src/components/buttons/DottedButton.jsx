@@ -7,7 +7,6 @@ const DottedButton = ({ text, onClick, className, style }) => {
         px-4
         py-2
         font-semibold 
-        uppercase 
         text-black
         transition-all 
         duration-300 
