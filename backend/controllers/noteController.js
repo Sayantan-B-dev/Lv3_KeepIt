@@ -124,7 +124,8 @@ export const createNote = async (req, res) => {
         if (!categoryDoc) {
             categoryDoc = new Category({
                 name: category,
-                user: req.user._id
+                user: req.user._id,
+                ...(req.body.type ? { type: req.body.type } : {})
             });
             await categoryDoc.save();
 

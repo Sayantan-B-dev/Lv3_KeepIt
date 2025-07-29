@@ -499,6 +499,7 @@ const Note = () => {
                     /<li>/g,
                     '<li style="margin-bottom: 0.3em; font-size: 1em; line-height: 1.7;">'
                   )
+                  
               }}
             />
           )}

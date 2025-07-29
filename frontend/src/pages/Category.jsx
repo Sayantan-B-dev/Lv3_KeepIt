@@ -30,6 +30,10 @@ const Category = () => {
     const [profile, setProfile] = useState(null);
     const [deleting, setDeleting] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [editMode, setEditMode] = useState(false);
+    const [editName, setEditName] = useState("");
+    const [editType, setEditType] = useState("");
+    const [saving, setSaving] = useState(false);
 
     const handleNoteClick = (noteId) => {
         window.open(`/note/${noteId}`, "_blank", "noopener,noreferrer");
@@ -71,6 +75,30 @@ const Category = () => {
         }
     };
 
+    const handleEditClick = () => {
+        setEditMode(true);
+        setEditName(category.name);
+        setEditType(category.type || "");
+    };
+    const handleEditCancel = () => {
+        setEditMode(false);
+        setEditName(category.name);
+        setEditType(category.type || "");
+    };
+    const handleEditSave = async () => {
+        setSaving(true);
+        try {
+            const response = await axiosInstance.put(`/api/categories/${category._id}`, { name: editName, type: editType });
+            setCategory({ ...category, name: response.data.name, type: response.data.type });
+            setEditMode(false);
+            toast.success("Category updated!");
+        } catch (err) {
+            toast.error(err.response?.data?.error || "Failed to update category");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     useEffect(() => {
         const fetchCategory = async () => {
             setLoading(true);
@@ -83,6 +111,8 @@ const Category = () => {
                 setNotes(sortedNotes);
                 setUser(res.data.user);
                 setProfile(res.data.user);
+                setEditName(res.data.name);
+                setEditType(res.data.type || "");
             } catch (err) {
                 setError(
                     err.response?.data?.message ||
@@ -139,40 +169,89 @@ const Category = () => {
 
                     {/* Category Header */}
                     <div className="flex items-center justify-center gap-6 mb-2">
-                        <div className="flex flex-col items-center">
-                            <div className="text-xl sm:text-2xl md:text-2xl font-extrabold text-gray-900 flex flex-col items-center gap-2 ">
-                                <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2">
+                        <div className="flex flex-col items-center ">
+                            <div
+                                className="text-xl sm:text-2xl md:text-2xl font-extrabold text-gray-900 flex flex-col items-center gap-2 rounded-xl px-3 py-2 mb-7 shadow-xl "
+                            >
+                                <p className="text-md font-extrabold text-gray-900 flex items-center gap-2">
                                     Category :
                                 </p>
+                                {editMode ? (
+                                    <>
+                                        <input
+                                            type="text"
+                                            className="border border-gray-700 rounded px-3 py-2 text-sm mb-1 text-xl border-dashed rounded-xl"
+                                            value={editName}
+                                            onChange={e => setEditName(e.target.value)}
+                                            placeholder="Category Name"
+                                        />
+                                        <div className="flex flex-col items-center justify-center gap-2 w-full">
+                                            <div className="flex flex-row gap-2">
+                                                <span className="text-sm font-semibold text-blsck tracking-wide my-auto">Type:</span>
+                                                <input
+                                                    type="text"
+                                                    className="border border-gray-700 rounded px-3 py-2 text-sm border-dashed rounded-xl"
 
-                                <p className="text-lg font-bold break-words text-center px-2" style={{ wordBreak: "break-all" }}>
-                                    {category.name}
-                                </p>
-                            </div>
-                            <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium">
-                                <span className="flex items-center gap-1 text-xs    ">
-                                    <span className="text-xs text-gray-400">Created:</span>
-                                    {new Date(category.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                                </span>
-                                {isOwner && (
-                                    <button
-                                        className="ml-4 p-1 rounded-full text-gray-400 hover:text-red-500 transition cursor-pointer"
-                                        onClick={() => setShowDeletePopup(true)}
-                                        disabled={deleting}
-                                        title="Delete this category"
-                                        style={{ background: "none", border: "none", outline: "none" }}
-                                    >
-                                        {deleting ? (
-                                            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                                            </svg>
-                                        ) : (
-                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m5 0H4" />
-                                            </svg>
-                                        )}
-                                    </button>
+                                                    value={editType}
+                                                    onChange={e => setEditType(e.target.value)}
+                                                    placeholder="Type (single word)"
+                                                    pattern="^\\w*$"
+                                                />
+                                            </div>
+                                            <div className="flex flex-row gap-2">
+                                                <div
+                                                    className="text-black text-sm h-fit px-3 py-1 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black hover:cursor-pointer"
+                                                    onClick={handleEditSave}
+                                                    disabled={saving}
+                                                    type="button"
+                                                >Save</div>
+                                                <div
+                                                    className="text-black text-sm h-fit px-3 py-1 rounded-lg font-semibold border-1 shadow hover:bg-red-400/20 transition hover:cursor-pointer"
+                                                    onClick={handleEditCancel}
+                                                    disabled={saving}
+                                                    type="button"
+                                                >Cancel</div>
+                                            </div>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="text-lg font-bold break-words text-center px-2 border-b-1 border-black rounded-sm  px-3 py-2" style={{ wordBreak: "break-all" }}>
+                                            {category.name}
+                                        </p>
+                                        <div className="flex flex-col items-center justify-center gap-2 w-full">
+                                            <div className="flex flex-row gap-2">
+                                                <span className="text-sm font-semibold text-blsck tracking-wide my-auto">Type:</span>
+                                                <span className="text-sm">
+                                                    {category.type || <span className="italic text-gray-400">(none)</span>}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex flex-row mt-2 w-full">
+                                                {isOwner && (
+                                                    <>
+                                                        
+                                                        <div
+                                                            className="ml-0 p-1 rounded-full text-gray-400 hover:text-red-500 transition cursor-pointer"
+                                                            onClick={() => setShowDeletePopup(true)}
+                                                            type="button"
+                                                            style={{ background: "none", border: "none", outline: "none" }}
+                                                            title="Delete this category"
+                                                        >
+                                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m5 0H4" />
+                                                            </svg>
+                                                        </div>
+                                                        <div
+                                                            className="mr-0 text-black text-sm h-fit px-3 py-1 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black hover:cursor-pointer m-auto"
+                                                            onClick={handleEditClick}
+                                                            type="button"
+                                                        >Edit</div>
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </>
                                 )}
                             </div>
                             <div

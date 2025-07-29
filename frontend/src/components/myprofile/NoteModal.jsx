@@ -17,7 +17,7 @@ const NoteModal = ({ noteModalOpen, openNote, closeNoteModal, noteContentHtml })
     ? openNote.tags.map((tag, idx) => (
         <span
           key={idx}
-          className="backdrop-blur-md bg-black/80 border border-black px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-black/10 transition text-white hover:text-black  shadow-sm"
+          className="backdrop-blur-md bg-black/80 border border-black px-2 py-0.5 rounded-full text-xs font-semibold cursor-pointer hover:bg-black/10 transition text-white hover:text-black shadow-sm"
           style={{
             boxShadow: '0 2px 8px 0 rgba(31,38,135,0.05)',
             fontWeight: 500,
@@ -44,8 +44,8 @@ const NoteModal = ({ noteModalOpen, openNote, closeNoteModal, noteContentHtml })
     >
       <div
         className={`
-          bg-white rounded-2xl shadow-2xl p-4 sm:p-8 border border-gray-200 relative flex flex-col
-          w-[98vw] xs:w-[95vw] sm:w-[90vw] md:w-[700px] lg:w-[900px] xl:w-[1100px] max-w-[98vw] md:max-w-[90vw] lg:max-w-[900px] xl:max-w-[1100px]
+          bg-white rounded-xl shadow-xl p-2 xs:p-3 sm:p-4 border border-gray-200 relative flex flex-col
+          w-[96vw] xs:w-[92vw] sm:w-[85vw] md:w-[500px] lg:w-[700px] xl:w-[900px] max-w-[96vw] md:max-w-[85vw] lg:max-w-[700px] xl:max-w-[900px]
         `}
         style={{
           maxHeight: '90vh',
@@ -56,28 +56,28 @@ const NoteModal = ({ noteModalOpen, openNote, closeNoteModal, noteContentHtml })
       >
         <button
           onClick={closeNoteModal}
-          className="absolute top-2 right-2 text-gray-500 hover:text-red-500 text-2xl font-bold z-10"
+          className="absolute top-1.5 right-2 text-gray-500 hover:text-red-500 text-xl font-bold z-10"
           aria-label="Close"
         >
           &times;
         </button>
-        <div className="mb-4 mt-6 sm:mt-0">
-          <h2 className="text-xl font-bold text-gray-900 mb-2" style={{ wordBreak: "break-all" }}>{openNote.title}</h2>
+        <div className="mb-3 mt-5 sm:mt-0">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2" style={{ wordBreak: "break-all" }}>{openNote.title}</h2>
           {/* Tags under the title */}
-          <div className="mb-2 flex flex-wrap items-center gap-1">{tags}</div>
-          <div className="text-xs text-gray-500 mb-2">Created: {new Date(openNote.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
+          <div className="mb-1 flex flex-wrap items-center gap-1">{tags}</div>
+          <div className="text-xs text-gray-500 mb-1">Created: {new Date(openNote.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</div>
         </div>
-        <div className="mb-4 flex-1">
+        <div className="mb-3 flex-1">
           <div
-            className="bg-white/40 rounded-xl px-3 py-2 shadow border border-gray-200 whitespace-pre-line text-gray-800"
-            style={{ minHeight: 60 }}
+            className="bg-white/40 rounded-lg px-2 py-1 sm:px-3 sm:py-2 shadow border border-gray-200 whitespace-pre-line text-gray-800 text-sm sm:text-base"
+            style={{ minHeight: 40 }}
             dangerouslySetInnerHTML={{ __html: noteContentHtml }}
           />
         </div>
-        <div className="text-center mt-4">
+        <div className="text-center mt-3">
           <button
             onClick={closeNoteModal}
-            className="px-6 py-2 rounded-lg font-semibold shadow bg-indigo-100 text-indigo-700 border border-indigo-300 hover:bg-indigo-200 transition"
+            className="px-4 py-1.5 rounded-md font-semibold shadow bg-indigo-100 text-indigo-700 border border-indigo-300 hover:bg-indigo-200 transition text-sm"
           >
             Close
           </button>

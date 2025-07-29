@@ -1,13 +1,7 @@
 import React, { useRef, useState } from 'react';
+const textAreaStyle =
+  "w-full border border-gray-700 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
 
-/**
- * TagInput - Animated, modern tag input field
- * Props:
- *   value: array of strings (tags)
- *   onChange: function(newTagsArray)
- *   placeholder: string
- *   disabled: boolean
- */
 const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled = false }) => {
   const [input, setInput] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -50,13 +44,14 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled 
 
   return (
     <div
-      className={`flex flex-wrap items-center gap-2 border border-gray-300 rounded-lg px-3 py-2 min-h-[48px] focus-within:ring-1 focus-within:ring-black ${disabled ? 'opacity-60 pointer-events-none' : ''}`}
+      className={textAreaStyle}
+
       onClick={() => inputRef.current && inputRef.current.focus()}
     >
       {value.map((tag, idx) => (
         <span
           key={tag + idx}
-                                 className="backdrop-blur-md bg-black/70 border border-black px-3 py-1 rounded-full text-xs font-semibold flex items-center text-white shadow-sm animate-fadeIn"
+          className="backdrop-blur-md bg-black/70 border border-black px-3 py-1 rounded-full text-xs font-semibold flex items-center text-white shadow-sm animate-fadeIn w-fit max-w-full mb-2"
         >
           {tag}
           {!disabled && (
@@ -75,7 +70,8 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled 
       <input
         ref={inputRef}
         type="text"
-        className="flex-1 min-w-[120px] border-none outline-none bg-transparent text-black placeholder-gray-400 py-1"
+        className={textAreaStyle}
+
         value={input}
         onChange={handleInput}
         onKeyDown={handleKeyDown}

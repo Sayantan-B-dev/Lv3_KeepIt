@@ -33,6 +33,7 @@ export const getUserCategories = async (req, res) => {
 export const createCategory = async (req, res) => {
     const category = new Category({
         name: req.body.name,
+        type: req.body.type,
         isPrivate: req.body.isPrivate || false,
         user: req.user._id
     })

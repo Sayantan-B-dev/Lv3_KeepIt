@@ -41,6 +41,9 @@ export const noteSchema = Joi.object({
 });
 export const categorySchema = Joi.object({
     name:Joi.string().min(3).max(50).required(),
+    type:Joi.string().regex(/^\w+$/).messages({
+      'string.pattern.base': 'Type must be a single word (no spaces or special characters).'
+    }),
     isPrivate:Joi.boolean(),
     user:Joi.string().required(),
     notes:Joi.array().items(Joi.string()),
