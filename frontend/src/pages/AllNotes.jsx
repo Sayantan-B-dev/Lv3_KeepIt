@@ -17,8 +17,12 @@ const AllNotes = () => {
 
 
   const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}`);
-  };
+    if (user && userId === user._id) {
+      navigate("/profile/MyProfile");
+    } else {
+      navigate(`/profile/${userId}`);
+    }
+  }
 
   useEffect(() => {
     const fetchNotes = async () => {

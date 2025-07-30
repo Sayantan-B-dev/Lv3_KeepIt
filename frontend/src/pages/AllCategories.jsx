@@ -15,7 +15,11 @@ const AllCategories = () => {
   const [search, setSearch] = useState("");
 
   const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}`);
+    if (user && userId === user._id) {
+      navigate("/profile/MyProfile");
+    } else {
+      navigate(`/profile/${userId}`);
+    }
   }
 
   useEffect(() => {

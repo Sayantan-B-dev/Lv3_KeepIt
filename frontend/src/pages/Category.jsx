@@ -36,10 +36,14 @@ const Category = () => {
     const [saving, setSaving] = useState(false);
 
     const handleNoteClick = (noteId) => {
-        window.open(`/note/${noteId}`, "_blank", "noopener,noreferrer");
+        navigate(`/note/${noteId}`);
     };
     const handleUserClick = (userId) => {
-        window.open(`/profile/${userId}`, "_blank", "noopener,noreferrer");
+        if (loggedInUser && userId === loggedInUser._id) {
+            navigate("/profile/MyProfile");
+        } else {
+            navigate(`/profile/${userId}`);
+        }
     };
 
     const handleCreateNote = () => {

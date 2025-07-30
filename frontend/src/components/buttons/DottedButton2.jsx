@@ -49,7 +49,9 @@ const DottedButton = ({ text, onClick, className, style, tags }) => {
         >
             <span>{text}</span>
             {Array.isArray(tags) && tags.length > 0 && (
-                <span className="ml-1 flex flex-nowrap gap-0.5 items-center" style={{ height: "20px", minHeight: "20px", maxHeight: "20px" }}>
+                <span
+                    className="ml-1 flex-wrap gap-0.5 items-center hidden sm:flex flex-row"
+                >
                     {[...tags].sort((a, b) => a.localeCompare(b)).map((tag, idx) => (
                         <span
                             key={idx}

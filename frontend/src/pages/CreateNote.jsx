@@ -24,11 +24,18 @@ const CreateNote = () => {
     const navigate = useNavigate();
     const { user, loading } = useAuth();
     const isAuthenticated = !!user;
-    const [categoryType, setCategoryType] = useState("");
+    // If preselectedCategory exists, use its type, otherwise empty string
+    const [categoryType, setCategoryType] = useState(
+        preselectedCategory && preselectedCategory.type ? preselectedCategory.type : ""
+    );
 
     useEffect(() => {
         if (preselectedCategory) {
             setCategory(preselectedCategory);
+            // If the preselectedCategory has a type, set it automatically
+            if (preselectedCategory.type) {
+                setCategoryType(preselectedCategory.type);
+            }
         }
     }, [preselectedCategory]);
 
@@ -53,14 +60,19 @@ const CreateNote = () => {
 
         let categoryName = "";
         let categoryId = "";
+        let categoryTypeValue = categoryType;
         if (preselectedCategory) {
             categoryName = preselectedCategory.name;
             categoryId = preselectedCategory._id;
+            // Always use the type from preselectedCategory if present
+            if (preselectedCategory.type) {
+                categoryTypeValue = preselectedCategory.type;
+            }
         } else if (typeof category === "string") {
             categoryName = category.trim();
         }
 
-        if (!title.trim() || !content.trim() || !categoryName || !categoryType) {
+        if (!title.trim() || !content.trim() || !categoryName || !categoryTypeValue) {
             setFormError("All fields are required.");
             return;
         }
@@ -71,7 +83,7 @@ const CreateNote = () => {
                 content,
                 category: categoryName,
                 tags,
-                type: categoryType,
+                type: categoryTypeValue,
             });
 
             setSuccess(true);
@@ -81,6 +93,8 @@ const CreateNote = () => {
             setContent("");
             setCategory(preselectedCategory ? preselectedCategory : "");
             setTags([]);
+            // If preselectedCategory exists, reset categoryType to its type, else to empty string
+            setCategoryType(preselectedCategory && preselectedCategory.type ? preselectedCategory.type : "");
 
             setTimeout(() => {
                 let redirectCategoryId = categoryId;
@@ -196,13 +210,31 @@ const CreateNote = () => {
                         </label>
                         <input
                             type="text"
-                            className={textAreaStyle}
-                            value={categoryType}
-                            onChange={e => setCategoryType(e.target.value)}
+                            className={
+                                preselectedCategory
+                                    ? `${textAreaStyle} bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed`
+                                    : textAreaStyle
+                            }
+                            value={
+                                preselectedCategory && preselectedCategory.type
+                                    ? preselectedCategory.type
+                                    : categoryType
+                            }
+                            onChange={
+                                preselectedCategory && preselectedCategory.type
+                                    ? undefined // If preselected, don't allow editing
+                                    : (e) => setCategoryType(e.target.value)
+                            }
                             placeholder="e.g. work, personal, ideas"
                             pattern="^\\w+$"
                             title="Type must be a single word (no spaces or special characters)."
+                            disabled={!!(preselectedCategory && preselectedCategory.type)}
                         />
+                        {preselectedCategory && preselectedCategory.type && (
+                            <div className="text-xs text-gray-400 mt-1 ml-1">
+                                Category type is preselected and cannot be changed.
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div>
