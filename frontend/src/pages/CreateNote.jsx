@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate, useLocation } from "react-router-dom";
 import DottedButton from "../components/buttons/DottedButton";
@@ -10,29 +10,95 @@ import TagInput from '../components/TagInput';
 const textAreaStyle =
     "w-full border border-gray-700 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
 
+// Key for localStorage
+const LOCAL_STORAGE_KEY = "createnote_draft_v1";
+
 const CreateNote = () => {
     const location = useLocation();
     const preselectedCategory = location.state?.category;
-    const [title, setTitle] = useState("");
-    const [content, setContent] = useState("");
-    const [category, setCategory] = useState(
-        preselectedCategory ? preselectedCategory : ""
-    );
-    const [tags, setTags] = useState([]);
-    const [formError, setFormError] = useState(null);
-    const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
     const { user, loading } = useAuth();
     const isAuthenticated = !!user;
+
+    // --- Load draft from localStorage if present ---
+    const initialDraft = (() => {
+        try {
+            const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                // If preselectedCategory is present, override category/categoryType
+                if (preselectedCategory) {
+                    parsed.category = preselectedCategory;
+                    if (preselectedCategory.type) {
+                        parsed.categoryType = preselectedCategory.type;
+                    }
+                }
+                return parsed;
+            }
+        } catch (e) {}
+        // If no draft, use defaults
+        return {
+            title: "",
+            content: "",
+            category: preselectedCategory ? preselectedCategory : "",
+            tags: [],
+            categoryType: preselectedCategory && preselectedCategory.type ? preselectedCategory.type : "",
+        };
+    })();
+
+    const [title, setTitle] = useState(initialDraft.title);
+    const [content, setContent] = useState(initialDraft.content);
+    const [category, setCategory] = useState(initialDraft.category);
+    const [tags, setTags] = useState(initialDraft.tags);
+    const [formError, setFormError] = useState(null);
+    const [success, setSuccess] = useState(false);
     // If preselectedCategory exists, use its type, otherwise empty string
     const [categoryType, setCategoryType] = useState(
-        preselectedCategory && preselectedCategory.type ? preselectedCategory.type : ""
+        initialDraft.categoryType
     );
 
+    // Save draft to localStorage on any change
+    useEffect(() => {
+        // Don't save if not authenticated
+        if (!isAuthenticated) return;
+        // Don't save if success (note created)
+        if (success) return;
+        // Don't save if all fields are empty
+        if (
+            !title &&
+            !content &&
+            (!category || (typeof category === "object" && !category.name)) &&
+            (!tags || tags.length === 0) &&
+            !categoryType
+        ) {
+            localStorage.removeItem(LOCAL_STORAGE_KEY);
+            return;
+        }
+        // Save
+        const toSave = {
+            title,
+            content,
+            // Save only the name for category if preselected, else string
+            category: preselectedCategory ? preselectedCategory : category,
+            tags,
+            categoryType,
+        };
+        try {
+            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(toSave));
+        } catch (e) {}
+    }, [title, content, category, tags, categoryType, preselectedCategory, isAuthenticated, success]);
+
+    // Remove draft from localStorage after successful creation
+    useEffect(() => {
+        if (success) {
+            localStorage.removeItem(LOCAL_STORAGE_KEY);
+        }
+    }, [success]);
+
+    // If preselectedCategory changes, update category/categoryType
     useEffect(() => {
         if (preselectedCategory) {
             setCategory(preselectedCategory);
-            // If the preselectedCategory has a type, set it automatically
             if (preselectedCategory.type) {
                 setCategoryType(preselectedCategory.type);
             }
@@ -93,8 +159,10 @@ const CreateNote = () => {
             setContent("");
             setCategory(preselectedCategory ? preselectedCategory : "");
             setTags([]);
-            // If preselectedCategory exists, reset categoryType to its type, else to empty string
             setCategoryType(preselectedCategory && preselectedCategory.type ? preselectedCategory.type : "");
+
+            // Remove draft from localStorage
+            localStorage.removeItem(LOCAL_STORAGE_KEY);
 
             setTimeout(() => {
                 let redirectCategoryId = categoryId;

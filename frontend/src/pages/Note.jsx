@@ -516,7 +516,7 @@ const Note = () => {
                       // Responsive iframe wrapper
                       return `
                         <div style=" display: flex; justify-content: start;">
-                          <div style="position: relative; width: 100%;  aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px 0 rgba(31,38,135,0.10);">
+                          <div style="position: relative; width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px 0 rgba(31,38,135,0.10);">
                             <iframe
                               src="https://www.youtube.com/embed/${videoId}"
                               title="YouTube video"

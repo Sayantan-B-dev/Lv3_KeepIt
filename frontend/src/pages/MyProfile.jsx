@@ -377,55 +377,109 @@ const MyProfile = () => {
         noteModalOpen={noteModalOpen}
         openNote={openNote}
         closeNoteModal={closeNoteModal}
-        noteContentHtml={openNote ?
-          DOMPurify.sanitize(
-                    marked(openNote.content || "", {
-                      highlight: function (code, lang) {
-                        return code;
-                      }
-                    })
+        noteContentHtml={
+          openNote
+            ? (() => {
+                // 1. Render markdown to HTML
+                let html = DOMPurify.sanitize(
+                  marked(openNote.content || "", {
+                    highlight: function (code, lang) {
+                      return code;
+                    },
+                  })
+                )
+                  // Style <a> tags and ensure long links break inside the box
+                  .replace(
+                    /<a /g,
+                    '<a target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 500; word-break: break-all; overflow-wrap: anywhere;" '
                   )
-                    .replace(
-                      /<a /g,
-                      '<a target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 500; word-break: break-all; overflow-wrap: anywhere;" '
-                    )
-                    .replace(
-                      /<pre>/g,
-                      '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;">'
-                    )
-                    .replace(
-                      /<pre[^>]*>\s*<code( class=".*?")?>/g,
-                      '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;"><code style="background: transparent; color: inherit; padding: 0; border-radius: 0; font-size: inherit;">'
-                    )
-                    .replace(
-                      /<code( class=".*?")?>/g,
-                      '<code style="background: #f3f4f6; color: #23272e; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; border: 1px solid #e5e7eb;">'
-                    )
-                    .replace(
-                      /<table>/g,
-                      '<div style="overflow-x:auto; max-width:100vw;"><table style="min-width:400px; width:100%; border-collapse:collapse; margin:1.5em 0; font-size:0.98em; background:#f8fafc; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px 0 rgba(31,38,135,0.05);">'
-                    )
-                    .replace(
-                      /<thead>/g,
-                      '<thead style="background:#e0e7ef;">'
-                    )
-                    .replace(
-                      /<th>/g,
-                      '<th style="padding:10px 16px; border-bottom:2px solid #c7d2fe; font-weight:700; text-align:left; color:#1e293b;">'
-                    )
-                    .replace(
-                      /<tr>/g,
-                      '<tr style="border-bottom:1px solid #e5e7eb;">'
-                    )
-                    .replace(
-                      /<td>/g,
-                      '<td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; color:#334155; vertical-align:top;">'
-                    )
-                    .replace(
-                      /<\/table>/g,
-                      '</table></div>'
-            ) : ""}
-              />
+                  // Style <pre> blocks
+                  .replace(
+                    /<pre>/g,
+                    '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;">'
+                  )
+                  // Style <pre><code>
+                  .replace(
+                    /<pre[^>]*>\s*<code( class=".*?")?>/g,
+                    '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;"><code style="background: transparent; color: inherit; padding: 0; border-radius: 0; font-size: inherit;">'
+                  )
+                  // Style <code>
+                  .replace(
+                    /<code( class=".*?")?>/g,
+                    '<code style="background: #f3f4f6; color: #23272e; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; border: 1px solid #e5e7eb;">'
+                  )
+                  // Style markdown tables - make them horizontally scrollable on small screens
+                  .replace(
+                    /<table>/g,
+                    '<div style="overflow-x:auto; max-width:100vw;"><table style="min-width:400px; width:100%; border-collapse:collapse; margin:1.5em 0; font-size:0.98em; background:#f8fafc; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px 0 rgba(31,38,135,0.05);">'
+                  )
+                  .replace(
+                    /<thead>/g,
+                    '<thead style="background:#e0e7ef;">'
+                  )
+                  .replace(
+                    /<th>/g,
+                    '<th style="padding:10px 16px; border-bottom:2px solid #c7d2fe; font-weight:700; text-align:left; color:#1e293b;">'
+                  )
+                  .replace(
+                    /<tr>/g,
+                    '<tr style="border-bottom:1px solid #e5e7eb;">'
+                  )
+                  .replace(
+                    /<td>/g,
+                    '<td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; color:#334155; vertical-align:top;">'
+                  )
+                  // Close the wrapping div after </table>
+                  .replace(
+                    /<\/table>/g,
+                    '</table></div>'
+                  )
+                  // Style <ul> and <ol> for ChatGPT-like look
+                  .replace(
+                    /<ul>/g,
+                    '<ul style="margin-left: 1.5em; margin-bottom: 1em; list-style-type: disc; padding-left: 1.2em;">'
+                  )
+                  .replace(
+                    /<ol>/g,
+                    '<ol style="margin-left: 1.5em; margin-bottom: 1em; list-style-type: decimal; padding-left: 1.2em;">'
+                  )
+                  .replace(
+                    /<li>/g,
+                    '<li style="margin-bottom: 0.3em; font-size: 1em; line-height: 1.7;">'
+                  );
+
+                // 2. Replace YouTube links with embedded video iframes
+                // Only replace anchor tags where the link text is the same as the YouTube URL (i.e., not [text](youtube))
+                html = html.replace(
+                  /<a [^>]*href="(https?:\/\/(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([A-Za-z0-9_\-]{11}))(?:[^\"]*)?"[^>]*>(.*?)<\/a>/g,
+                  (match, url, videoId, linkText) => {
+                    // Only embed if the link text is exactly the same as the URL (no custom text)
+                    // Allow for possible HTML-encoded ampersands in the URL
+                    const normalizedUrl = url.replace(/&amp;/g, "&");
+                    const normalizedLinkText = linkText.replace(/&amp;/g, "&");
+                    if (!videoId || normalizedUrl !== normalizedLinkText) return match;
+                    // Responsive iframe wrapper
+                    return `
+                      <div style=" display: flex; justify-content: start;">
+                        <div style="position: relative; width: 100%;  aspect-ratio: 16/9; background: #000; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px 0 rgba(31,38,135,0.10);">
+                          <iframe
+                            src="https://www.youtube.com/embed/${videoId}"
+                            title="YouTube video"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen
+                            style="width: 100%; height: 100%; border: 0;"
+                          ></iframe>
+                        </div>
+                      </div>
+                    `;
+                  }
+                );
+
+                return html;
+              })()
+            : ""
+        }
+      />
     </>
   );
 };

@@ -5,12 +5,18 @@ const textAreaStyle =
 const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled = false }) => {
   const [input, setInput] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [error, setError] = useState('');
   const inputRef = useRef(null);
 
   const addTag = (tag) => {
     const trimmed = tag.trim();
-    if (trimmed && !value.includes(trimmed) && trimmed.length <= 30) {
+    if (trimmed.length > 30) {
+      setError("Tags cannot be more than 30 characters.");
+      return;
+    }
+    if (trimmed && !value.includes(trimmed)) {
       onChange([...value, trimmed]);
+      setError('');
     }
   };
 
@@ -20,6 +26,11 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled 
 
   const handleInput = (e) => {
     setInput(e.target.value);
+    if (e.target.value.length > 30) {
+      setError("Tags cannot be more than 30 characters.");
+    } else {
+      setError('');
+    }
   };
 
   const handleKeyDown = (e) => {
@@ -45,7 +56,6 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled 
   return (
     <div
       className={textAreaStyle}
-
       onClick={() => inputRef.current && inputRef.current.focus()}
     >
       {value.map((tag, idx) => (
@@ -71,7 +81,6 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled 
         ref={inputRef}
         type="text"
         className={textAreaStyle}
-
         value={input}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
@@ -82,6 +91,9 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled 
         onBlur={() => setIsFocused(false)}
         maxLength={30}
       />
+      {error && (
+        <div className="text-xs text-red-500 mt-1">{error}</div>
+      )}
       {/* Simple animation for focus */}
       <style>{`
         .animate-fadeIn {

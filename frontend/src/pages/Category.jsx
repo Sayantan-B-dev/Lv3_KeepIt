@@ -291,7 +291,7 @@ const Category = () => {
                                             style={{ fontSize: "12px" }}
                                             className="w-full text-left"
                                             onClick={() => handleNoteClick(note._id)}
-                                            text={index + 1 + ". " + note.title}
+                                            text={note.title}
                                             tags={note.tags}
                                         />
                                     </li>

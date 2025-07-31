@@ -95,6 +95,7 @@ export function StickyNavbar() {
     };
   }, []);
 
+  // Add a property to indicate which links should open in a new tab
   const navItems = [
     {
       label: "All Categories",
@@ -107,6 +108,7 @@ export function StickyNavbar() {
           <rect x="12" y="12" width="6" height="6" rx="2" fill="#90A4AE" />
         </svg>
       ),
+      newTab: true,
     },
     {
       label: "All Notes",
@@ -118,6 +120,7 @@ export function StickyNavbar() {
           <rect x="3" y="14" width="10" height="2" rx="1" fill="#90A4AE" />
         </svg>
       ),
+      newTab: true,
     },
     {
       label: "All Tags",
@@ -129,6 +132,7 @@ export function StickyNavbar() {
           <rect x="9" y="7" width="2" height="6" rx="1" fill="#90A4AE" />
         </svg>
       ),
+      newTab: true,
     },
     {
       label: "All Users",
@@ -139,6 +143,7 @@ export function StickyNavbar() {
           <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#90A4AE" />
         </svg>
       ),
+      newTab: true,
     },
     {
       label: "About",
@@ -150,12 +155,13 @@ export function StickyNavbar() {
           <rect x="9" y="5" width="2" height="2" rx="1" fill="#90A4AE" />
         </svg>
       ),
+      newTab: false,
     },
   ];
 
   const navList = (
     <ul className="mt-2 mb-4 flex flex-col gap-2 md:gap-3 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-      {navItems.map(({ label, href, icon }) => (
+      {navItems.map(({ label, href, icon, newTab }) => (
         <li
           key={label}
           className="flex items-center gap-x-2 p-1 font-medium"
@@ -165,6 +171,9 @@ export function StickyNavbar() {
             href={href}
             className={`flex items-center text-base md:text-[1.05rem] ${blackFontClass}`}
             style={blackFont}
+            {...(newTab
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
           >
             {label}
           </a>
