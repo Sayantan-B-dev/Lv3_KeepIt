@@ -1,3 +1,14 @@
+// Why doesn't refreshing the page remove form field values?
+// ----------------------------------------------------------
+// This component saves the form field values (title, content, category, tags, categoryType)
+// to localStorage on every change (see the useEffect that writes to localStorage).
+// When the page is refreshed, the component's initial state is loaded from localStorage
+// (see the initialDraft function). This means the form fields are "restored" from the
+// last saved draft, so refreshing the page does NOT clear the form fields.
+// The draft is only removed from localStorage after a successful note creation
+// (see the useEffect that runs when 'success' is true, and also after handleSubmit).
+// ----------------------------------------------------------
+
 import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate, useLocation } from "react-router-dom";
