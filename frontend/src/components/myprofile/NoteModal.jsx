@@ -54,13 +54,18 @@ const NoteModal = ({ noteModalOpen, openNote, closeNoteModal, noteContentHtml })
         }}
         onClick={e => e.stopPropagation()} // Prevent closing when clicking inside modal
       >
-        <button
+        <div
           onClick={closeNoteModal}
-          className="absolute top-1.5 right-2 text-gray-500 hover:text-red-500 text-xl font-bold z-10"
+          className="absolute top-3 right-3 z-20 flex items-center justify-center w-9 h-9 rounded-full bg-white/80 border border-gray-300 shadow-lg cursor-pointer transition hover:bg-red-100 hover:border-red-400 group"
           aria-label="Close"
+          title="Close"
+          style={{
+            boxShadow: '0 2px 8px 0 rgba(31,38,135,0.10)',
+            backdropFilter: 'blur(2px)',
+          }}
         >
-          &times;
-        </button>
+          <span className="text-2xl font-bold text-gray-500 group-hover:text-red-500 transition-all" style={{lineHeight: 1}}>&times;</span>
+        </div>
         <div className="mb-3 mt-5 sm:mt-0">
           <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 sm:mb-2" style={{ wordBreak: "break-all" }}>{openNote.title}</h2>
           {/* Tags under the title */}

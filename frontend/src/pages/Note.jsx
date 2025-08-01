@@ -401,44 +401,44 @@ const Note = () => {
                 text={category?.name || note.category}
               />
             </div>
-   
+
           </div>
 
         </div>
         <div className="flex justify-between items-center mt-8 mb-4 gap-2 w-fit m-auto">
-              <div
-                onClick={() => goToNote(0)}
-                disabled={currentIndex <= 0}
-                className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
-                title="First note"
-              >
-                {"<<"}
-              </div>
-              <div
-                onClick={() => goToNote(currentIndex - 1)}
-                disabled={currentIndex <= 0}
-                className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
-                title="Previous note"
-              >
-                {"<"}
-              </div>
-              <div
-                onClick={() => goToNote(currentIndex + 1)}
-                disabled={currentIndex === -1 || currentIndex >= categoryNotes.length - 1}
-                className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex === -1 || currentIndex >= categoryNotes.length - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
-                title="Next note"
-              >
-                {">"}
-              </div>
-              <div
-                onClick={() => goToNote(categoryNotes.length - 1)}
-                disabled={currentIndex === -1 || currentIndex >= categoryNotes.length - 1}
-                className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex === -1 || currentIndex >= categoryNotes.length - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
-                title="Last note"
-              >
-                {">>"}
-              </div>
-            </div>
+          <div
+            onClick={() => goToNote(0)}
+            disabled={currentIndex <= 0}
+            className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
+            title="First note"
+          >
+            {"<<"}
+          </div>
+          <div
+            onClick={() => goToNote(currentIndex - 1)}
+            disabled={currentIndex <= 0}
+            className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
+            title="Previous note"
+          >
+            {"<"}
+          </div>
+          <div
+            onClick={() => goToNote(currentIndex + 1)}
+            disabled={currentIndex === -1 || currentIndex >= categoryNotes.length - 1}
+            className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex === -1 || currentIndex >= categoryNotes.length - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
+            title="Next note"
+          >
+            {">"}
+          </div>
+          <div
+            onClick={() => goToNote(categoryNotes.length - 1)}
+            disabled={currentIndex === -1 || currentIndex >= categoryNotes.length - 1}
+            className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex === -1 || currentIndex >= categoryNotes.length - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
+            title="Last note"
+          >
+            {">>"}
+          </div>
+        </div>
         {isOwner && !editMode && (
           < div className="w-full text-center justify-center ">
             <div onClick={handleEdit} className="w-full">
@@ -450,6 +450,26 @@ const Note = () => {
                 <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) or Use [TextToClick](Link) for shorter more user friendly view and it will be clickable when viewing the note.<br />
               </span>
             </div>
+          </div>
+        )}
+        {isOwner && editMode && (
+          <div className="flex gap-3 mb-auto w-full justify-center">
+            <button
+              onClick={handleSave}
+              className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black"
+              disabled={updateLoading || contentTooLarge}
+              style={{ border: "1px dashed black" }}
+            >
+              {updateLoading ? "Saving..." : "Save"}
+            </button>
+            <button
+              onClick={handleCancel}
+              className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-red-400/20 transition"
+              disabled={updateLoading}
+              style={{ border: "1px dashed black" }}
+            >
+              Cancel
+            </button>
           </div>
         )}
         {/* Content */}
@@ -546,6 +566,19 @@ const Note = () => {
                     .replace(
                       /<li>/g,
                       '<li style="margin-bottom: 0.3em; font-size: 1em; line-height: 1.7;">'
+                    )
+                    // Style <h1> (#), <h2> (##), <h3> (###) with different sizes
+                    .replace(
+                      /<h1([^>]*)>/g,
+                      '<h1$1 style="font-size:2.2em; font-weight:800; margin:1.2em 0 0.7em 0; color:#1e293b; line-height:1.15;">'
+                    )
+                    .replace(
+                      /<h2([^>]*)>/g,
+                      '<h2$1 style="font-size:1.6em; font-weight:700; margin:1.1em 0 0.6em 0; color:#334155; line-height:1.18;">'
+                    )
+                    .replace(
+                      /<h3([^>]*)>/g,
+                      '<h3$1 style="font-size:1.25em; font-weight:600; margin:1em 0 0.5em 0; color:#475569; line-height:1.22;">'
                     );
 
                   // 2. Replace YouTube links with embedded video iframes
@@ -575,7 +608,6 @@ const Note = () => {
                     }
                   );
 
-
                   return html;
                 })()
               }}
@@ -588,26 +620,7 @@ const Note = () => {
             <span className="text-indigo-600 font-bold">{note.likes ? note.likes.length : 0}</span>
           </div> */}
 
-        {isOwner && editMode && (
-          <div className="flex gap-3 mb-auto w-full justify-center">
-            <button
-              onClick={handleSave}
-              className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black"
-              disabled={updateLoading || contentTooLarge}
-              style={{ border: "1px dashed black" }}
-            >
-              {updateLoading ? "Saving..." : "Save"}
-            </button>
-            <button
-              onClick={handleCancel}
-              className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-red-400/20 transition"
-              disabled={updateLoading}
-              style={{ border: "1px dashed black" }}
-            >
-              Cancel
-            </button>
-          </div>
-        )}
+
         {/* Footer */}
         <div className="mt-10 text-center">
           <p className="text-gray-500 text-sm italic">
