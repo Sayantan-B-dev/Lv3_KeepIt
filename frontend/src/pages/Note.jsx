@@ -31,6 +31,8 @@ const Note = () => {
 
   const [category, setCategory] = useState(null);
   const [user, setUser] = useState(null);
+  const [categoryNotes, setCategoryNotes] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(-1);
 
   const [deleting, setDeleting] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -51,11 +53,11 @@ const Note = () => {
 
   const handleUserClick = (userId) => {
     if (loggedInUser && userId === loggedInUser._id) {
-        navigate("/profile/MyProfile");
+      navigate("/profile/MyProfile");
     } else {
-        navigate(`/profile/${userId}`);
+      navigate(`/profile/${userId}`);
     }
-};
+  };
   const handleCategoryClick = (categoryId) => {
     navigate(`/category/${categoryId}`);
   };
@@ -174,12 +176,16 @@ const Note = () => {
         setEditNote({ title: res.data.title, content: res.data.content });
         setEditTags(Array.isArray(res.data.tags) ? res.data.tags : []);
 
-        const category = await axiosInstance.get(`/api/categories/${res.data.category}`);
-        setCategory(category.data);
+        const categoryRes = await axiosInstance.get(`/api/categories/${res.data.category}`);
+        setCategory(categoryRes.data);
+        // Fetch all notes in this category (sorted by title for consistency)
+        const notesArr = (categoryRes.data.notes || []).slice().sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
+        setCategoryNotes(notesArr);
+        const idx = notesArr.findIndex(n => n._id === res.data._id);
+        setCurrentIndex(idx);
 
         const user = await axiosInstance.get(`/api/profile/${res.data.user}`);
         setUser(user.data);
-
       } catch (err) {
         setError(
           err.response?.data?.message ||
@@ -190,9 +196,14 @@ const Note = () => {
         setLoading(false);
       }
     };
-
     fetchNote();
   }, [noteId]);
+
+  const goToNote = (idx) => {
+    if (idx >= 0 && idx < categoryNotes.length) {
+      navigate(`/note/${categoryNotes[idx]._id}`);
+    }
+  };
 
   if (loading) {
     return <Loading />;
@@ -351,7 +362,7 @@ const Note = () => {
                     </span>
                   ))}
                 </div>
-                
+
               )
             )}
             {/* Delete button for owner, like in Category */}
@@ -381,19 +392,53 @@ const Note = () => {
                 </button>
               )}
             </div>
-        {/* Category */}
-        <div className="flex items-center gap-4 m-auto ">
-          <span className="block font-semibold text-gray-700">Category:</span>
-          <DottedButton2
-            style={{ fontSize: "12px" }}
-            onClick={() => handleCategoryClick(category._id)}
-            text={category?.name || note.category}
-          />
-        </div>
+            {/* Category */}
+            <div className="flex items-center gap-4 m-auto ">
+              <span className="block font-semibold text-gray-700">Category:</span>
+              <DottedButton2
+                style={{ fontSize: "12px" }}
+                onClick={() => handleCategoryClick(category._id)}
+                text={category?.name || note.category}
+              />
+            </div>
+   
           </div>
-          
-        </div>
 
+        </div>
+        <div className="flex justify-between items-center mt-8 mb-4 gap-2 w-fit m-auto">
+              <div
+                onClick={() => goToNote(0)}
+                disabled={currentIndex <= 0}
+                className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
+                title="First note"
+              >
+                {"<<"}
+              </div>
+              <div
+                onClick={() => goToNote(currentIndex - 1)}
+                disabled={currentIndex <= 0}
+                className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex <= 0 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
+                title="Previous note"
+              >
+                {"<"}
+              </div>
+              <div
+                onClick={() => goToNote(currentIndex + 1)}
+                disabled={currentIndex === -1 || currentIndex >= categoryNotes.length - 1}
+                className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex === -1 || currentIndex >= categoryNotes.length - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
+                title="Next note"
+              >
+                {">"}
+              </div>
+              <div
+                onClick={() => goToNote(categoryNotes.length - 1)}
+                disabled={currentIndex === -1 || currentIndex >= categoryNotes.length - 1}
+                className={`cursor-pointer px-4 py-2 rounded border border-black font-semibold shadow transition ${currentIndex === -1 || currentIndex >= categoryNotes.length - 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-white text-black hover:bg-blue-100'}`}
+                title="Last note"
+              >
+                {">>"}
+              </div>
+            </div>
         {isOwner && !editMode && (
           < div className="w-full text-center justify-center ">
             <div onClick={handleEdit} className="w-full">
@@ -573,6 +618,7 @@ const Note = () => {
         {updateError && <div className="mt-2 text-red-500 text-center">{updateError}</div>}
         {updateSuccess && <div className="mt-2 text-green-600 text-center">{updateSuccess}</div>}
       </div>
+
     </>
   );
 };
