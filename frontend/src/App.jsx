@@ -77,6 +77,7 @@ function App() {
             squareSize={20}
             direction='down'
             borderColor='#ccc'
+            
           />
           {/* <DotGrid
             dotSize={2}

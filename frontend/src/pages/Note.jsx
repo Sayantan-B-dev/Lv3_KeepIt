@@ -51,7 +51,7 @@ const Note = () => {
   // Track if content is too large for editing
   const [contentTooLarge, setContentTooLarge] = useState(false);
 
-  const CONTENT_MAX_LENGTH = undefined;
+  const CONTENT_MAX_LENGTH = 20000;
 
   const [editTags, setEditTags] = useState([]);
   const [newTag, setNewTag] = useState("");
