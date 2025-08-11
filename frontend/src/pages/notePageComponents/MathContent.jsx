@@ -106,6 +106,11 @@ const linkStyle = {
   overflowWrap: "anywhere",
 };
 
+// Normalize spacing for typographic elements
+const blockReset = { marginTop: 0, marginBottom: "0.6em" };
+const listReset = { marginTop: 0, marginBottom: "0.6em", paddingLeft: "1.2em" };
+const liReset = { marginTop: "0.2em", marginBottom: "0.2em" };
+
 // Link card styles for bare URLs
 const cardOuter = {
   display: "block",
@@ -129,6 +134,18 @@ function MathContent({ content }) {
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeKatex]}
       components={{
+        p({ children }) {
+          return <p style={blockReset}>{children}</p>;
+        },
+        ul({ children }) {
+          return <ul style={listReset}>{children}</ul>;
+        },
+        ol({ children }) {
+          return <ol style={listReset}>{children}</ol>;
+        },
+        li({ children }) {
+          return <li style={liReset}>{children}</li>;
+        },
         a({ href, children, ...props }) {
           const childText = Array.isArray(children) && children.length === 1 && typeof children[0] === "string" ? children[0] : "";
           const text = typeof childText === "string" ? childText : "";
@@ -229,7 +246,7 @@ function MathContent({ content }) {
         table({ children }) {
           return (
             <div style={{ overflowX: "auto", maxWidth: "100vw" }}>
-              <table style={{ minWidth: 400, width: "100%", borderCollapse: "collapse", margin: "1.5em 0", fontSize: "0.98em", background: "#f8fafc", borderRadius: 10, overflow: "hidden", boxShadow: "0 2px 8px 0 rgba(31,38,135,0.05)" }}>{children}</table>
+              <table style={{ minWidth: 400, width: "100%", borderCollapse: "collapse", margin: "1.2em 0", fontSize: "0.98em", background: "#f8fafc", borderRadius: 10, overflow: "hidden", boxShadow: "0 2px 8px 0 rgba(31,38,135,0.05)" }}>{children}</table>
             </div>
           );
         },
@@ -246,13 +263,13 @@ function MathContent({ content }) {
           return <td style={{ padding: "10px 16px", borderBottom: "1px solid #e5e7eb", color: "#334155", verticalAlign: "top" }}>{children}</td>;
         },
         h1({ children }) {
-          return <h1 style={{ fontSize: "2.2em", fontWeight: 800, margin: "1.2em 0 0.7em 0", color: "#1e293b", lineHeight: 1.15 }}>{children}</h1>;
+          return <h1 style={{ fontSize: "2.2em", fontWeight: 800, margin: "1.1em 0 0.6em 0", color: "#1e293b", lineHeight: 1.15 }}>{children}</h1>;
         },
         h2({ children }) {
-          return <h2 style={{ fontSize: "1.6em", fontWeight: 700, margin: "1.1em 0 0.6em 0", color: "#334155", lineHeight: 1.18 }}>{children}</h2>;
+          return <h2 style={{ fontSize: "1.6em", fontWeight: 700, margin: "1em 0 0.5em 0", color: "#334155", lineHeight: 1.18 }}>{children}</h2>;
         },
         h3({ children }) {
-          return <h3 style={{ fontSize: "1.25em", fontWeight: 600, margin: "1em 0 0.5em 0", color: "#475569", lineHeight: 1.22 }}>{children}</h3>;
+          return <h3 style={{ fontSize: "1.25em", fontWeight: 600, margin: "0.8em 0 0.4em 0", color: "#475569", lineHeight: 1.22 }}>{children}</h3>;
         },
       }}
     >

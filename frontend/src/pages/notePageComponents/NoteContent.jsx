@@ -33,7 +33,7 @@ const NoteContent = ({
         />
       </>
     ) : (
-      <div className="bg-white/40 rounded-xl px-5 py-4 shadow-lg  border-1 border-black whitespace-pre-line text-gray-800">
+      <div className="bg-white/40 rounded-xl px-5 py-4 shadow-lg  border-1 border-black text-gray-800">
         <MathContent content={note.content} />
       </div>
     )}
