@@ -93,14 +93,20 @@ export const getAllTags = async (req, res) => {
     }
 };
 
+/**
+ * Unified note creation handler for both normal and .md file uploads.
+ * If req.body.category looks like an ObjectId, treat as category ID (for .md upload).
+ * Otherwise, treat as category name (for normal note creation).
+ */
 export const createNote = async (req, res) => {
     try {
+        // Rate limiting: 5 seconds between notes, 100 notes/hour
         const lastNote = await Note.findOne({ user: req.user._id }).sort({ createdAt: -1 });
         if (lastNote) {
             const now = Date.now();
             const lastCreated = new Date(lastNote.createdAt).getTime();
-            if (now - lastCreated < 10 * 1000) {
-                const wait = Math.ceil((10 * 1000 - (now - lastCreated)) / 1000);
+            if (now - lastCreated < 5 * 1000) {
+                const wait = Math.ceil((5 * 1000 - (now - lastCreated)) / 1000);
                 return res.status(429).json({ error: `Please wait ${wait} more second(s) before creating another note.` });
             }
         }
@@ -116,11 +122,22 @@ export const createNote = async (req, res) => {
 
         const { title, content, category, tags } = req.body;
 
-        let categoryDoc = await Category.findOne({
-            name: category,
-            user: req.user._id
-        });
+        let categoryDoc = null;
+        // If category is a valid ObjectId, treat as ID (for .md upload)
+        if (
+            typeof category === "string" &&
+            category.match(/^[0-9a-fA-F]{24}$/)
+        ) {
+            categoryDoc = await Category.findOne({ _id: category });
+        } else {
+            // Otherwise, treat as name (for normal note creation)
+            categoryDoc = await Category.findOne({
+                name: category,
+                user: req.user._id
+            });
+        }
 
+        // If not found, create new category (always uses name from req.body.category)
         if (!categoryDoc) {
             categoryDoc = new Category({
                 name: category,
@@ -143,7 +160,6 @@ export const createNote = async (req, res) => {
             isPrivate: false,
             tags: Array.isArray(tags) ? tags.map(tag => tag.trim()).filter(tag => tag.length > 0) : []
         });
-
         await note.save();
 
         await Category.findByIdAndUpdate(
@@ -152,6 +168,7 @@ export const createNote = async (req, res) => {
         );
 
         res.status(201).json(note);
+
     } catch (error) {
         if (error.code === 11000 && error.keyPattern && error.keyPattern.title && error.keyPattern.user) {
             return res.status(400).json({ error: 'You already have a note with this title. Note titles must be unique.' });
@@ -162,8 +179,10 @@ export const createNote = async (req, res) => {
             details: error.message
         });
     }
-}
+};
 
+// For backward compatibility, alias createNoteFromMD to createNote
+export const createNoteFromMD = createNote;
 export const updateNote=async(req,res)=>{
     const {id}=req.params
     try {

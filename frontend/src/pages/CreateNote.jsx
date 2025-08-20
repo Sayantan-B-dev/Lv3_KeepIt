@@ -9,7 +9,7 @@
 // (see the useEffect that runs when 'success' is true, and also after handleSubmit).
 // ----------------------------------------------------------
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate, useLocation } from "react-router-dom";
 import DottedButton from "../components/buttons/DottedButton";
@@ -68,6 +68,10 @@ const CreateNote = () => {
         initialDraft.categoryType
     );
 
+    // For drag-and-drop
+    const dropRef = useRef(null);
+    const [isDragActive, setIsDragActive] = useState(false);
+
     // Save draft to localStorage on any change
     useEffect(() => {
         // Don't save if not authenticated
@@ -121,6 +125,79 @@ const CreateNote = () => {
             navigate("/login");
         }
     }, [isAuthenticated, navigate]);
+
+    // --- Markdown file upload handler (for both input and drag-and-drop) ---
+    const handleMdFile = useCallback((file) => {
+        if (!file) return;
+        if (!file.name.toLowerCase().endsWith('.md')) {
+            toast.error("Please upload a .md (Markdown) file.");
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const fileContent = event.target.result;
+            const fileTitle = file.name.replace(/\.md$/i, "");
+            setTitle(fileTitle);
+            setContent(fileContent);
+            toast.success("Markdown file loaded! You can review and submit.");
+        };
+        reader.onerror = function() {
+            toast.error(`Failed to read file: ${file.name}`);
+        };
+        reader.readAsText(file);
+    }, []);
+
+    // For file input
+    const handleMdUpload = (e) => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+        handleMdFile(files[0]);
+        // Clear the input value so the same file can be uploaded again
+        e.target.value = "";
+    };
+
+    // For drag-and-drop
+    useEffect(() => {
+        const dropArea = dropRef.current;
+        if (!dropArea) return;
+
+        const handleDragOver = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDragActive(true);
+        };
+        const handleDragEnter = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDragActive(true);
+        };
+        const handleDragLeave = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDragActive(false);
+        };
+        const handleDrop = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDragActive(false);
+            const files = Array.from(e.dataTransfer.files);
+            if (!files.length) return;
+            const file = files[0];
+            handleMdFile(file);
+        };
+
+        dropArea.addEventListener("dragover", handleDragOver);
+        dropArea.addEventListener("dragenter", handleDragEnter);
+        dropArea.addEventListener("dragleave", handleDragLeave);
+        dropArea.addEventListener("drop", handleDrop);
+
+        return () => {
+            dropArea.removeEventListener("dragover", handleDragOver);
+            dropArea.removeEventListener("dragenter", handleDragEnter);
+            dropArea.removeEventListener("dragleave", handleDragLeave);
+            dropArea.removeEventListener("drop", handleDrop);
+        };
+    }, [handleMdFile]);
 
     if (loading) {
         return <Loading />;
@@ -250,6 +327,41 @@ const CreateNote = () => {
                             <b>Markdown supported:</b> You can use <b>**bold**</b>, <i>*italic*</i>, <code>`inline code`</code>, <code>```code blocks```</code>, lists, headings (<code>#</code>, <code>##</code>, etc.), blockquotes (<code>&gt; quote</code>), and more.<br />
                             <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) and it will be clickable when viewing the note.<br />
                         </span>
+                    </div>
+                </div>
+                {/* Markdown file upload button and drag-and-drop */}
+                <div
+                    ref={dropRef}
+                    className={`transition border-2 border-dashed rounded-lg mt-2 p-4 flex flex-col items-center justify-center cursor-pointer bg-white/80 hover:bg-white/50 shadow
+                        ${isDragActive ? "border-indigo-500 bg-indigo-50" : "border-black"}
+                    `}
+                    style={{
+                        outline: isDragActive ? "2px solid #6366f1" : "none",
+                        minHeight: "80px",
+                        position: "relative"
+                    }}
+                    tabIndex={0}
+                    aria-label="Upload or drag and drop a Markdown file"
+                >
+                    <label className="flex flex-col items-center justify-center cursor-pointer w-full h-full text-black">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                        </svg>
+                        <span>
+                            {isDragActive
+                                ? "Drop your .md file here"
+                                : "Upload or drag & drop a .md file"}
+                        </span>
+                        <input
+                            type="file"
+                            accept=".md"
+                            onChange={handleMdUpload}
+                            className="hidden"
+                            tabIndex={-1}
+                        />
+                    </label>
+                    <div className="text-xs text-gray-500 mt-1 text-center w-full">
+                        Upload or drag and drop a Markdown (.md) file to auto-fill the title and content fields.
                     </div>
                 </div>
                 <div className="flex flex-row gap-4 justify-between">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import DottedButton2 from "../components/buttons/DottedButton2";
@@ -20,6 +20,7 @@ const backdropStyle = {
 const Category = () => {
     const { user: loggedInUser } = useAuth();
     const { categoryId } = useParams();
+    
 
     const navigate = useNavigate();
     const [category, setCategory] = useState(null);
@@ -35,6 +36,10 @@ const Category = () => {
     const [editType, setEditType] = useState("");
     const [saving, setSaving] = useState(false);
 
+    // For drag-and-drop
+    const dropRef = useRef(null);
+    const [dragActive, setDragActive] = useState(false);
+
     const handleNoteClick = (noteId) => {
         navigate(`/note/${noteId}`);
     };
@@ -48,6 +53,202 @@ const Category = () => {
 
     const handleCreateNote = () => {
         navigate("/CreateNote", { state: { category } });
+    };
+
+    // Handle .md file upload: for each file, create note directly and update list
+    // Multi-file upload queue using localStorage, uploads one after another
+    const UPLOAD_QUEUE_KEY = "mdUploadQueue";
+
+    // Helper: get queue from localStorage
+    function getUploadQueue() {
+        try {
+            const q = localStorage.getItem(UPLOAD_QUEUE_KEY);
+            return q ? JSON.parse(q) : [];
+        } catch {
+            return [];
+        }
+    }
+    // Helper: set queue in localStorage
+    function setUploadQueue(queue) {
+        localStorage.setItem(UPLOAD_QUEUE_KEY, JSON.stringify(queue));
+    }
+    // Helper: clear queue
+    function clearUploadQueue() {
+        localStorage.removeItem(UPLOAD_QUEUE_KEY);
+    }
+
+    // Main upload handler
+    // --- handleUpload with improved duplicate toast and 5s countdown toast between uploads ---
+    const handleUpload = async (e, filesOverride) => {
+        let files = filesOverride || Array.from(e.target.files);
+        if (!files.length) return;
+
+        // Add files to queue in localStorage (as File cannot be stored, we store name+content)
+        // Read all files as text, then push to queue
+        const readFilesAsText = (filesArr) =>
+            Promise.all(
+                filesArr.map(
+                    (file) =>
+                        new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => {
+                                resolve({
+                                    name: file.name,
+                                    content: reader.result,
+                                });
+                            };
+                            reader.onerror = () => reject(new Error(`Failed to read file: ${file.name}`));
+                            reader.readAsText(file);
+                        })
+                )
+            );
+
+        try {
+            const filesData = await readFilesAsText(files);
+            // Add to queue, but skip files with duplicate names already in queue for this category
+            let queue = getUploadQueue();
+            const existingNames = new Set(queue.filter(q => q.categoryId === categoryId).map(q => q.name));
+            let addedAny = false;
+            let duplicateFiles = [];
+            filesData.forEach((f) => {
+                if (existingNames.has(f.name)) {
+                    duplicateFiles.push(f.name);
+                } else {
+                    queue.push({
+                        name: f.name,
+                        content: f.content,
+                        categoryId,
+                    });
+                    existingNames.add(f.name);
+                    addedAny = true;
+                }
+            });
+            setUploadQueue(queue);
+
+            // Show info toast for duplicates (if any)
+            if (duplicateFiles.length > 0) {
+                duplicateFiles.forEach(name => {
+                    toast.info(`File "${name}" is already in the upload queue and was ignored.`, { autoClose: 4000 });
+                });
+            }
+
+            // Start processing queue if not already running
+            if (addedAny && !window.__mdUploadProcessing) {
+                processUploadQueue();
+            }
+        } catch (err) {
+            toast.error(err.message || "Failed to read files.");
+        }
+
+        // Clear the input value so the same file can be uploaded again
+        if (e && e.target) e.target.value = "";
+    };
+
+    // --- processUploadQueue with 5s countdown toast ---
+    async function processUploadQueue() {
+        window.__mdUploadProcessing = true;
+        let queue = getUploadQueue();
+        if (!queue.length) {
+            window.__mdUploadProcessing = false;
+            clearUploadQueue();
+            return;
+        }
+        const { name, content, categoryId: catId } = queue[0];
+        const title = name.replace(/\.md$/i, "");
+
+        // Show a 5 second countdown toast before uploading
+        let countdown = 5;
+        let toastId = toast.info(`Uploading "${title}" in ${countdown} seconds...`, {
+            autoClose: false,
+            closeButton: false,
+            toastId: `countdown-${title}-${Date.now()}`
+        });
+
+        // Update the toast every second
+        const interval = setInterval(() => {
+            countdown -= 1;
+            if (countdown > 0) {
+                toast.update(toastId, {
+                    render: `Uploading "${title}" in ${countdown} second${countdown === 1 ? "" : "s"}...`
+                });
+            }
+        }, 1000);
+
+        // Wait 5 seconds before uploading
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        clearInterval(interval);
+        toast.dismiss(toastId);
+
+        try {
+            const res = await axiosInstance.post("/api/notes", {
+                title,
+                content,
+                category: catId,
+            });
+            toast.success(`Note "${title}" created!`);
+            // If in correct category, update notes list
+            if (
+                res.data.category === catId ||
+                (typeof res.data.category === "object" && res.data.category._id === catId)
+            ) {
+                // Use setNotes if available in closure
+                if (typeof setNotes === "function") {
+                    setNotes((prevNotes) => {
+                        const newNotes = [...prevNotes, res.data];
+                        return newNotes.slice().sort((a, b) =>
+                            a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+                        );
+                    });
+                }
+            } else {
+                toast.error("Note was not created in this category.");
+            }
+        } catch (err) {
+            // If the error is about duplicate title, show a more specific message
+            const errorMsg = err?.response?.data?.error || `Failed to create note: ${title}`;
+            if (
+                errorMsg &&
+                errorMsg.toLowerCase().includes("note titles must be unique")
+            ) {
+                toast.error(
+                    `A note with the title "${title}" already exists in this category. Note titles must be unique.`,
+                    { autoClose: 6000 }
+                );
+            } else {
+                toast.error(errorMsg);
+            }
+        }
+        // Remove first from queue and continue
+        queue = getUploadQueue();
+        queue.shift();
+        setUploadQueue(queue);
+        setTimeout(processUploadQueue, 500);
+    }
+
+    // Drag and drop handlers
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(true);
+    };
+    const handleDragEnter = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(true);
+    };
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+    };
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        const files = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.md'));
+        if (files.length > 0) {
+            handleUpload({ target: { value: "" } }, files);
+        }
     };
 
     // When deleting a category, also delete all notes in it
@@ -160,13 +361,20 @@ const Category = () => {
                 backdropStyle={backdropStyle}
             />
             <Magnet padding={50} disabled={false} magnetStrength={50} className="w-full">
-                <div className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-2 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
+                <div
+                    ref={dropRef}
+                    onDragOver={handleDragOver}
+                    onDragEnter={handleDragEnter}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    className={`container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-2 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl ${dragActive ? "ring-4 ring-indigo-300 bg-indigo-50" : ""}`}
                     style={{
                         ...backdropStyle,
                         borderTopLeftRadius: '60px',
                         borderTopRightRadius: '60px',
                         borderBottomLeftRadius: '0px',
                         borderBottomRightRadius: '0px',
+                        transition: "background 0.2s, box-shadow 0.2s"
                     }}
                 >
                     <Author user={user} handleUserClick={handleUserClick} />
@@ -195,7 +403,6 @@ const Category = () => {
                                                 <input
                                                     type="text"
                                                     className="border border-gray-700 rounded px-3 py-2 text-sm border-dashed rounded-xl"
-
                                                     value={editType}
                                                     onChange={e => setEditType(e.target.value)}
                                                     placeholder="Type (single word)"
@@ -234,7 +441,6 @@ const Category = () => {
                                             <div className="flex flex-row mt-2 w-full">
                                                 {isOwner && (
                                                     <>
-                                                        
                                                         <div
                                                             className="ml-0 p-1 rounded-full text-gray-400 hover:text-red-500 transition cursor-pointer"
                                                             onClick={() => setShowDeletePopup(true)}
@@ -261,12 +467,54 @@ const Category = () => {
                             <div
                                 type="button"
                                 onClick={handleCreateNote}
-                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-none border border-dashed border-black shadow transition cursor-pointer"
-                                style={{ background: "white" }}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-none border border-dashed border-black bg-white  hover:bg-white/50 shadow transition cursor-pointer"
                             >
                                 <span className="font-semibold text-indigo-700 text-base">
                                     Add a new Note
                                 </span>
+                            </div>
+                            <div
+                                ref={dropRef}
+                                className={`transition border-2 border-dashed rounded-lg mt-2 p-4 flex flex-col items-center justify-center cursor-pointer bg-white/80 hover:bg-white/50 shadow
+                                    ${dragActive ? "border-indigo-500 bg-indigo-50" : "border-black"}
+                                `}
+                                style={{
+                                    outline: dragActive ? "2px solid #6366f1" : "none",
+                                    minHeight: "80px",
+                                    position: "relative"
+                                }}
+                                tabIndex={0}
+                                aria-label="Upload or drag and drop a Markdown file"
+                                onDragOver={handleDragOver}
+                                onDragEnter={handleDragEnter}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                            >
+                                <label className="flex flex-col items-center justify-center cursor-pointer w-full h-full text-black">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                                    </svg>
+                                    <span>
+                                        {dragActive
+                                            ? "Drop your .md file here"
+                                            : "Upload or drag & drop a .md file"}
+                                    </span>
+                                    <input
+                                        type="file"
+                                        accept=".md"
+                                        multiple
+                                        onChange={handleUpload}
+                                        className="hidden"
+                                        tabIndex={-1}
+                                    />
+                                </label>
+                                <div className="text-xs text-gray-500 mt-1 text-center w-full">
+                                    Upload or drag and drop a Markdown (.md) file to add as a note.
+                                <div className="mt-2 text-xs text-blue-500 font-semibold text-center">
+                                    Note: There will be a 5 second gap between each note.<br />
+                                    Please keep your PC on and <span className="underline text-red-500">do not refresh</span> the page during the process.
+                                </div>
+                                </div>
                             </div>
                         </div>
                     </div>
