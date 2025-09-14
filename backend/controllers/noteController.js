@@ -116,8 +116,8 @@ export const createNote = async (req, res) => {
             user: req.user._id,
             createdAt: { $gte: oneHourAgo }
         });
-        if (notesLastHour >= 100) {
-            return res.status(429).json({ error: "Note creation limit reached: Only 5 notes per hour allowed." });
+        if (notesLastHour >= 200) {
+            return res.status(429).json({ error: "Note creation limit reached: Only 200 notes per hour allowed." });
         }
 
         const { title, content, category, tags } = req.body;
