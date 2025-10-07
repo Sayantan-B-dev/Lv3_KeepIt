@@ -8,6 +8,8 @@ import ConfirmPopUp from "../components/ConfirmPopUp";
 import Loading from "../components/home/Loading";
 import { toast } from "react-toastify";
 import { useAuth } from '../context/AuthContext';
+import JSZip from "jszip";
+import { saveAs } from "file-saver";
 
 const backdropStyle = {
     backdropFilter: 'blur(2px)',
@@ -53,6 +55,21 @@ const Category = () => {
 
     const handleCreateNote = () => {
         navigate("/CreateNote", { state: { category } });
+    };
+
+    // Client-side ZIP download of all notes as .md files
+    const handleDownloadAllMidi = async () => {
+        try {
+            const zip = new JSZip();
+            const folder = zip.folder((category?.name || "category").replace(/\s+/g, "_") || "category");
+            (notes || []).forEach((n) => {
+                const filename = `${String(n.title || "note").replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_\-\.]/g, "").slice(0,128) || "note"}.md`;
+                folder.file(filename, String(n.content || ""));
+            });
+            const blob = await zip.generateAsync({ type: "blob" });
+            const zipName = `${String(category?.name || "category").replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_\-\.]/g, "").slice(0,128) || "category"}.zip`;
+            saveAs(blob, zipName);
+        } catch (_) {}
     };
 
     // Handle .md file upload: for each file, create note directly and update list
@@ -457,6 +474,12 @@ const Category = () => {
                                                             onClick={handleEditClick}
                                                             type="button"
                                                         >Edit</div>
+                                                        <div
+                                                            className="ml-2 text-black text-sm h-fit px-3 py-1 rounded-lg font-semibold shadow hover:bg-green-400/20 transition border border-dashed border-black hover:cursor-pointer m-auto"
+                                                            onClick={handleDownloadAllMidi}
+                                                            type="button"
+                                                            title="Download all notes in this category as a ZIP of MIDI files"
+                                                        >Download All (ZIP)</div>
                                                     </>
                                                 )}
                                             </div>
