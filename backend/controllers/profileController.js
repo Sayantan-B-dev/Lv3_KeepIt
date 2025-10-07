@@ -21,8 +21,22 @@ export const getUserProfile = async (req, res) => {
 // Get all users' public profiles
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({})
-      .select('_id username profileImage categories');
+    const { page = 1, limit = 50, search = '' } = req.query;
+    const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+    const pageLimit = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
+
+    const query = {};
+    if (search && typeof search === 'string') {
+      const regex = { $regex: search.trim(), $options: 'i' };
+      query.$or = [{ username: regex }, { email: regex }];
+    }
+
+    const users = await User.find(query)
+      .select('_id username profileImage categories createdAt')
+      .sort({ createdAt: -1 })
+      .skip((pageNum - 1) * pageLimit)
+      .limit(pageLimit)
+      .lean();
     res.json(users);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

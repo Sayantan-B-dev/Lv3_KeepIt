@@ -27,10 +27,23 @@ export const getPublicNotesbyUser=async(req,res)=>{
 
 export const getAllPublicNotes=async(req,res)=>{
     try {
-        const notes= await Note.find({isPrivate:false})
-            .populate('category')
+        const { page = 1, limit = 20, search = '' } = req.query;
+        const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+        const pageLimit = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
+
+        const query = { isPrivate: false };
+        if (search && typeof search === 'string') {
+            query.title = { $regex: search.trim(), $options: 'i' };
+        }
+
+        const notes= await Note.find(query)
+            .select('title user category createdAt')
+            .populate('category', 'name')
             .populate('user', 'username')
             .sort({createdAt: -1})
+            .skip((pageNum - 1) * pageLimit)
+            .limit(pageLimit)
+            .lean();
         res.json(notes)
     } catch (error) {
         console.error('Error fetching public notes:', error);
@@ -47,7 +60,8 @@ export const getNotesByTag = async (req, res) => {
                 isPrivate: false,
                 tags: { $elemMatch: { $regex: `^${tag}$`, $options: 'i' } }
             })
-            .populate('category')
+            .select('title user category createdAt tags')
+            .populate('category', 'name')
             .populate('user', 'username profileImage email')
             .sort({ createdAt: -1 });
             return res.json(notes);
@@ -59,7 +73,8 @@ export const getNotesByTag = async (req, res) => {
         // fallback: return all public notes (for search page)
         try {
             const notes = await Note.find({ isPrivate: false })
-                .populate('category')
+                .select('title user category createdAt tags')
+                .populate('category', 'name')
                 .populate('user', 'username profileImage email')
                 .sort({ createdAt: -1 });
             return res.json(notes);

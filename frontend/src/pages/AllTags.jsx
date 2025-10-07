@@ -1,9 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import DottedButton from '../components/buttons/DottedButton';
 import DottedButton2 from '../components/buttons/DottedButton2';
 import Magnet from '../components/advance/Magnet';
+
+// Skeleton loader for tags
+const TagSkeleton = () => (
+  <div
+    className="flex items-center gap-2 w-[70%] m-auto animate-pulse"
+    style={{
+      border: '1px solid black',
+      borderRadius: '60px',
+      padding: '10px 16px',
+      background: 'rgba(255,255,255,0.08)',
+      marginBottom: '8px',
+      minHeight: '48px',
+    }}
+  >
+    <div className="flex-1 h-6 bg-gray-200 rounded" style={{ border: '1px solid black' }}></div>
+    <div className="w-10 h-4 bg-gray-200 rounded" style={{ border: '1px solid black' }}></div>
+  </div>
+);
+
+const PAGE_SIZE = 15;
 
 const AllTags = () => {
   const navigate = useNavigate();
@@ -11,6 +31,12 @@ const AllTags = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [searching, setSearching] = useState(false);
+  const searchTimeout = useRef(null);
 
   useEffect(() => {
     const fetchTags = async () => {
@@ -24,10 +50,26 @@ const AllTags = () => {
         setTags([]);
       } finally {
         setLoading(false);
+        setInitialLoad(false);
       }
     };
     fetchTags();
   }, []);
+
+  // Debounced search behavior
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    setSearching(true);
+    searchTimeout.current = setTimeout(() => {
+      setSearching(false);
+    }, 300);
+    return () => {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    };
+    // eslint-disable-next-line
+  }, [search]);
 
   // Filter tags based on search input (case-insensitive)
   const filteredTags = tags.filter(tagObj =>
@@ -35,6 +77,19 @@ const AllTags = () => {
   );
   // Sort by tag name (case-insensitive)
   const sortedTags = filteredTags.sort((a, b) => a.tag.localeCompare(b.tag, undefined, { sensitivity: 'base' }));
+  const visibleTags = sortedTags.slice(0, page * PAGE_SIZE);
+
+  const handleLoadMore = () => {
+    if (loadingMore || !hasMore) return;
+    const nextPage = page + 1;
+    setLoadingMore(true);
+    setPage(nextPage);
+    const totalAfterNext = nextPage * PAGE_SIZE;
+    if (sortedTags.length <= totalAfterNext) {
+      setHasMore(false);
+    }
+    setLoadingMore(false);
+  };
 
   return (
     <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
@@ -80,14 +135,20 @@ const AllTags = () => {
             }}
           />
         </div>
-        {loading && <div>Loading tags...</div>}
+        {(loading || initialLoad || searching) && (
+          <div className="flex flex-col gap-2" style={{ listStyle: 'none', padding: 0 }}>
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <TagSkeleton key={idx} />
+            ))}
+          </div>
+        )}
         {error && <div style={{ color: '#e63946' }}>{error}</div>}
-        {!loading && !error && (
+        {!loading && !initialLoad && !searching && !error && (
           <div style={{ listStyle: 'none', padding: 0 }} className='flex flex-col gap-2'>
             {sortedTags.length === 0 ? (
               <div className='text-center text-red-500'>No tags found.</div>
             ) : (
-              sortedTags.map((tagObj) => (
+              visibleTags.map((tagObj) => (
                 <div key={tagObj.tag} className='flex items-center gap-2 w-[70%] m-auto'>
                   <DottedButton2
                     style={{ fontSize: "12px" }}
@@ -101,6 +162,30 @@ const AllTags = () => {
                   </div>
                 </div>
               ))
+            )}
+            {hasMore && (
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="mt-4 mx-auto px-6 py-2 border border-black rounded-full bg-white text-black font-semibold hover:bg-gray-100 transition"
+                style={{ minWidth: 120 }}
+              >
+                {loadingMore ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Loading</span>
+                    <span className="animate-spin inline-block w-4 h-4 border-2 border-black border-t-transparent rounded-full"></span>
+                  </div>
+                ) : (
+                  "Load More"
+                )}
+              </button>
+            )}
+            {loadingMore && (
+              <div className="flex flex-col gap-2 mt-2">
+                {Array.from({ length: 3 }).map((_, idx) => (
+                  <TagSkeleton key={`loadmore-skel-${idx}`} />
+                ))}
+              </div>
             )}
           </div>
         )}

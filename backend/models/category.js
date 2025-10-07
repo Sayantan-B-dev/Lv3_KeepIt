@@ -15,6 +15,10 @@ const categorySchema=new mongoose.Schema({
     updatedAt:{type:Date,default:Date.now},
 },{timestamps:true})
 
+// Indexes for faster lookups
+categorySchema.index({ user: 1, createdAt: -1 })
+categorySchema.index({ name: 1 })
+
 const Category=mongoose.model('Category',categorySchema)
 
 

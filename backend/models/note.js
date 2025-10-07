@@ -21,5 +21,11 @@ const noteSchema =new mongoose.Schema({
 
 },{timestamps:true})
 
+// Indexes for common query patterns
+noteSchema.index({ user: 1, createdAt: -1 })
+noteSchema.index({ category: 1, createdAt: -1 })
+noteSchema.index({ tags: 1 })
+noteSchema.index({ createdAt: -1 })
+
 const Note=mongoose.model('Note',noteSchema)
 export default Note

@@ -1,29 +1,30 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState, useEffect } from 'react';
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Profile from "./pages/Profile";
-import Category from "./pages/Category";
-import Note from "./pages/Note";
-import Logout from "./pages/Logout";
+import { lazy, Suspense } from 'react';
+const Home = lazy(() => import('./pages/Home'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Category = lazy(() => import('./pages/Category'));
+const Note = lazy(() => import('./pages/Note'));
+const Logout = lazy(() => import('./pages/Logout'));
 import axiosInstance from "./api/axiosInstance";
 import DotGrid from './components/advance/Background';
 import Squares from "./components/advance/Squares";
 import Footer from "./components/partials/footer";
 import MyProfile from "./pages/MyProfile";
 import { StickyNavbar } from "./components/partials/StickyNavbar";
-import CreateNote from "./pages/CreateNote";
-import AllNotes from "./pages/AllNotes";
-import AllCategories from "./pages/AllCategories";
-import About from "./pages/About";
-import AllUsers from "./pages/AllUsers";
+const CreateNote = lazy(() => import('./pages/CreateNote'));
+const AllNotes = lazy(() => import('./pages/AllNotes'));
+const AllCategories = lazy(() => import('./pages/AllCategories'));
+const About = lazy(() => import('./pages/About'));
+const AllUsers = lazy(() => import('./pages/AllUsers'));
 import Loading from "./components/home/Loading";
 import RotatingKeepIt from "./components/RotatingKeepIt"
 import Waiting from "./components/partials/Waiting";
 import { useAuth } from "./context/AuthContext";
-import TagNotes from "./pages/TagNotes";
-import AllTags from "./pages/AllTags";
+const TagNotes = lazy(() => import('./pages/TagNotes'));
+const AllTags = lazy(() => import('./pages/AllTags'));
 
 
 function App() {
@@ -114,6 +115,7 @@ function App() {
               />
             </Routes>
           ) : (
+            <Suspense fallback={<Loading />}>
             <Routes>
               <Route
                 path="/"
@@ -151,6 +153,7 @@ function App() {
               />
               <Route path="/CreateNote" element={<CreateNote />} />
             </Routes>
+            </Suspense>
           )}
         </div>}
 

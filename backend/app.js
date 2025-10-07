@@ -7,6 +7,7 @@ import flash from "connect-flash"
 import methodOverride from "method-override"
 import sanitize from 'mongo-sanitize';
 import helmet from "helmet"
+import compression from "compression"
 import cors from "cors";
 import dotenv from 'dotenv';
 import User from "./models/user.js"
@@ -17,6 +18,8 @@ import errorHandler from './middlewares/errorHandler.js';
 dotenv.config();
 
 const app = express()
+// HTTP compression for faster responses
+app.use(compression())
 
 // Rate limiting
 const loginLimiter = rateLimit({
@@ -30,19 +33,23 @@ const allowedOrigins = [process.env.FRONTEND_URL];
 //console.log("ALLOWED ORIGINS:", allowedOrigins);
 
 
-app.use(cors({
+app.use(
+  cors({
     origin: function (origin, callback) {
-        //console.log("Incoming Origin:", origin);
-        if (!origin) return callback(null, true);
-        const cleanOrigin = origin.replace(/\/$/, '');
-        if (allowedOrigins.includes(cleanOrigin)) {
-          return callback(null, true);
-        }
-        return callback(new Error('Not allowed by CORS'));
-      }
-      ,
-      credentials: true
-}));
+      if (!origin) return callback(null, true); // allow same-origin (e.g. Postman)
+      const allowedOrigins = [process.env.FRONTEND_URL];
+      const cleanOrigin = origin.replace(/\/$/, '');
+
+      const match = allowedOrigins.some(
+        (o) => o.replace(/\/$/, '') === cleanOrigin
+      );
+
+      if (match) callback(null, true);
+      else callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  })
+);
 
 
 // Middlewares
@@ -128,7 +135,7 @@ app.use(
         directives: {
             defaultSrc: ["'self'"],
             workerSrc: workerSrcUrls,
-            connectSrc: ["'self'", process.env.FRONTEND_URL],
+            connectSrc: ["'self'", process.env.FRONTEND_URL, "http://localhost:5000"],
             scriptSrc: ["'self'", "'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'"],
             fontSrc: ["'self'"],

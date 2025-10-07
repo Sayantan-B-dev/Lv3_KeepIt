@@ -1,14 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import UserBox from '../components/home/UserBox';
 import Magnet from '../components/advance/Magnet';
 import DottedButton2 from '../components/buttons/DottedButton2';
+
+// Skeleton loader for users
+const UserSkeleton = () => (
+  <div
+    className="flex items-center gap-2 w-[70%] m-auto animate-pulse"
+    style={{
+      border: '1px solid black',
+      borderRadius: '60px',
+      padding: '10px 16px',
+      background: 'rgba(255,255,255,0.08)',
+      marginBottom: '8px',
+      minHeight: '48px',
+    }}
+  >
+    <div className="flex-1 h-6 bg-gray-200 rounded" style={{ border: '1px solid black' }}></div>
+    <div className="w-12 h-12 bg-gray-200 rounded-full" style={{ border: '1px solid black' }}></div>
+  </div>
+);
+
+const PAGE_SIZE = 15;
 
 const AllUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
+  const [searching, setSearching] = useState(false);
+  const searchTimeout = useRef(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -20,11 +46,27 @@ const AllUsers = () => {
         setError('Failed to load users');
       } finally {
         setLoading(false);
+        setInitialLoad(false);
       }
     };
 
     fetchUsers();
   }, []);
+
+  // Debounced search
+  useEffect(() => {
+    setPage(1);
+    setHasMore(true);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    setSearching(true);
+    searchTimeout.current = setTimeout(() => {
+      setSearching(false);
+    }, 300);
+    return () => {
+      if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    };
+    // eslint-disable-next-line
+  }, [search]);
 
   // Filter users based on search input (case-insensitive, by username or name)
   const filteredUsers = users.filter(user => {
@@ -41,13 +83,19 @@ const AllUsers = () => {
     return aName.localeCompare(bName, undefined, { sensitivity: 'base' });
   });
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const visibleUsers = sortedUsers.slice(0, page * PAGE_SIZE);
 
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
+  const handleLoadMore = () => {
+    if (loadingMore || !hasMore) return;
+    const nextPage = page + 1;
+    setLoadingMore(true);
+    setPage(nextPage);
+    const totalAfterNext = nextPage * PAGE_SIZE;
+    if (sortedUsers.length <= totalAfterNext) {
+      setHasMore(false);
+    }
+    setLoadingMore(false);
+  };
 
   const containerStyle = {
     backdropFilter: 'blur(2px)',
@@ -95,13 +143,47 @@ const AllUsers = () => {
             }}
           />
         </div>
-        <div id="explore-users" >
-          {sortedUsers.length === 0 ? (
-            <div className="text-center text-red-500">No users found.</div>
-          ) : (
-            <UserBox users={sortedUsers} />
-          )}
-        </div>
+        {(loading || initialLoad || searching) && (
+          <div className="flex flex-col gap-2" style={{ listStyle: 'none', padding: 0 }}>
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <UserSkeleton key={idx} />
+            ))}
+          </div>
+        )}
+        {error && <div className="text-red-500">{error}</div>}
+        {!loading && !initialLoad && !searching && !error && (
+          <div id="explore-users">
+            {sortedUsers.length === 0 ? (
+              <div className="text-center text-red-500">No users found.</div>
+            ) : (
+              <UserBox users={visibleUsers} />
+            )}
+            {hasMore && (
+              <button
+                onClick={handleLoadMore}
+                disabled={loadingMore}
+                className="mt-4 mx-auto px-6 py-2 border border-black rounded-full bg-white text-black font-semibold hover:bg-gray-100 transition block"
+                style={{ minWidth: 120 }}
+              >
+                {loadingMore ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <span>Loading</span>
+                    <span className="animate-spin inline-block w-4 h-4 border-2 border-black border-t-transparent rounded-full"></span>
+                  </div>
+                ) : (
+                  "Load More"
+                )}
+              </button>
+            )}
+            {loadingMore && (
+              <div className="flex flex-col gap-2 mt-2">
+                {Array.from({ length: 3 }).map((_, idx) => (
+                  <UserSkeleton key={`loadmore-skel-${idx}`} />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </Magnet>
   );

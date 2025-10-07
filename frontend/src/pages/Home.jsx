@@ -18,7 +18,10 @@ const Home = () => {
     const fetchUsers = async () => {
       try {
         setLoading(true);
-        const response = await axiosInstance.get('/api/profile/users');
+        // server-side pagination for faster initial load
+        const response = await axiosInstance.get('/api/profile/users', {
+          params: { page: 1, limit: 24 }
+        });
         setUsers(response.data);
       } catch (err) {
         console.error('Error details:', err.response || err);

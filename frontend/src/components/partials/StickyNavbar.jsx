@@ -172,7 +172,7 @@ export function StickyNavbar() {
             className={`flex items-center text-base md:text-[1.05rem] ${blackFontClass}`}
             style={blackFont}
             {...(newTab
-              ? { target: "_blank", rel: "noopener noreferrer" }
+              ? {rel: "noopener noreferrer" }//target: "_blank", if needed
               : {})}
           >
             {label}
