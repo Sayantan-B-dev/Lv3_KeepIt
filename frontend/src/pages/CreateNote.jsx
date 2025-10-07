@@ -17,12 +17,16 @@ import Loading from "../components/home/Loading";
 import { toast } from "react-toastify";
 import { useAuth } from '../context/AuthContext';
 import TagInput from '../components/TagInput';
+import { MdUndo, MdRedo } from "react-icons/md";
 
 const textAreaStyle =
     "w-full border border-gray-700 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
 
 // Key for localStorage
 const LOCAL_STORAGE_KEY = "createnote_draft_v1";
+
+// Maximum undo stack size for content field
+const MAX_UNDO_STACK = 30;
 
 const CreateNote = () => {
     const location = useLocation();
@@ -71,6 +75,11 @@ const CreateNote = () => {
     // For drag-and-drop
     const dropRef = useRef(null);
     const [isDragActive, setIsDragActive] = useState(false);
+
+    // --- Undo stack for content field ---
+    const [contentUndoStack, setContentUndoStack] = useState([initialDraft.content]);
+    const [contentRedoStack, setContentRedoStack] = useState([]);
+    const contentInputRef = useRef(null);
 
     // Save draft to localStorage on any change
     useEffect(() => {
@@ -139,6 +148,8 @@ const CreateNote = () => {
             const fileTitle = file.name.replace(/\.md$/i, "");
             setTitle(fileTitle);
             setContent(fileContent);
+            setContentUndoStack([fileContent]);
+            setContentRedoStack([]);
             toast.success("Markdown file loaded! You can review and submit.");
         };
         reader.onerror = function() {
@@ -199,6 +210,71 @@ const CreateNote = () => {
         };
     }, [handleMdFile]);
 
+    // --- Undo/Redo logic for content field ---
+    // Push to undo stack only if content actually changes
+    const handleContentChange = (e) => {
+        const newValue = e.target.value;
+        // Only push if different from last
+        if (contentUndoStack.length === 0 || contentUndoStack[contentUndoStack.length - 1] !== newValue) {
+            let newStack = [...contentUndoStack, newValue];
+            if (newStack.length > MAX_UNDO_STACK) {
+                newStack = newStack.slice(newStack.length - MAX_UNDO_STACK);
+            }
+            setContentUndoStack(newStack);
+            setContentRedoStack([]); // Clear redo stack on new input
+        }
+        setContent(newValue);
+    };
+
+    const handleUndo = () => {
+        if (contentUndoStack.length > 1) {
+            const newRedoStack = [contentUndoStack[contentUndoStack.length - 1], ...contentRedoStack];
+            const newUndoStack = contentUndoStack.slice(0, -1);
+            setContent(newUndoStack[newUndoStack.length - 1]);
+            setContentUndoStack(newUndoStack);
+            setContentRedoStack(newRedoStack);
+            // Focus textarea after undo for better UX
+            if (contentInputRef.current) {
+                contentInputRef.current.focus();
+            }
+        }
+    };
+
+    const handleRedo = () => {
+        if (contentRedoStack.length > 0) {
+            const redoValue = contentRedoStack[0];
+            const newUndoStack = [...contentUndoStack, redoValue];
+            let trimmedUndoStack = newUndoStack;
+            if (trimmedUndoStack.length > MAX_UNDO_STACK) {
+                trimmedUndoStack = trimmedUndoStack.slice(trimmedUndoStack.length - MAX_UNDO_STACK);
+            }
+            setContent(redoValue);
+            setContentUndoStack(trimmedUndoStack);
+            setContentRedoStack(contentRedoStack.slice(1));
+            if (contentInputRef.current) {
+                contentInputRef.current.focus();
+            }
+        }
+    };
+
+    // Keyboard shortcuts for undo/redo (Ctrl+Z, Ctrl+Y) for desktop
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            // Only if textarea is focused
+            if (document.activeElement !== contentInputRef.current) return;
+            if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === "z") {
+                e.preventDefault();
+                handleUndo();
+            } else if ((e.ctrlKey || e.metaKey) && (e.key === "y" || (e.shiftKey && e.key === "z"))) {
+                e.preventDefault();
+                handleRedo();
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+        // eslint-disable-next-line
+    }, [contentUndoStack, contentRedoStack]);
+
     if (loading) {
         return <Loading />;
     }
@@ -248,6 +324,8 @@ const CreateNote = () => {
             setCategory(preselectedCategory ? preselectedCategory : "");
             setTags([]);
             setCategoryType(preselectedCategory && preselectedCategory.type ? preselectedCategory.type : "");
+            setContentUndoStack([""]);
+            setContentRedoStack([]);
 
             // Remove draft from localStorage
             localStorage.removeItem(LOCAL_STORAGE_KEY);
@@ -284,6 +362,13 @@ const CreateNote = () => {
         }
     };
 
+    // --- Helper: Detect if device is mobile (for showing undo/redo buttons more prominently) ---
+    // (No longer needed for button display logic, but keep for possible future use)
+    const isMobile = (() => {
+        if (typeof window === "undefined") return false;
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    })();
+
     return (
         <div
             className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
@@ -316,17 +401,52 @@ const CreateNote = () => {
                     <label className="block text-gray-700 font-semibold mb-2">
                         Content
                     </label>
-                    <textarea
-                        className={`${textAreaStyle} h-75`}
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder="Write your note here... (You can adjast the size of the text area by dragging the bottom right corner)"
-                    />
-                    <div className="text-xs text-gray-500 mt-1">
-                        <span>
-                            <b>Markdown supported:</b> You can use <b>**bold**</b>, <i>*italic*</i>, <code>`inline code`</code>, <code>```code blocks```</code>, lists, headings (<code>#</code>, <code>##</code>, etc.), blockquotes (<code>&gt; quote</code>), and more.<br />
-                            <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) and it will be clickable when viewing the note.<br />
-                        </span>
+                    <div className="relative">
+                        <textarea
+                            ref={contentInputRef}
+                            className={`${textAreaStyle} h-75 pr-12`}
+                            value={content}
+                            onChange={handleContentChange}
+                            placeholder="Write your note here... (You can adjast the size of the text area by dragging the bottom right corner)"
+                            style={{ minHeight: 120 }}
+                        />
+                        {/* Undo/Redo buttons, now at bottom right of textarea, smaller size */}
+                        <div
+                            className="absolute right-2 bottom-2 flex gap-0.5 z-10"
+                        >
+                            <button
+                                type="button"
+                                aria-label="Undo"
+                                className="rounded-full p-0.5 bg-white border border-black shadow hover:bg-gray-100 transition disabled:opacity-80 flex items-center justify-center"
+                                onClick={handleUndo}
+                                disabled={contentUndoStack.length <= 1}
+                                tabIndex={0}
+                                title="Undo (Ctrl+Z)"
+                                style={{ width: 18, height: 18, minWidth: 18, minHeight: 18, borderWidth: 1, borderStyle: 'solid', borderColor: 'black' }}
+                            >
+                                <span className="text-xs text-black" style={{ fontSize: 14 }}><MdUndo size={12} /></span>
+                            </button>
+                            <button
+                                type="button"
+                                aria-label="Redo"
+                                className="rounded-full p-0.5 bg-white border border-black shadow hover:bg-gray-100 transition disabled:opacity-80 flex items-center justify-center"
+                                onClick={handleRedo}
+                                disabled={contentRedoStack.length === 0}
+                                tabIndex={0}
+                                title="Redo (Ctrl+Y)"
+                                style={{ width: 18, height: 18, minWidth: 18, minHeight: 18, borderWidth: 1, borderStyle: 'solid', borderColor: 'black' }}
+                            >
+                                <span className="text-xs text-black" style={{ fontSize: 14 }}><MdRedo size={12} /></span>
+                            </button>
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between mt-1">
+                        <div className="text-xs text-gray-500">
+                            <span>
+                                <b>Markdown supported:</b> You can use <b>**bold**</b>, <i>*italic*</i>, <code>`inline code`</code>, <code>```code blocks```</code>, lists, headings (<code>#</code>, <code>##</code>, etc.), blockquotes (<code>&gt; quote</code>), and more.<br />
+                                <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) and it will be clickable when viewing the note.<br />
+                            </span>
+                        </div>
                     </div>
                 </div>
                 {/* Markdown file upload button and drag-and-drop */}
