@@ -16,7 +16,7 @@ const parseUrl = (href) => {
 
 const getFaviconUrl = (hostname) => `https://icons.duckduckgo.com/ip3/${hostname}.ico`;
 
-// YouTube helpers
+// YouTube helpers (supports watch, youtu.be, embed, shorts, playlists)
 const extractYouTube = (href) => {
   const url = parseUrl(href);
   if (!url) return null;
@@ -24,6 +24,7 @@ const extractYouTube = (href) => {
   if (!/(youtube\.com|youtu\.be|m\.youtube\.com)/i.test(host)) return null;
 
   let videoId = "";
+  let playlistId = "";
   let start = 0;
 
   // video id from different paths
@@ -31,10 +32,13 @@ const extractYouTube = (href) => {
     videoId = url.pathname.split("/").filter(Boolean)[0] || "";
   } else if (url.pathname.startsWith("/watch")) {
     videoId = url.searchParams.get("v") || "";
+    playlistId = url.searchParams.get("list") || "";
   } else if (url.pathname.startsWith("/embed/")) {
     videoId = url.pathname.split("/")[2] || "";
   } else if (url.pathname.startsWith("/shorts/")) {
     videoId = url.pathname.split("/")[2] || "";
+  } else if (url.pathname.startsWith("/playlist")) {
+    playlistId = url.searchParams.get("list") || "";
   }
 
   // parse start time: t or start, supports 1h2m3s or seconds
@@ -51,8 +55,8 @@ const extractYouTube = (href) => {
     }
   }
 
-  if (!videoId) return null;
-  return { videoId, start };
+  if (!videoId && !playlistId) return null;
+  return { videoId, playlistId, start };
 };
 
 // Vimeo helper
@@ -154,20 +158,42 @@ function MathContent({ content }) {
           // YouTube embeds
           const yt = extractYouTube(href);
           if (yt && textEqualsHref) {
-            const params = yt.start ? `?start=${yt.start}` : "";
-            return (
-              <div style={iframeWrapperStyle}>
-                <div style={iframeContainerStyle}>
-                  <iframe
-                    src={`https://www.youtube.com/embed/${yt.videoId}${params}`}
-                    title="YouTube video"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    style={{ width: "100%", height: "100%", border: 0 }}
-                  />
+            // Playlist-only embed
+            if (!yt.videoId && yt.playlistId) {
+              return (
+                <div style={iframeWrapperStyle}>
+                  <div style={iframeContainerStyle}>
+                    <iframe
+                      src={`https://www.youtube.com/embed/videoseries?list=${yt.playlistId}`}
+                      title="YouTube playlist"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      style={{ width: "100%", height: "100%", border: 0 }}
+                    />
+                  </div>
                 </div>
-              </div>
-            );
+              );
+            }
+            // Video (optionally within a playlist)
+            if (yt.videoId) {
+              const params = new URLSearchParams();
+              if (yt.start) params.set('start', String(yt.start));
+              if (yt.playlistId) params.set('list', yt.playlistId);
+              const qs = params.toString();
+              return (
+                <div style={iframeWrapperStyle}>
+                  <div style={iframeContainerStyle}>
+                    <iframe
+                      src={`https://www.youtube.com/embed/${yt.videoId}${qs ? `?${qs}` : ''}`}
+                      title="YouTube video"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      style={{ width: "100%", height: "100%", border: 0 }}
+                    />
+                  </div>
+                </div>
+              );
+            }
           }
 
           // Vimeo embeds

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from 'react';
 import { lazy, Suspense } from 'react';
 const Home = lazy(() => import('./pages/Home'));
@@ -125,10 +125,10 @@ function App() {
                   />
                 }
               />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
+              <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />} />
               <Route path="/logout" element={<Logout />} />
-              <Route path="/profile/MyProfile" element={<MyProfile categories={categories} />} />
+              <Route path="/profile/MyProfile" element={isAuthenticated ? <MyProfile categories={categories} /> : <Navigate to="/login" replace />} />
               <Route path="/CreateNote" element={<CreateNote categories={categories} />} />
               <Route path="/all-categories" element={<AllCategories />} />
               <Route path="/all-notes" element={<AllNotes />} />
