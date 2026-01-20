@@ -29,7 +29,7 @@ const Loading = ({ message = "Loading..." }) => (
         <span className="text-xl font-semibold text-white animate-pulse">
           {message}
         </span>
-
+        
         <span className="text-sm sm:text-base text-white/70 max-w-md">
           Please wait, the page is loading. This may take a few moments.
         </span>

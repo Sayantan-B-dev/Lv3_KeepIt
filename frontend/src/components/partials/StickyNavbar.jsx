@@ -24,7 +24,7 @@ const fontClass = `
   hover:after:origin-left hover:after:scale-x-100
 `;
 
-export { fontClass as blackFontClass };
+export { fontClass };
 
 /* ================= sidebar styles ================= */
 
@@ -198,7 +198,7 @@ export function StickyNavbar() {
             style={coloredFont}
             onClick={() => navigate("/")}
           >
-            NoteCorner
+            Re-Docs
           </Typography>
         </div>
 

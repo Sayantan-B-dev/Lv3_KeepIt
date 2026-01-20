@@ -4,6 +4,7 @@ import UserBox from '../components/home/UserBox';
 import Hero from '../components/home/Hero';
 import Loading from '../components/home/Loading';
 import { useAuth } from '../context/AuthContext';
+import RotatingKeepIt from "../components/RotatingKeepIt";
 
 
 const Home = () => {
@@ -43,10 +44,11 @@ const Home = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 w-[90%] max-w-full ">
+    <div className="container mx-auto p-4 max-w-full ">
       <Hero user={user} isAuthenticated={isAuthenticated} />
-      <h1 className="text-2xl font-bold mt-10 text-black pb-2 text-gray-200">Explore</h1>
-      <div id="explore-users"><UserBox users={users} /></div>
+      <UserBox users={users} />
+      <RotatingKeepIt/>
+
     </div>
   );
 };

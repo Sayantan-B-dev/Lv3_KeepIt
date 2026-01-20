@@ -5,7 +5,6 @@ import axiosInstance from "./api/axiosInstance";
 import Footer from "./components/partials/footer";
 import { StickyNavbar } from "./components/partials/StickyNavbar";
 import Loading from "./components/home/Loading";
-import RotatingKeepIt from "./components/RotatingKeepIt";
 import Waiting from "./components/partials/Waiting";
 import { useAuth } from "./context/AuthContext";
 
@@ -133,7 +132,6 @@ function App() {
                   <Route path="/tag/:tagname" element={<TagNotes />} />
                 </Routes>
               </Suspense>
-              <RotatingKeepIt />
               <Footer />
             </>
           )}

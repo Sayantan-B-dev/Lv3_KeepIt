@@ -29,32 +29,33 @@ const Hero = ({ user, loading, error, isAuthenticated }) => {
       border border-white
 
         relative overflow-hidden
-        mt-10 border border-black/20 rounded-3xl flex items-center
+        mb-10 border border-black/20 rounded-3xl flex items-center
         p-4 sm:p-6 md:p-10
-        bg-gray-50
-        bg-[url('https://images.pexels.com/photos/317356/pexels-photo-317356.jpeg')]
         bg-cover bg-center bg-no-repeat
         min-h-[500px] md:min-h-[800px] h-auto
       "
     >
+      
+        {/* bg-[url('https://images.pexels.com/photos/317356/pexels-photo-317356.jpeg')] */}
+        
       {/* Background overlay (controls opacity) */}
       <div className="absolute inset-0 bg-black/30" />
-
+      
       {/* Content */}
       <div className="relative z-10 container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
           {/* Left side */}
           <div className="space-y-8">
             <div className="space-y-4">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-red-100 leading-tight">
                 Keep your notes and ideas
-                <span className="block text-indigo-800">
+                <span className="block text-indigo-300">
                   organized in one place
                 </span>
               </h1>
 
-              <p className="text-base sm:text-lg md:text-xl text-gray-800 leading-relaxed">
-                <b>NoteCorner</b> is a simple platform to write, organize, and share
+              <p className="text-base sm:text-lg md:text-xl text-red-100 leading-relaxed">
+                <b>Re-Docs</b> is a simple platform to write, organize, and share
                 notes. Save useful content from the web, structure your thoughts,
                 and revisit them whenever you need.
               </p>
@@ -77,9 +78,9 @@ const Hero = ({ user, loading, error, isAuthenticated }) => {
               />
             </div>
 
-            <div className="text-sm sm:text-base text-gray-800 pt-4 max-w-xl">
+            <div className="text-sm sm:text-base text-red-300 pt-4 max-w-xl">
               Built for individuals who want a clean space to store ideas,
-              learning notes, and useful links — without unnecessary complexity.
+              learning notes, and useful links - without unnecessary complexity.
             </div>
           </div>
 
@@ -97,15 +98,12 @@ const Hero = ({ user, loading, error, isAuthenticated }) => {
                   key={index}
                   className="
         flex flex-col items-center
-        backdrop-blur-sm bg-white/30
+        backdrop-blur-sm bg-white/10
         p-4 sm:p-6
         rounded-xl shadow-xl
         transition-all duration-300
         hover:-translate-y-2 hover:shadow-2xl
-        border border-white/40 hover:border-white/60 hover:bg-white/40
-
-
-
+        border border-white/40 hover:border-white/60 hover:bg-white/20
         box-border
       "
                 >
@@ -124,11 +122,11 @@ const Hero = ({ user, loading, error, isAuthenticated }) => {
                     </span>
                   </div>
 
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 text-center break-words">
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-300 text-center break-words">
                     {box.title}
                   </h3>
                   
-                  <p className="text-gray-800 text-xs sm:text-sm text-center break-words">
+                  <p className="text-gray-400 text-xs sm:text-sm text-center break-words">
                     {box.description}
                   </p>
                 </div>

@@ -160,7 +160,15 @@ const RotatingText = forwardRef((props, ref) => {
   return (
     <motion.span
       className={cn(
-        "flex flex-wrap whitespace-pre-wrap relative",
+        // MAIN STYLE (glass + typography)
+        "relative inline-flex items-center",
+        "text-white font-semibold tracking-tight",
+        "bg-white/10 backdrop-blur-md",
+        "border border-white/30 rounded-xl",
+        "px-4 py-2 shadow-lg",
+        "hover:bg-white/20 hover:border-white/50",
+        "transition-all duration-300",
+
         mainClassName
       )}
       {...rest}
@@ -168,13 +176,18 @@ const RotatingText = forwardRef((props, ref) => {
       transition={transition}
     >
       <span className="sr-only">{texts[currentTextIndex]}</span>
-      <AnimatePresence mode={animatePresenceMode} initial={animatePresenceInitial}>
+
+      <AnimatePresence
+        mode={animatePresenceMode}
+        initial={animatePresenceInitial}
+      >
         <motion.div
           key={currentTextIndex}
           className={cn(
             splitBy === "lines"
-              ? "flex flex-col w-full"
-              : "flex flex-wrap whitespace-pre-wrap relative"
+              ? "flex flex-col"
+              : "flex flex-wrap items-center",
+            "relative"
           )}
           layout
           aria-hidden="true"
@@ -183,8 +196,15 @@ const RotatingText = forwardRef((props, ref) => {
             const previousCharsCount = array
               .slice(0, wordIndex)
               .reduce((sum, word) => sum + word.characters.length, 0);
+
             return (
-              <span key={wordIndex} className={cn("inline-flex", splitLevelClassName)}>
+              <span
+                key={wordIndex}
+                className={cn(
+                  "inline-flex",
+                  splitLevelClassName
+                )}
+              >
                 {wordObj.characters.map((char, charIndex) => (
                   <motion.span
                     key={charIndex}
@@ -195,15 +215,26 @@ const RotatingText = forwardRef((props, ref) => {
                       ...transition,
                       delay: getStaggerDelay(
                         previousCharsCount + charIndex,
-                        array.reduce((sum, word) => sum + word.characters.length, 0)
+                        array.reduce(
+                          (sum, word) => sum + word.characters.length,
+                          0
+                        )
                       ),
                     }}
-                    className={cn("inline-block", elementLevelClassName)}
+                    className={cn(
+                      // CHARACTER STYLE
+                      "inline-block",
+                      "text-white",
+                      "will-change-transform",
+                      elementLevelClassName
+                    )}
                   >
                     {char}
                   </motion.span>
                 ))}
-                {wordObj.needsSpace && <span className="whitespace-pre"> </span>}
+                {wordObj.needsSpace && (
+                  <span className="whitespace-pre text-white/80"> </span>
+                )}
               </span>
             );
           })}
