@@ -14,13 +14,13 @@ const fontClass = `
 const UserBox = ({ users }) => {
   return (
     <>
-      <h1 className="text-center mb-5 border-b border-white/30">Users</h1>
+      <h1 className="text-center mb-5 border-b border-white/50">Users</h1>
       <div
         className="
-        w-full mb-10 p-5
+        w-full mb-5 p-5
         flex flex-wrap gap-4
         rounded-2xl
-        border border-white/30
+        border border-white/50
         bg-white/10 backdrop-blur-md
       "
       >
@@ -108,6 +108,7 @@ const UserBox = ({ users }) => {
           </motion.div>
         ))}
       </div>
+      <hr className="border-t border-white/50" />
     </>
 
   );

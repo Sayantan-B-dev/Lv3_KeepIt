@@ -26,10 +26,9 @@ const Hero = ({ user, loading, error, isAuthenticated }) => {
   return (
     <div
       className="
-      border border-white
-
+        border border-white/50
         relative overflow-hidden
-        mb-10 border border-black/20 rounded-3xl flex items-center
+        mb-10 rounded-3xl flex items-center
         p-4 sm:p-6 md:p-10
         bg-cover bg-center bg-no-repeat
         min-h-[500px] md:min-h-[800px] h-auto

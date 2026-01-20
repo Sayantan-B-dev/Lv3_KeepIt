@@ -10,7 +10,7 @@ const RotatingKeepIt = () => {
           px-6 py-3
           rounded-2xl
           bg-white/10 backdrop-blur-md
-          border border-white/30
+          border border-white/50
           shadow-lg
         "
       >
@@ -40,7 +40,7 @@ const RotatingKeepIt = () => {
             py-1 sm:py-2 md:py-3
             rounded-xl
             bg-white/10 backdrop-blur-md
-            border border-white/30
+            border border-white/50
             text-white
             font-bold
             text-xl sm:text-2xl md:text-3xl

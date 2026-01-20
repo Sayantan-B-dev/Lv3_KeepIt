@@ -72,13 +72,13 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer
-      className="border-t border-gray-400 pt-10 pb-4 px-2 sm:px-4 md:px-8 rounded-t-3xl w-full z-50 bottom-0 "
+      className=" pt-10 pb-4 px-2 sm:px-4 md:px-8 rounded-t-3xl w-full z-50 bottom-0 "
       style={{
         backdropFilter: 'blur(3px)',
         background: 'rgba(255, 255, 255, 0.06)',
         WebkitBackdropFilter: 'blur(12px)',
         boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-        border: '1px solid rgba(255, 255, 255, 0.18)',
+        border: '1px solid rgba(255, 255, 255, 0.47)',
         marginTop: "auto",
         position: "relative"  
       }}
