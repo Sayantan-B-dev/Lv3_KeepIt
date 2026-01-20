@@ -2,21 +2,48 @@
 
 
 
+
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  /* Typography */
+  --font-main: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --line-height-base: 1.5;
+  --font-weight-regular: 400;
 
+  /* Color scheme */
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #F0F0F0;
 
+  /* Core colors */
+  --color-bg-main: #10110f;
+  --color-bg-muted: #181a17;
+  --color-bg-elevated: #1f221d;
+
+
+  --color-text-primary: rgba(255, 255, 255, 0.87);
+  --color-text-secondary: rgba(255, 255, 255, 0.6);
+  --color-text-muted: rgba(255, 255, 255, 0.4);
+
+  --color-border: rgba(255, 255, 255, 0.12);
+
+  /* Accent / brand (safe defaults) */
+  --color-primary: #4f7cff;
+  --color-primary-hover: #3b6cf0;
+  --color-accent: #22c55e;
+  --color-danger: #ef4444;
+
+  /* Rendering */
+  font-family: var(--font-main);
+  line-height: var(--line-height-base);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-main);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
 
 html, body, #root {
   height: 100%;

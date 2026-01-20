@@ -1,8 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import DottedButton2 from "../components/buttons/DottedButton2";
-import Magnet from "../components/advance/Magnet";
 import Author from "../components/Author";
 import ConfirmPopUp from "../components/ConfirmPopUp";
 import Loading from "../components/home/Loading";
@@ -377,7 +375,7 @@ const Category = () => {
                 message="Are you sure you want to delete this category? This will also delete all notes in this category. This action cannot be undone."
                 backdropStyle={backdropStyle}
             />
-            <Magnet padding={50} disabled={false} magnetStrength={50} className="w-full">
+           
                 <div
                     ref={dropRef}
                     onDragOver={handleDragOver}
@@ -542,7 +540,7 @@ const Category = () => {
                         </div>
                     </div>
                 </div>
-            </Magnet>
+     
             <div className="mb-8 container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border-1 border-black w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
                 style={{
                     ...backdropStyle,
@@ -556,7 +554,7 @@ const Category = () => {
                     {notes && notes.length > 0 ? (
                         <ul className="flex flex-wrap gap-3">
                             {notes.map((note, index) => (
-                                <Magnet key={note._id} padding={5} disabled={false} magnetStrength={20} className="w-full">
+                               
                                     <li key={note._id}>
                                         <DottedButton2
                                             style={{ fontSize: "12px" }}
@@ -566,7 +564,7 @@ const Category = () => {
                                             tags={note.tags}
                                         />
                                     </li>
-                                </Magnet>
+                          
                             ))}
                         </ul>
                     ) : (

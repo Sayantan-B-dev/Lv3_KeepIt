@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import EncryptButton from "../components/buttons/EncryptButton";
-import Magnet from "../components/advance/Magnet";
 import { useAuth } from "../context/AuthContext";
 import ConfirmPopUp from "../components/ConfirmPopUp";
 import { marked } from "marked";

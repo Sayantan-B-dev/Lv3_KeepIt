@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import DottedButton from '../components/buttons/DottedButton';
 import DottedButton2 from '../components/buttons/DottedButton2';
-import Magnet from '../components/advance/Magnet';
 
 // Skeleton loader for tags
 const TagSkeleton = () => (
@@ -92,7 +91,7 @@ const AllTags = () => {
   };
 
   return (
-    <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
+
       <div className='container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-21 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl'
         style={{
           backdropFilter: 'blur(2px)',
@@ -190,7 +189,7 @@ const AllTags = () => {
           </div>
         )}
       </div>
-    </Magnet>
+
   );
 };
 

@@ -6,10 +6,10 @@ const RotatingKeepIt = () => {
         <div className="h-[10%] flex justify-center items-center bg-transparent py-4 mb-10">
             <div className="flex items-center gap-3 px-6 py-2 bg-white/80 rounded-2xl shadow-lg border border-cyan-200">
                 <span className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-cyan-700 drop-shadow-sm tracking-tight">
-                    Keep
+                    Note
                 </span>
                 <RotatingText
-                    texts={['It', 'Notes', 'Links', 'Ideas', 'Tasks', 'Reminders', 'Snippets', 'Thoughts']}
+                    texts={['Corner', 'Ideas', 'Thoughts', 'Collections', 'Finds', 'Moments']}
                     mainClassName="px-3 items-center sm:px-4 md:px-6 bg-gradient-to-r from-cyan-300 to-blue-200 text-cyan-900 font-bold text-xl sm:text-2xl md:text-3xl overflow-hidden py-1 sm:py-2 md:py-3 justify-center rounded-xl shadow"
                     staggerFrom={"last"}
                     initial={{ y: "100%" }}

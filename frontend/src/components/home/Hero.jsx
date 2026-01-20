@@ -1,129 +1,145 @@
-import React from 'react'
-import DottedButton from '../buttons/DottedButton';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import DottedButton from "../buttons/DottedButton";
+import { useNavigate } from "react-router-dom";
 
 const boxes = [
   {
     title: "Create Notes",
-    description: "Share your thoughts and experiences",
-    icon: "📝"
+    description: "Write and store your thoughts in one place",
+    icon: "📝",
   },
   {
-    title: "Global Connect",
-    description: "Connect with people worldwide",
-    icon: "🌍"
+    title: "Organize Content",
+    description: "Group notes by tags and categories",
+    icon: "🗂️",
   },
   {
-    title: "Discover Ideas",
-    description: "Explore diverse perspectives",
-    icon: "💡"
-  },
-  {
-    title: "Collaborate",
-    description: "Work together on shared notes",
-    icon: "🤝"
-  },
-  {
-    title: "Learn",
-    description: "Gain knowledge from others",
-    icon: "📚"
-  },
-  {
-    title: "Inspire",
-    description: "Be inspired by global stories",
-    icon: "⭐"
+    title: "Discover Notes",
+    description: "Explore notes shared by other users",
+    icon: "🔍",
   }
-]
+];
 
-const Hero = ( {user, loading, error, isAuthenticated} ) => {
+const Hero = ({ user, loading, error, isAuthenticated }) => {
   const navigate = useNavigate();
 
   return (
     <div
       className="
-        mt-10 border-1 border-black rounded-3xl flex items-center
+      border border-white
+
+        relative overflow-hidden
+        mt-10 border border-black/20 rounded-3xl flex items-center
         p-4 sm:p-6 md:p-10
         bg-gray-50
         bg-[url('https://images.pexels.com/photos/317356/pexels-photo-317356.jpeg')]
         bg-cover bg-center bg-no-repeat
-        min-h-[500px] md:min-h-[600px] h-auto
+        min-h-[500px] md:min-h-[800px] h-auto
       "
     >
-      <div className="container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full">
+      {/* Background overlay (controls opacity) */}
+      <div className="absolute inset-0 bg-black/30" />
+
+      {/* Content */}
+      <div className="relative z-10 container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
-          {/* Left Side - App Definition */}
+          {/* Left side */}
           <div className="space-y-8">
             <div className="space-y-4">
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                Keep your internet 
-                <span className="block text-indigo-600">Content in one place</span>
+                Keep your notes and ideas
+                <span className="block text-indigo-800">
+                  organized in one place
+                </span>
               </h1>
-              <p className="text-base sm:text-lg md:text-xl text-gray-600 leading-relaxed">
-                WorldNote helps you capture, organize, and share knowledge from across the web. Transform scattered information into meaningful content that grows with you.
+
+              <p className="text-base sm:text-lg md:text-xl text-gray-800 leading-relaxed">
+                <b>NoteCorner</b> is a simple platform to write, organize, and share
+                notes. Save useful content from the web, structure your thoughts,
+                and revisit them whenever you need.
               </p>
             </div>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-none">
-              <DottedButton text="Create Note" onClick={() => {
-                if (isAuthenticated) {
-                  navigate("/CreateNote");
-                } else {
-                  navigate("/login");
-                }
-              }} />
-              <DottedButton text="Learn More" onClick={() => {
-                navigate("/about");
-              }} />
+              <DottedButton
+                text="Create Note"
+                onClick={() => {
+                  if (isAuthenticated) {
+                    navigate("/CreateNote");
+                  } else {
+                    navigate("/login");
+                  }
+                }}
+              />
+              <DottedButton
+                text="Learn More"
+                onClick={() => navigate("/about")}
+              />
             </div>
 
-            <div className="flex flex-col xs:flex-row sm:flex-row md:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-8 pt-4">
-              <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold text-indigo-600">1000+</div>
-                <div className="text-gray-600 text-sm sm:text-base">Active Users</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold text-indigo-600">5000+</div>
-                <div className="text-gray-600 text-sm sm:text-base">Notes Shared</div>
-              </div>
-              <div className="text-center">
-                <div className="text-xl sm:text-2xl font-bold text-indigo-600">50+</div>
-                <div className="text-gray-600 text-sm sm:text-base">Countries</div>
-              </div>
+            <div className="text-sm sm:text-base text-gray-800 pt-4 max-w-xl">
+              Built for individuals who want a clean space to store ideas,
+              learning notes, and useful links — without unnecessary complexity.
             </div>
           </div>
 
+          {/* Right side feature grid */}
           <div className="relative flex justify-center items-center p-2 sm:p-6 md:p-10 w-full">
-            <div className="
-              grid
-              grid-cols-2
-              sm:grid-cols-3
-              gap-3 sm:gap-4
-              max-w-xs sm:max-w-md mx-auto lg:mx-0
-              w-full
-            ">
+            <div
+              className="
+    flex flex-col flex-wrap justify-center
+    gap-3 sm:gap-4
+    w-full
+  "
+            >
               {boxes.map((box, index) => (
                 <div
                   key={index}
                   className="
-                    backdrop-blur-sm bg-white/30 p-4 sm:p-6 rounded-xl shadow-xl
-                    hover:shadow-2xl transition-all duration-300 hover:-translate-y-2
-                    border border-white/40 hover:border-white/60 hover:bg-white/40
-                    flex flex-col items-center
-                  "
+        flex flex-col items-center
+        backdrop-blur-sm bg-white/30
+        p-4 sm:p-6
+        rounded-xl shadow-xl
+        transition-all duration-300
+        hover:-translate-y-2 hover:shadow-2xl
+        border border-white/40 hover:border-white/60 hover:bg-white/40
+
+
+
+        box-border
+      "
                 >
-                  <div className="w-8 h-8 bg-white/50 rounded-lg mb-2 sm:mb-3 flex items-center justify-center backdrop-blur-sm">
-                    <span className="text-indigo-600 text-lg">{box.icon}</span>
+                  <div
+                    className="
+          w-8 h-8
+          bg-white/50 rounded-lg
+          mb-2 sm:mb-3
+          flex items-center justify-center
+          backdrop-blur-sm
+          shrink-0
+        "
+                  >
+                    <span className="text-indigo-800 text-lg">
+                      {box.icon}
+                    </span>
                   </div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 text-center">{box.title}</h3>
-                  <p className="text-gray-600 text-xs sm:text-sm text-center">{box.description}</p>
+
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900 text-center break-words">
+                    {box.title}
+                  </h3>
+                  
+                  <p className="text-gray-800 text-xs sm:text-sm text-center break-words">
+                    {box.description}
+                  </p>
                 </div>
               ))}
             </div>
+
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;

@@ -1,99 +1,78 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect } from 'react';
-import { lazy, Suspense } from 'react';
-const Home = lazy(() => import('./pages/Home'));
-const Login = lazy(() => import('./pages/Login'));
-const Register = lazy(() => import('./pages/Register'));
-const Profile = lazy(() => import('./pages/Profile'));
-const Category = lazy(() => import('./pages/Category'));
-const Note = lazy(() => import('./pages/Note'));
-const Logout = lazy(() => import('./pages/Logout'));
+import { useState, useEffect, lazy, Suspense } from "react";
 import axiosInstance from "./api/axiosInstance";
-import DotGrid from './components/advance/Background';
-import Squares from "./components/advance/Squares";
+
 import Footer from "./components/partials/footer";
-import MyProfile from "./pages/MyProfile";
 import { StickyNavbar } from "./components/partials/StickyNavbar";
-const CreateNote = lazy(() => import('./pages/CreateNote'));
-const AllNotes = lazy(() => import('./pages/AllNotes'));
-const AllCategories = lazy(() => import('./pages/AllCategories'));
-const About = lazy(() => import('./pages/About'));
-const AllUsers = lazy(() => import('./pages/AllUsers'));
 import Loading from "./components/home/Loading";
-import RotatingKeepIt from "./components/RotatingKeepIt"
+import RotatingKeepIt from "./components/RotatingKeepIt";
 import Waiting from "./components/partials/Waiting";
 import { useAuth } from "./context/AuthContext";
-const TagNotes = lazy(() => import('./pages/TagNotes'));
-const AllTags = lazy(() => import('./pages/AllTags'));
 
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Profile = lazy(() => import("./pages/Profile"));
+const MyProfile = lazy(() => import("./pages/MyProfile"));
+const Category = lazy(() => import("./pages/Category"));
+const Note = lazy(() => import("./pages/Note"));
+const Logout = lazy(() => import("./pages/Logout"));
+const CreateNote = lazy(() => import("./pages/CreateNote"));
+const AllNotes = lazy(() => import("./pages/AllNotes"));
+const AllCategories = lazy(() => import("./pages/AllCategories"));
+const About = lazy(() => import("./pages/About"));
+const AllUsers = lazy(() => import("./pages/AllUsers"));
+const TagNotes = lazy(() => import("./pages/TagNotes"));
+const AllTags = lazy(() => import("./pages/AllTags"));
 
 function App() {
   const { user, loading: authLoading } = useAuth();
   const isAuthenticated = !!user;
+
   const [notes, setNotes] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
+
         const categoriesRes = await axiosInstance.get("/api/categories");
-        setCategories(categoriesRes.data);
         const notesRes = await axiosInstance.get("/api/notes/public/all");
+
+        setCategories(categoriesRes.data);
         setNotes(notesRes.data || []);
-      } catch (e) {
+      } catch {
         setError("Something went wrong. Please try again later.");
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
-      <BrowserRouter >
+      <BrowserRouter>
+        {/* Sidebar is fixed, content flows beside it */}
         <StickyNavbar />
 
-        {/* background */}
+        {/* MAIN CONTENT WRAPPER */}
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            minWidth: '200vw',
-            minHeight: '200vh',
-            maxWidth: '200vw',
-            maxHeight: '200vh',
-            zIndex: -3456,
-            pointerEvents: 'none',
-          }}
+          className="
+            flex-1 flex flex-col
+            transition-all duration-300
+            lg:ml-[17rem]
+            px-3 sm:px-6
+          "
         >
-          <Squares
-            speed={0.5}
-            squareSize={20}
-            direction='down'
-            borderColor='#ccc'
-            
-          />
-          {/* <DotGrid
-            dotSize={2}
-            gap={20}
-            baseColor="#1a1a2e"
-            activeColor="#16213e"
-            proximity={100}
-            shockRadius={200}
-            shockStrength={3}
-            resistance={600}
-            returnDuration={2.0}
-          /> */}
-        </div>
-        {(authLoading || loading) ? <Loading /> : <div className="flex-1 flex flex-col">
-          {error ? (
+          {(authLoading || loading) ? (
+            <Loading />
+          ) : error ? (
             <Routes>
               <Route
                 path="*"
@@ -105,62 +84,60 @@ function App() {
                         if (typeof window !== "undefined") {
                           setTimeout(() => {
                             window.location.reload();
-                          }, 10000000);
+                          }, 10000);
                         }
                         return null;
-                      })()
+                      })(),
                     }}
                   />
                 }
               />
             </Routes>
           ) : (
-            <Suspense fallback={<Loading />}>
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <Home
-                    notes={notes}
+            <>
+              <Suspense fallback={<Loading />}>
+                <Routes>
+                  <Route path="/" element={<Home notes={notes} />} />
+
+                  <Route
+                    path="/login"
+                    element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />}
                   />
-                }
-              />
-              <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} />
-              <Route path="/register" element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />} />
-              <Route path="/logout" element={<Logout />} />
-              <Route path="/profile/MyProfile" element={isAuthenticated ? <MyProfile categories={categories} /> : <Navigate to="/login" replace />} />
-              <Route path="/CreateNote" element={<CreateNote categories={categories} />} />
-              <Route path="/all-categories" element={<AllCategories />} />
-              <Route path="/all-notes" element={<AllNotes />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/all-users" element={<AllUsers />} />
-              <Route path="/all-tags" element={<AllTags />} />
-              <Route
-                path="/profile/:userId"
-                element={<Profile />}
-              />
-              <Route
-                path="/category/:categoryId"
-                element={<Category />}
-              />
-              <Route
-                path="/note/:noteId"
-                element={<Note />}
-              />
-              <Route
-                path="/tag/:tagname"
-                element={<TagNotes />}
-              />
-              <Route path="/CreateNote" element={<CreateNote />} />
-            </Routes>
-            </Suspense>
+                  <Route
+                    path="/register"
+                    element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />}
+                  />
+                  <Route path="/logout" element={<Logout />} />
+
+                  <Route
+                    path="/profile/MyProfile"
+                    element={
+                      isAuthenticated ? (
+                        <MyProfile categories={categories} />
+                      ) : (
+                        <Navigate to="/login" replace />
+                      )
+                    }
+                  />
+
+                  <Route path="/CreateNote" element={<CreateNote categories={categories} />} />
+                  <Route path="/all-categories" element={<AllCategories />} />
+                  <Route path="/all-notes" element={<AllNotes />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/all-users" element={<AllUsers />} />
+                  <Route path="/all-tags" element={<AllTags />} />
+
+                  <Route path="/profile/:userId" element={<Profile />} />
+                  <Route path="/category/:categoryId" element={<Category />} />
+                  <Route path="/note/:noteId" element={<Note />} />
+                  <Route path="/tag/:tagname" element={<TagNotes />} />
+                </Routes>
+              </Suspense>
+              <RotatingKeepIt />
+              <Footer />
+            </>
           )}
-        </div>}
-
-
-
-        <RotatingKeepIt />
-        <Footer />
+        </div>
       </BrowserRouter>
     </div>
   );

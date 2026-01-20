@@ -1,6 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Magnet from "../components/advance/Magnet";
 
 const clickableOptions = [
   {
@@ -54,7 +53,7 @@ const About = () => {
   const navigate = useNavigate();
 
   return (
-    <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
+   
       <div
         className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-22 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
         style={{
@@ -95,7 +94,7 @@ const About = () => {
           &copy; {new Date().getFullYear()} <span className="font-semibold text-indigo-700">KeepIt</span>. Built with <span role="img" aria-label="love">❤️</span> by the Sayantan.
         </div>
       </div>  
-    </Magnet>
+    
   );
 };
 

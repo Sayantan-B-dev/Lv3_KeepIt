@@ -1,348 +1,275 @@
-import React from "react";
-import {
-  Navbar,
-  Collapse,
-  Typography,
-} from "@material-tailwind/react";
-import DottedButton from "../buttons/DottedButton";
+import React, { useEffect, useState } from "react";
+import { Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../../api/axiosInstance";
 import { toast } from "react-toastify";
-import { useAuth } from '../../context/AuthContext';
-import { useRef, useState } from 'react';
+import axiosInstance from "../../api/axiosInstance";
+import { useAuth } from "../../context/AuthContext";
+import DottedButton from "../buttons/DottedButton";
 
-const blackFont = {
+/* ================= shared underline style ================= */
+
+const coloredFont = {
   textDecoration: "none",
-  color: "black",
+  color: "white",
   position: "relative",
   display: "inline-block",
 };
 
-const blackFontClass = `
-  relative inline-block text-black no-underline
-  after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-[1px] after:bg-black
-  after:origin-right after:scale-x-0 after:transition-transform after:duration-300 
+const fontClass = `
+  relative inline-block text-white no-underline
+  after:content-[''] after:absolute after:left-0 after:bottom-0
+  after:w-full after:h-[1px] after:bg-white
+  after:origin-right after:scale-x-0
+  after:transition-transform after:duration-300
   hover:after:origin-left hover:after:scale-x-100
 `;
-export { blackFontClass };
+
+export { fontClass as blackFontClass };
+
+/* ================= sidebar styles ================= */
+
+const sidebarBaseClass = `
+  fixed top-3 left-3
+  h-[calc(100vh-1.5rem)] w-64
+  rounded-xl
+  px-4 py-3
+  z-50
+  backdrop-blur-md
+  border border-gray-500
+  transition-transform duration-300
+  flex flex-col
+`;
+
+const sidebarHiddenClass = `-translate-x-full`;
+
+const sidebarHeaderClass = `mb-4`;
+
+const sidebarBrandClass = `
+  text-xl font-bold cursor-pointer
+`;
+
+const sidebarNavListClass = `
+  flex flex-col gap-4 flex-1
+`;
+
+const sidebarNavItemClass = `
+  flex items-center gap-x-3 cursor-pointer
+`;
+
+const sidebarFooterClass = `
+  pt-4 mt-4
+  border-t border-gray-300
+  flex flex-col gap-3
+`;
+
+const sidebarProfileImgClass = `
+  w-[42px] h-[42px]
+  rounded-full
+  border border-black
+  object-cover
+  cursor-pointer
+  transition-transform duration-300
+  hover:scale-110
+`;
+
+const sidebarHamburgerClass = `
+  fixed top-4 left-4
+  z-[60]
+  cursor-pointer
+  lg:hidden
+`;
+
+const sidebarOverlayClass = `
+  fixed inset-0
+  bg-black/30
+  z-40
+  lg:hidden
+`;
+
+/* ================= component ================= */
 
 export function StickyNavbar() {
   const { user } = useAuth();
   const isAuthenticated = !!user;
-  const [openNav, setOpenNav] = React.useState(false);
-  const [scrolled, setScrolled] = React.useState(false);
   const navigate = useNavigate();
-  const [tagSearch, setTagSearch] = useState("");
-  const [showTagPopup, setShowTagPopup] = useState(false);
-  const [tagResults, setTagResults] = useState([]);
-  const [tagLoading, setTagLoading] = useState(false);
-  const [tagError, setTagError] = useState(null);
-  const tagInputRef = useRef(null);
-  const tagPopupRef = useRef(null);
 
-  // Close popup on outside click
-  React.useEffect(() => {
-    function handleClickOutside(event) {
-      if (tagPopupRef.current && !tagPopupRef.current.contains(event.target) && tagInputRef.current && !tagInputRef.current.contains(event.target)) {
-        setShowTagPopup(false);
-        setTagSearch("");
-        setTagResults([]);
-        setTagError(null);
-      }
-    }
-    if (showTagPopup) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showTagPopup]);
+  const [open, setOpen] = useState(false);
 
-  const handleTagSearch = async (e) => {
-    e.preventDefault();
-    if (!tagSearch.trim()) return;
-    setTagLoading(true);
-    setTagError(null);
-    setTagResults([]);
-    setShowTagPopup(true);
-    try {
-      const res = await axiosInstance.get(`/api/notes?tag=${encodeURIComponent(tagSearch.trim())}`);
-      setTagResults(res.data || []);
-    } catch (err) {
-      setTagError("Failed to fetch notes for this tag.");
-    } finally {
-      setTagLoading(false);
-    }
-  };
-
-  React.useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-
-    const onResize = () => {
-      if (window.innerWidth >= 960) {
-        setOpenNav(false);
-      }
-    };
-
-    window.addEventListener("scroll", onScroll);
-    window.addEventListener("resize", onResize);
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onResize);
-    };
-  }, []);
-
-  // Add a property to indicate which links should open in a new tab
   const navItems = [
     {
       label: "All Categories",
       href: "/all-categories",
       icon: (
-        <svg width="18" height="18" fill="none" viewBox="0 0 20 20">
+        <svg width="18" height="18" viewBox="0 0 20 20">
           <rect x="2" y="2" width="6" height="6" rx="2" fill="#90A4AE" />
           <rect x="12" y="2" width="6" height="6" rx="2" fill="#90A4AE" />
           <rect x="2" y="12" width="6" height="6" rx="2" fill="#90A4AE" />
           <rect x="12" y="12" width="6" height="6" rx="2" fill="#90A4AE" />
         </svg>
       ),
-      newTab: true,
     },
     {
       label: "All Notes",
       href: "/all-notes",
       icon: (
-        <svg width="18" height="18" fill="none" viewBox="0 0 20 20">
+        <svg width="18" height="18" viewBox="0 0 20 20">
           <rect x="3" y="4" width="14" height="2" rx="1" fill="#90A4AE" />
           <rect x="3" y="9" width="14" height="2" rx="1" fill="#90A4AE" />
           <rect x="3" y="14" width="10" height="2" rx="1" fill="#90A4AE" />
         </svg>
       ),
-      newTab: true,
     },
     {
       label: "All Tags",
       href: "/all-tags",
       icon: (
-        <svg width="18" height="18" fill="none" viewBox="0 0 20 20">
+        <svg width="18" height="18" viewBox="0 0 20 20">
           <circle cx="10" cy="10" r="8" stroke="#90A4AE" strokeWidth="2" />
           <rect x="7" y="9" width="6" height="2" rx="1" fill="#90A4AE" />
           <rect x="9" y="7" width="2" height="6" rx="1" fill="#90A4AE" />
         </svg>
       ),
-      newTab: true,
     },
     {
       label: "All Users",
       href: "/all-users",
       icon: (
-        <svg width="18" height="18" fill="none" viewBox="0 0 20 20">
-          <path d="M8 7C9.65685 7 11 5.65685 11 4C11 2.34315 9.65685 1 8 1C6.34315 1 5 2.34315 5 4C5 5.65685 6.34315 7 8 7Z" fill="#90A4AE" />
-          <path d="M14 12C14 10.3431 12.6569 9 11 9H5C3.34315 9 2 10.3431 2 12V15H14V12Z" fill="#90A4AE" />
+        <svg width="18" height="18" viewBox="0 0 20 20">
+          <path
+            d="M8 7C9.66 7 11 5.66 11 4S9.66 1 8 1 5 2.34 5 4s1.34 3 3 3Z"
+            fill="#90A4AE"
+          />
+          <path
+            d="M14 12c0-1.66-1.34-3-3-3H5c-1.66 0-3 1.34-3 3v3h12v-3Z"
+            fill="#90A4AE"
+          />
         </svg>
       ),
-      newTab: true,
     },
     {
       label: "About",
       href: "/about",
       icon: (
-        <svg width="18" height="18" fill="none" viewBox="0 0 20 20">
+        <svg width="18" height="18" viewBox="0 0 20 20">
           <circle cx="10" cy="10" r="8" stroke="#90A4AE" strokeWidth="2" />
           <rect x="9" y="8" width="2" height="5" rx="1" fill="#90A4AE" />
           <rect x="9" y="5" width="2" height="2" rx="1" fill="#90A4AE" />
         </svg>
       ),
-      newTab: false,
     },
   ];
 
-  const navList = (
-    <ul className="mt-2 mb-4 flex flex-col gap-2 md:gap-3 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
-      {navItems.map(({ label, href, icon, newTab }) => (
-        <li
-          key={label}
-          className="flex items-center gap-x-2 p-1 font-medium"
-        >
-          {icon}
-          <a
-            href={href}
-            className={`flex items-center text-base md:text-[1.05rem] ${blackFontClass}`}
-            style={blackFont}
-            {...(newTab
-              ? {rel: "noopener noreferrer" }//target: "_blank", if needed
-              : {})}
-          >
-            {label}
-          </a>
-        </li>
-      ))}
-    </ul>
-  );
+  /* desktop default open */
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 1024) setOpen(true);
+    };
+    window.addEventListener("resize", onResize);
+    onResize();
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   return (
-    <Navbar
-      className={`w-[90%] max-w-full md:max-w-[96%] lg:max-w-[90%] mx-auto rounded-2xl md:rounded-3xl lg:rounded-4xl py-2 px-2 sm:px-4 md:px-6 lg:px-8 lg:py-4 sticky top-2 md:top-4 z-50 transition-colors backdrop-blur-xs duration-500 ${scrolled
-        ? "bg-white/20 backdrop-blur-xs border border-gray-500 shadow-3xl"
-        : "bg-black/5"
-        }`}
-    >
-      <div className="container mx-auto flex flex-wrap items-center justify-between text-blue-gray-900 gap-y-2">
-        <Typography
-          as="a"
-          href="#"
-          className="mr-2 sm:mr-4 cursor-pointer py-1.5 font-bold text-xl sm:text-2xl"
-          style={{ textDecoration: "none", color: "black" }}
-          onClick={() => navigate("/")}
+    <>
+      {/* Hamburger */}
+      <div className={sidebarHamburgerClass} onClick={() => setOpen(!open)}>
+        <svg
+          className="h-8 w-8 text-black"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
         >
-          KeepIt
-        </Typography>
-        {/* Desktop Nav */}
-        <div className="hidden lg:flex flex-1 justify-center">{navList}</div>
-        {/* Desktop Auth Buttons/Profile */}
-
-        <div className="flex items-center gap-x-3">
-          <div className="flex items-center gap-x-3">
-            {isAuthenticated && (
-              <div
-                className="cursor-pointer hover:scale-110 transition-all duration-300 active:scale-95"
-                onClick={() => {
-                  setOpenNav(false);
-                  navigate("/profile/MyProfile");
-                }}
-                style={{ outline: "none" }}
-              >
-                <img
-                  src={
-                    user?.profileImage?.url ||
-                    `https://ui-avatars.com/api/?name=${user?.username?.split(" ")[0] || "U"}&background=E0E7FF&color=6366F1`
-                  }
-                  className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border border-black"
-                  alt="Profile"
-                />
-              </div>
-            )}
-            {/* Mobile Hamburger */}
-            <div
-              onClick={() => setOpenNav(!openNav)}
-              className="cursor-pointer flex items-center lg:hidden ml-auto"
-              aria-label={openNav ? "Close navigation menu" : "Open navigation menu"}
-            >
-              {openNav ? (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-7 w-7 sm:h-8 sm:w-8 text-black"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-7 w-7 sm:h-8 sm:w-8 text-black"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
-              )}
-            </div>
-          </div>
-          <div className="hidden lg:flex items-center gap-x-3">
-            {!isAuthenticated && (
-              <>
-                <DottedButton text="LOG IN" onClick={() => navigate("/login")} />
-                <DottedButton text="SIGN IN" onClick={() => navigate("/register")} />
-              </>
-            )}
-            {isAuthenticated && (
-              <>
-                <DottedButton
-                  text="Log Out"
-                  className="hidden lg:block"
-                  onClick={async () => {
-                    try {
-                      await axiosInstance.post("/api/auth/logout");
-                    } catch (err) {
-
-                    }
-                    localStorage.removeItem("user");
-                    toast.success("Logged out successfully");
-                    setTimeout(() => {
-                      navigate("/");
-                      window.location.reload();
-                    }, 3000);
-                  }}
-                />
-              </>
-            )}
-          </div>
-        </div>
-
+          {open ? (
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
       </div>
-      {/* Mobile Nav */}
-      <Collapse open={openNav}>
-        <div className="container mx-auto flex flex-col gap-4 py-2">
-          <div className="w-full">{navList}</div>
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-x-3">
-            {!isAuthenticated && (
-              <>
-                <DottedButton
-                  text="Log In"
-                  className="w-full sm:w-auto"
-                  onClick={() => {
-                    setOpenNav(false);
-                    navigate("/login");
-                  }}
-                />
-                <DottedButton
-                  text="Sign in"
-                  className="w-full sm:w-auto"
-                  onClick={() => {
-                    setOpenNav(false);
-                    navigate("/register");
-                  }}
-                />
-              </>
-            )}
-            {isAuthenticated && (
-              <>
-                <DottedButton
-                  text="LOG OUT"
-                  className="w-full sm:w-auto"
-                  onClick={async () => {
-                    try {
-                      await axiosInstance.post("/api/auth/logout");
-                    } catch (err) {
-                    }
-                    localStorage.removeItem("user");
-                    setOpenNav(false);
-                    toast.success("Logged out successfully");
-                    setTimeout(() => {
-                      navigate("/");
-                    }, 3000);
-                  }}
-                />
-              </>
-            )}
-          </div>
+
+      {/* Sidebar */}
+      <aside className={`${sidebarBaseClass} ${open ? "translate-x-0" : sidebarHiddenClass}`}>
+        {/* Brand */}
+        <div className={sidebarHeaderClass}>
+          <Typography
+            as="div"
+            className={`${sidebarBrandClass} ${fontClass}`}
+            style={coloredFont}
+            onClick={() => navigate("/")}
+          >
+            NoteCorner
+          </Typography>
         </div>
-      </Collapse>
-    </Navbar>
+
+        {/* Nav */}
+        <nav className={sidebarNavListClass}>
+          {navItems.map(({ label, href, icon }) => (
+            <div
+              key={label}
+              className={sidebarNavItemClass}
+              onClick={() => {
+                navigate(href);
+                if (window.innerWidth < 1024) setOpen(false);
+              }}
+            >
+              {icon}
+              <span className={fontClass} style={coloredFont}>
+                {label}
+              </span>
+            </div>
+          ))}
+        </nav>
+
+        {/* Footer */}
+        <div className={sidebarFooterClass}>
+          {isAuthenticated && (
+            <div
+              className="flex items-center gap-x-3 cursor-pointer"
+              onClick={() => navigate("/profile/MyProfile")}
+            >
+              <img
+                src={
+                  user?.profileImage?.url ||
+                  `https://ui-avatars.com/api/?name=${user?.username?.split(" ")[0] || "U"}`
+                }
+                className={sidebarProfileImgClass}
+                alt="Profile"
+              />
+              <span className={fontClass} style={coloredFont}>
+                {user?.username || "Profile"}
+              </span>
+            </div>
+          )}
+
+          {!isAuthenticated ? (
+            <>
+              <DottedButton text="LOG IN" onClick={() => navigate("/login")} />
+              <DottedButton text="SIGN IN" onClick={() => navigate("/register")} />
+            </>
+          ) : (
+            <DottedButton
+              text="LOG OUT"
+              onClick={async () => {
+                try {
+                  await axiosInstance.post("/api/auth/logout");
+                } catch {}
+                localStorage.removeItem("user");
+                toast.success("Logged out successfully");
+                navigate("/");
+              }}
+            />
+          )}
+        </div>
+      </aside>
+
+      {/* Overlay */}
+      {open && (
+        <div
+          className={sidebarOverlayClass}
+          onClick={() => setOpen(false)}
+        />
+      )}
+    </>
   );
 }

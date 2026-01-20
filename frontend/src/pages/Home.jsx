@@ -45,7 +45,7 @@ const Home = () => {
   return (
     <div className="container mx-auto p-4 w-[90%] max-w-full ">
       <Hero user={user} isAuthenticated={isAuthenticated} />
-      <h1 className="text-2xl font-bold mt-10 text-black pb-2 ">Explore</h1>
+      <h1 className="text-2xl font-bold mt-10 text-black pb-2 text-gray-200">Explore</h1>
       <div id="explore-users"><UserBox users={users} /></div>
     </div>
   );

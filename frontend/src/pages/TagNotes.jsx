@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
 import Loading from '../components/home/Loading';
-import Magnet from '../components/advance/Magnet';
 import DottedButton from '../components/buttons/DottedButton';
 import Author from '../components/Author';
 
@@ -40,7 +39,6 @@ const TagNotes = () => {
   };
 
   return (
-    <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
       <div className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-22 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
         style={{
           backdropFilter: 'blur(2px)',
@@ -116,7 +114,7 @@ const TagNotes = () => {
           </div>
         )}
       </div>
-    </Magnet>
+
   );
 };
 

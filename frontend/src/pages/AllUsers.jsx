@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axiosInstance from '../api/axiosInstance';
 import UserBox from '../components/home/UserBox';
-import Magnet from '../components/advance/Magnet';
-import DottedButton2 from '../components/buttons/DottedButton2';
 
 // Skeleton loader for users
 const UserSkeleton = () => (
@@ -107,7 +105,7 @@ const AllUsers = () => {
   };
 
   return (
-    <Magnet padding={50} disabled={false} magnetStrength={100} className="w-full">
+  
       <div className="container mx-auto p-6 shadow-2xl border-1 border-dashed border-black mt-10 mb-21 relative w-[90%] max-w-[90%] md:max-w-2xl lg:max-w-3xl"
         style={{
           width: '90%',
@@ -185,7 +183,7 @@ const AllUsers = () => {
           </div>
         )}
       </div>
-    </Magnet>
+
   );
 };
 

@@ -4,9 +4,9 @@ import './Squares.css';
 const Squares = ({
   direction = 'right',
   speed = 1,
-  borderColor = '#222',
+  borderColor = '',
   squareSize = 40,
-  hoverFillColor = '#444',
+  hoverFillColor = '#6e6c6c',
   className = '',
 }) => {
   const canvasRef = useRef(null);
@@ -63,7 +63,7 @@ const Squares = ({
         canvas.height / 2,
         Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2
       );
-      gradient.addColorStop(0, 'rgba(0, 0, 0, 0)');
+      gradient.addColorStop(0, 'rgba(155, 118, 118, 0)');
 
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
