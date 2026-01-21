@@ -1,5 +1,4 @@
 import React from "react";
-import Author from "../../components/Author";
 import DottedButton2 from "../../components/buttons/DottedButton2";
 
 const NoteHeader = ({
@@ -33,7 +32,7 @@ const NoteHeader = ({
   return (
     <div className="flex items-center gap-6 mb-8  justify-center">
       <div className="relative flex flex-col  justify-center  border-2 border-black rounded-xl p-10">
-        <p className="text-sm font-extrabold text-gray-900 flex items-center gap-2 text-center justify-center">
+        <p className="text-sm font-extrabold text-type-1 flex items-center gap-2 text-center justify-center">
           Title:
         </p>
         <div>
@@ -43,12 +42,12 @@ const NoteHeader = ({
               name="title"
               value={editNote.title}
               onChange={handleInputChange}
-              className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 border border-grayi5digo-200 rounded px-2 py-1"
+              className="text-lg sm:text-xl md:text-2xl font-extrabold text-type-1 border border-grayi5digo-200 rounded px-2 py-1"
               maxLength={100}
               disabled={updateLoading}
             />
           ) : (
-            <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-900 flex ienter text-center justify-center gap-2" style={{ wordBreak: "break-all" }}>
+            <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-type-1 flex ienter text-center justify-center gap-2" style={{ wordBreak: "break-all" }}>
               {note.title}
             </h3>
           )}

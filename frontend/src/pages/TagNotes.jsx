@@ -1,121 +1,173 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/axiosInstance';
-import Loading from '../components/home/Loading';
 import DottedButton from '../components/buttons/DottedButton';
+import DottedButton2 from '../components/buttons/DottedButton2';
 import Author from '../components/Author';
+import SearchBar from '../components/common/SearchBar';
+import Skeleton from '../components/skeletons/Skeleton';
+
+const PAGE_SIZE = 15;
 
 const TagNotes = () => {
   const { tagname } = useParams();
   const navigate = useNavigate();
+
   const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);        // initial load
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     const fetchNotes = async () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await axiosInstance.get(`/api/notes?tag=${encodeURIComponent(tagname)}`);
+        const res = await axiosInstance.get(
+          `/api/notes?tag=${encodeURIComponent(tagname)}`
+        );
         setNotes(res.data || []);
-      } catch (err) {
+      } catch {
         setError('Failed to fetch notes for this tag.');
       } finally {
         setLoading(false);
       }
     };
+
     fetchNotes();
   }, [tagname]);
 
-  // Filter notes by title (case-insensitive)
+  // reset pagination on search or tag change
+  useEffect(() => {
+    setPage(1);
+  }, [search, tagname]);
+
   const filteredNotes = notes.filter(note =>
-    note.title && note.title.toLowerCase().includes(search.toLowerCase())
+    note.title?.toLowerCase().includes(search.toLowerCase())
   );
+
+  const visibleNotes = filteredNotes.slice(0, page * PAGE_SIZE);
+  const hasMore = filteredNotes.length > visibleNotes.length;
+
+  const handleLoadMore = () => {
+    if (loadingMore) return;
+    setLoadingMore(true);
+
+    setTimeout(() => {
+      setPage(p => p + 1);
+      setLoadingMore(false);
+    }, 300);
+  };
 
   const handleUserClick = (userId) => {
     navigate(`/profile/${userId}`);
   };
 
   return (
-      <div className="container mx-auto p-6 max-w-3xl shadow-2xl border-1 border-dashed border-black mt-10 mb-22 relative w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
-        style={{
-          backdropFilter: 'blur(2px)',
-          backdropShadow: '20px',
-          background: 'rgba(255, 255, 255, 0.01)',
-          WebkitBackdropFilter: 'blur(12px)',
-          boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-          borderRadius: '60px',
-        }}
-      >
-        <div className="flex flex-col items-center justify-center mb-8">
-          <h2 className="text-2xl font-bold text-black text-center mb-4">
-            Notes tagged with
-          </h2>
-          <span className="backdrop-blur-md bg-black/80 border border-black px-3 py-1 rounded-full text-xs font-semibold cursor-pointer hover:bg-black/10 transition text-white hover:text-black shadow-sm mt-2 text-center">
-            #{tagname}
-          </span>
+    <div
+      className="
+        mx-auto mb-5
+        w-full
+        p-6 sm:p-8
+        relative
+        border border-muted
+        rounded-lg
+        bg-type-b1
+        glass-panel
+      "
+    >
+      {/* Header */}
+      <div className="flex flex-col items-center justify-center mb-10">
+        <h2 className="text-2xl sm:text-3xl font-extrabold text-type-1 text-center mb-4">
+          Notes tagged with
+        </h2>
+
+        <span
+          className="
+            px-4 py-1.5
+            rounded-full
+            text-xs font-mono
+            bg-black text-type-3
+            border border-muted2
+            hover:scale-105
+            shadow-sm
+            transition
+            cursor-pointer
+          "
+        >
+          #{tagname}
+        </span>
+      </div>
+
+      {/* Search */}
+      <SearchBar
+        value={search}
+        onChange={setSearch}
+        placeholder="Search notes"
+      />
+
+      {/* Initial load skeletons */}
+      {loading && (
+        <div className="flex flex-col gap-3 mt-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} />
+          ))}
         </div>
-        <div className="flex items-center gap-3 w-full mb-6">
-          <div className="flex items-center justify-center h-10 w-10 rounded-full bg-gray-100">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-6 h-6 text-black"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607Z"
-              />
-            </svg>
-          </div>
-          <input
-            type="text"
-            placeholder="Search notes by title"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="flex-1 h-10 px-4 rounded-md border-1 border-gray-300 text-black focus:outline-none focus:border-black"
-            style={{
-              backdropFilter: 'blur(2px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              background: 'rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-              borderRadius: '60px',
-            }}
-          />
+      )}
+
+      {error && (
+        <div className="text-center text-red-500 font-medium">
+          {error}
         </div>
-        {loading && <div> <Loading /> </div>}
-        {error && <div style={{ color: '#e63946' }}>{error}</div>}
-        {!loading && !error && (
-          <div style={{ listStyle: 'none', padding: 0 }} className="flex flex-col gap-2">
-            {filteredNotes.length === 0 ? (
-              <div className="text-center text-red-500">No notes found with this tag.</div>
+      )}
+
+      {!loading && !error && (
+        <>
+          <div className="flex flex-col gap-3">
+            {visibleNotes.length === 0 ? (
+              <div className="text-center text-type-3">
+                No notes found with this tag.
+              </div>
             ) : (
-              filteredNotes.map((note) => (
-                <div key={note._id || note.title} className="flex items-center gap-2 w-[70%] m-auto">
-                  <DottedButton
-                    style={{ fontSize: "12px" }}
-                    key={note._id || note.title}
+              visibleNotes.map(note => (
+                <div
+                  key={note._id}
+                  className="flex items-center gap-3 w-full mx-auto"
+                >
+                  <DottedButton2
                     text={note.title}
-                    className="w-full"
+                    className="w-full text-sm"
                     onClick={() => navigate(`/note/${note._id}`)}
                   />
-                  <div className="w-12 h-12">
-                    <Author user={note.user} handleUserClick={handleUserClick} />
+
+                  <div className="w-12 h-12 shrink-0">
+                    <Author
+                      user={note.user}
+                      handleUserClick={handleUserClick}
+                    />
                   </div>
                 </div>
               ))
             )}
-          </div>
-        )}
-      </div>
 
+            {/* Load-more skeletons */}
+            {loadingMore &&
+              Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton key={`more-${i}`} />
+              ))}
+          </div>
+
+          {hasMore && !loadingMore && (
+            <div className="flex justify-center mt-6">
+              <DottedButton text="Load More" onClick={handleLoadMore} />
+            </div>
+          )}
+        </>
+      )}
+    </div>
   );
 };
 
-export default TagNotes; 
+export default TagNotes;
