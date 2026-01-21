@@ -2,13 +2,20 @@ import User from '../models/user.js';
 import Note from '../models/note.js';
 import Category from '../models/category.js';
 import { cloudinary } from '../utils/cloudinary.js';
+import CategoryType from "../models/categoryType.js";
 
 // Get a user's public profile by ID
 export const getUserProfile = async (req, res) => {
   try {
     const { userId } = req.params;
     // Only select public fields
-    const user = await User.findById(userId).populate('categories')
+    const user = await User.findById(userId).populate({
+      path: "categories",
+      populate: {
+        path: "categoryType",
+        select: "name",
+      },
+    });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -47,11 +54,11 @@ export const myProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id)
       .populate({
-        path: 'categories',
-        populate: {
-          path: 'notes',
-          select: '_id'
-        }
+        path: "categories",
+        populate: [
+          { path: "notes", select: "_id" },
+          { path: "categoryType", select: "name" }
+        ],
       })
     res.json(user)
   } catch (err) {
@@ -64,9 +71,9 @@ function extractPublicId(url) {
     const urlParts = url.split('/upload/');
     if (urlParts.length < 2) return null;
 
-    let publicIdWithVersion = urlParts[1]; 
+    let publicIdWithVersion = urlParts[1];
     const parts = publicIdWithVersion.split('/');
-    
+
     if (parts[0].startsWith('v')) parts.shift();
 
     let publicId = parts.join('/');
@@ -85,7 +92,7 @@ export const updateProfile = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    
+
 
     if (
       req.body.profileImage &&
@@ -94,16 +101,16 @@ export const updateProfile = async (req, res) => {
       req.body.profileImage.filename !== user.profileImage.filename
     ) {
       const publicId = extractPublicId(user.profileImage.filename);
-      
+
       if (publicId) {
         console.log("Deleting Cloudinary image with publicId:", publicId);
         const result = await cloudinary.uploader.destroy(publicId, { invalidate: true });
-        console.log(result); 
+        console.log(result);
       } else {
         console.log("Failed to extract publicId from:", user.profileImage.filename);
       }
     }
-    
+
 
     user.bio = req.body.bio;
     user.website = req.body.website;
@@ -186,6 +193,7 @@ export const deleteUser = async (req, res) => {
 
     await Note.deleteMany({ user: userId });
     await Category.deleteMany({ user: userId });
+    await CategoryType.deleteMany({ user: userId });
     await req.user.deleteOne();
 
     res.json({ message: 'Profile, image, and all associated notes and categories deleted successfully.' });

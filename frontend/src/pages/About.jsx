@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import DottedButton from "../components/buttons/DottedButton";
 
+
 const containerClass = `
   w-full max-w-none
     mx-0
@@ -71,56 +72,7 @@ const About = () => {
     </p>
   </div>
 
-  {/* Philosophy */}
-  <div className={paragraphClass}>
-    <p>
-      Re-Docs follows a minimal-interface, clarity-first philosophy. Every feature
-      exists to support reading, writing, and structuring knowledge over time,
-      without unnecessary visual or cognitive noise.
-    </p>
-  </div>
 
-  {/* Tech Stack */}
-  <div className="mb-8">
-    <h3 className="text-xl font-semibold text-type-2 mb-3">
-      Tech Stack
-    </h3>
-    <ul className=" list-inside text-type-3 space-y-2">
-      <li>
-        <span className="font-medium text-type-2">▸Architecture:</span> Pure MERN
-        stack (MongoDB, Express, React, Node.js)
-      </li>
-      <li>
-        <span className="font-medium text-type-2">▸Frontend:</span> React, React
-        Router, Tailwind CSS, Material Tailwind, ReactBits
-      </li>
-      <li>
-        <span className="font-medium text-type-2">▸Backend:</span> REST-based API
-        services built with Node.js and Express
-      </li>
-      <li>
-        <span className="font-medium text-type-2">▸Data Layer:</span> Document-oriented
-        storage for flexible note structures
-      </li>
-      <li>
-        <span className="font-medium text-type-2">▸UI System:</span> Custom
-        glass-inspired design with reusable utility styles
-      </li>
-    </ul>
-  </div>
-
-  {/* Features */}
-  <div className="mb-8">
-    <h3 className="text-xl font-semibold text-type-2 mb-3">
-      Core Capabilities
-    </h3>
-    <ul className=" text-type-3">
-      <li>▸Create and manage structured notes</li>
-      <li>▸Organize content using categories and tags</li>
-      <li>▸Explore community-shared knowledge</li>
-      <li>▸Maintain private and public collections</li>
-    </ul>
-  </div>
 
   {/* Actions */}
   <div className="mb-8">

@@ -11,6 +11,8 @@ import {
     getNotesById,
     getNotesByTag,
     getAllTags,
+    getMyNotesPaginated,
+    getMyTags
     // createNoteFromMD
 } from '../controllers/noteController.js'
 import {isLoggedIn} from '../middlewares/isAuthenticated.js'
@@ -41,7 +43,8 @@ router.get('/', getNotesByTag)
 router.post('/', noteLimiter, isLoggedIn, validateBody(noteSchema), aiModeration, createNote);
 // router.post('/md', noteLimiter, isLoggedIn, validateBody(noteSchema), aiModeration, createNoteFromMD);
 router.get('/tags', getAllTags)
-
+router.get("/my", isLoggedIn, getMyNotesPaginated);
+router.get("/my-tags", isLoggedIn, getMyTags);
 router.get('/:id', isLoggedIn, getNotesById);
 router.put('/:id',isLoggedIn,validateBody(noteSchema || categorySchema),aiModeration,updateNote)
 router.put('/:id/edit',isLoggedIn,validateBody(noteSchema || categorySchema),aiModeration,updateNote)

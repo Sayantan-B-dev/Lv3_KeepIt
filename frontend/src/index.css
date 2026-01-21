@@ -3,6 +3,9 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
+
 /* ================= custom scrollbar ================= */
 
 ::-webkit-scrollbar {
@@ -20,20 +23,28 @@
   /*========================================================*/
   /*used in most of the places*/
   /*========================================================*/
+
+  .all-container{
+    @apply relative mb-5 w-full max-w-none p-8 rounded-lg border backdrop-blur-xl shadow-2xl
+  }
+
+
+
+
   .bg-type-1 {
-    @apply bg-white/10;
+    @apply bg-white/5;
   }
 
   .bg-type-2 {
-    @apply bg-white/20;
+    @apply bg-white/15;
   }
 
   .bg-type-3 {
-    @apply bg-white/30;
+    @apply bg-white/25;
   }
 
   .bg-type-4 {
-    @apply bg-white/40;
+    @apply bg-white/35;
   }
 
   .bg-type-5 {
@@ -100,7 +111,7 @@
   /*used in Navbar,userbox and footer*/
   /*========================================================*/
   .underline-animation {
-    @apply relative inline-block text-white/50 no-underline;
+    @apply relative inline-block no-underline;
   }
 
   .underline-animation::after {
@@ -122,7 +133,6 @@
     transition: transform 100ms ease,
       box-shadow 100ms ease;
   }
-
   .hover-muted:hover {
     transform: translate(-4px, -4px);
   }
@@ -130,7 +140,6 @@
   .hover-muted:active {
     transform: translate(0, 0);
   }
-
   .hover-shadow-muted:hover {
     box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.5);
   }
@@ -200,7 +209,7 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  font-family: 'Merriweather Variable', serif;
+   font-family: monospace, serif;
 }
 
 
@@ -235,3 +244,8 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 } */
+ @keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

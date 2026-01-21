@@ -1,10 +1,11 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Typography } from "@material-tailwind/react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "../../api/axiosInstance";
 import { useAuth } from "../../context/AuthContext";
 import DottedButton from "../buttons/DottedButton";
+import { motion, AnimatePresence } from "framer-motion";
 
 /* ================= shared underline style ================= */
 
@@ -33,11 +34,9 @@ const sidebarBaseClass = `
 
 const sidebarHiddenClass = `-translate-x-[500px]`;
 
-const sidebarHeaderClass = `mb-4 flex items-center justify-between`;
+const sidebarHeaderClass = `mb-3 flex items-center justify-between`;
 const sidebarBrandClass = `text-xl font-bold cursor-pointer`;
-const sidebarNavListClass = `flex flex-col gap-3 flex-1
-  overflow-y-auto
-  pr-1`;
+const sidebarNavListClass = `flex flex-col gap-3 flex-1 overflow-y-auto pr-1`;
 const sidebarNavItemClass = `flex items-center gap-x-3 cursor-pointer`;
 const sidebarGroupLabelClass = `text-xs uppercase tracking-wider text-white/50 mt-2 mb-1`;
 const sidebarIndentClass = `pl-4 flex flex-col gap-3`;
@@ -49,7 +48,7 @@ const sidebarFooterClass = `
   flex flex-col gap-3
 `;
 
-/* ================= drawer toggle (triangle) ================= */
+/* ================= drawer toggle ================= */
 
 const toggleBaseClass = `
   fixed
@@ -58,11 +57,11 @@ const toggleBaseClass = `
   -translate-y-1/2
   z-[60]
   cursor-pointer
-  hover:scale-111
+  hover:scale-110
   transition-transform
 `;
 
-/* ================= triangle arrow icon ================= */
+/* ================= toggle icon ================= */
 
 const SidebarToggleIcon = ({ open }) => (
   <svg
@@ -71,10 +70,8 @@ const SidebarToggleIcon = ({ open }) => (
     fill="currentColor"
   >
     {open ? (
-      /* ◀ collapse */
       <path d="M14.5 5l-7 7 7 7V5z" />
     ) : (
-      /* ▶ expand */
       <path d="M9.5 5l7 7-7 7V5z" />
     )}
   </svg>
@@ -126,40 +123,37 @@ export function SideNavbar({ open, setOpen }) {
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const navigate = useNavigate();
+  const [profileHover, setProfileHover] = useState(false);
 
   const myItems = useMemo(
     () =>
       isAuthenticated
         ? [
-          { label: "My Profile", href: "/about", icon: Icons.user },
-          { label: "My Category Types", href: "/about", icon: Icons.tag },
-          { label: "My Categories", href: "/about", icon: Icons.grid },
-          { label: "My Notes", href: "/about", icon: Icons.list },
+          { label: "My Profile", href: "/profile/MyProfile", icon: Icons.user },
+          { label: "My Category Types", href: "/my-category-types", icon: Icons.tag },
+          { label: "My Categories", href: "/my-categories", icon: Icons.grid },
+          { label: "My Notes", href: "/my-notes", icon: Icons.list },
+          { label: "My Tags", href: "/my-tags", icon: Icons.tag },
         ]
+
         : [],
     [isAuthenticated]
   );
 
   const communityItems = [
-    { label: "All Users", href: "/all-users", icon: Icons.user },
-    { label: "All Categories", href: "/all-categories", icon: Icons.grid },
-    { label: "All Notes", href: "/all-notes", icon: Icons.list },
-    { label: "All Tags", href: "/all-tags", icon: Icons.tag },
+    { label: "Users", href: "/all-users", icon: Icons.user },
+    { label: "Categories", href: "/all-categories", icon: Icons.grid },
+    { label: "Notes", href: "/all-notes", icon: Icons.list },
+    { label: "Tags", href: "/all-tags", icon: Icons.tag },
     { label: "About", href: "/about", icon: Icons.info },
   ];
 
-  const handleNavigate = (href) => {
-    navigate(href);
-  };
-
   return (
-    <div className="z-1000">
-      {/* Drawer toggle */}
-      <div className={toggleBaseClass} onClick={() => setOpen((v) => !v)}>
+    <div>
+      <div className={toggleBaseClass} onClick={() => setOpen(v => !v)}>
         <SidebarToggleIcon open={open} />
       </div>
 
-      {/* Sidebar */}
       <aside
         className={`${sidebarBaseClass} ${open ? "translate-x-0" : sidebarHiddenClass
           }`}
@@ -170,11 +164,57 @@ export function SideNavbar({ open, setOpen }) {
             as="div"
             className={`${sidebarBrandClass} underline-animation`}
             style={coloredFont}
-            onClick={() => handleNavigate("/")}
+            onClick={() => navigate("/")}
           >
-            Re-Docs
+            Docs
           </Typography>
         </div>
+
+        {/* Profile */}
+        {isAuthenticated && user && (
+          <div
+            className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2"
+            onClick={() => navigate("/profile/MyProfile")}
+          >
+            {user?.profileImage?.url ? (
+              <motion.img
+                src={user.profileImage.url}
+                alt={user.username}
+                className="w-14 h-14 rounded-full object-cover border border-muted shadow-2xl"
+                whileHover={{
+                  scale: 1.25,
+                  rotate: 5,
+                  filter: "brightness(1.1)",
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              />
+            ) : (
+              <motion.div
+                className="
+          w-14 h-14 rounded-full
+          bg-type-1
+          flex items-center justify-center
+          text-2xl font-bold text-type-2
+          border border-muted shadow-2xl
+        "
+                whileHover={{
+                  scale: 1.25,
+                  rotate: 5,
+                  filter: "brightness(1.1)",
+                }}
+                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              >
+                {user?.username?.[0]?.toUpperCase() || "?"}
+              </motion.div>
+            )}
+
+            {/* Static username */}
+            <span className="text-sm font-mono text-type-1 truncate underline-animation">
+              {user?.username}
+            </span>
+          </div>
+        )}
+
 
         {/* Nav */}
         <nav className={sidebarNavListClass}>
@@ -182,15 +222,18 @@ export function SideNavbar({ open, setOpen }) {
             <>
               <div className={sidebarGroupLabelClass}>My Space</div>
               <div className={sidebarIndentClass}>
-                {myItems.map(({ label, href, icon }) => (
+                {myItems.map(item => (
                   <div
-                    key={label}
+                    key={item.label}
                     className={sidebarNavItemClass}
-                    onClick={() => handleNavigate(href)}
+                    onClick={() => navigate(item.href)}
                   >
-                    {icon}
-                    <span className="underline-animation text-[0.8rem]" style={coloredFont}>
-                      {label}
+                    {item.icon}
+                    <span
+                      className="underline-animation text-[0.8rem]"
+                      style={coloredFont}
+                    >
+                      {item.label}
                     </span>
                   </div>
                 ))}
@@ -201,15 +244,18 @@ export function SideNavbar({ open, setOpen }) {
 
           <div className={sidebarGroupLabelClass}>Community</div>
           <div className={sidebarIndentClass}>
-            {communityItems.map(({ label, href, icon }) => (
+            {communityItems.map(item => (
               <div
-                key={label}
+                key={item.label}
                 className={sidebarNavItemClass}
-                onClick={() => handleNavigate(href)}
+                onClick={() => navigate(item.href)}
               >
-                {icon}
-                <span className="underline-animation text-[0.8rem]" style={coloredFont}>
-                  {label}
+                {item.icon}
+                <span
+                  className="underline-animation text-[0.8rem]"
+                  style={coloredFont}
+                >
+                  {item.label}
                 </span>
               </div>
             ))}
@@ -221,7 +267,10 @@ export function SideNavbar({ open, setOpen }) {
           {!isAuthenticated ? (
             <>
               <DottedButton text="LOG IN" onClick={() => navigate("/login")} />
-              <DottedButton text="SIGN IN" onClick={() => navigate("/register")} />
+              <DottedButton
+                text="SIGN IN"
+                onClick={() => navigate("/register")}
+              />
             </>
           ) : (
             <DottedButton

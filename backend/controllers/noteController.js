@@ -1,31 +1,73 @@
 import Note from "../models/note.js"
 import Category from "../models/category.js"
 import User from "../models/user.js"
+import CategoryType from "../models/categoryType.js";
 
-export const getNotesById=async(req,res)=>{
-    const {id}=req.params;
-    const note=await Note.findById(id)
+export const getNotesById = async (req, res) => {
+    const { id } = req.params;
+    const note = await Note.findById(id)
     res.json(note)
 }
 
-export const pinNote=async(req,res)=>{
-    const {id}=req.params;
-    const note=await Note.findByIdAndUpdate(id,{isPinned:true},{new:true})
+export const getMyNotesPaginated = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const page = Math.max(parseInt(req.query.page) || 1, 1);
+        const limit = Math.min(parseInt(req.query.limit) || 15, 50);
+        const search = req.query.search?.trim();
+
+        const query = { user: userId };
+
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: "i" } },
+                { content: { $regex: search, $options: "i" } },
+            ];
+        }
+
+        const notes = await Note.find(query)
+            .sort({ updatedAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .select("-__v")
+            .lean();
+
+        res.status(200).json({
+            notes,
+            page,
+            limit,
+            hasMore: notes.length === limit,
+        });
+    } catch (err) {
+        console.error("getMyNotesPaginated error:", err);
+        res.status(500).json({ error: "Failed to fetch notes" });
+    }
+};
+export const pinNote = async (req, res) => {
+    const { id } = req.params;
+    const note = await Note.findByIdAndUpdate(id, { isPinned: true }, { new: true })
     res.json(note)
 }
 
-export const getUserNotes=async(req,res)=>{
-    const notes=await Note.find({user:req.user._id}).populate('category')
+export const getUserNotes = async (req, res) => {
+    const notes = await Note.find({ user: req.user._id }).populate({
+        path: "category",
+        populate: { path: "categoryType", select: "name" },
+    });
     res.json(notes)
 }
 
-export const getPublicNotesbyUser=async(req,res)=>{
-    const userId=req.params.userId;
-    const notes= await Note.find({user:userId,isPrivate:false}).populate('category')
+export const getPublicNotesbyUser = async (req, res) => {
+    const userId = req.params.userId;
+    const notes = await Note.find({ user: userId, isPrivate: false }).populate({
+        path: "category",
+        populate: { path: "categoryType", select: "name" },
+    });
     res.json(notes)
 }
 
-export const getAllPublicNotes=async(req,res)=>{
+export const getAllPublicNotes = async (req, res) => {
     try {
         const { page = 1, limit = 20, search = '' } = req.query;
         const pageNum = Math.max(parseInt(page, 10) || 1, 1);
@@ -36,11 +78,15 @@ export const getAllPublicNotes=async(req,res)=>{
             query.title = { $regex: search.trim(), $options: 'i' };
         }
 
-        const notes= await Note.find(query)
+        const notes = await Note.find(query)
             .select('title user category createdAt')
-            .populate('category', 'name')
+            .populate({
+                path: "category",
+                select: "name categoryType",
+                populate: { path: "categoryType", select: "name" },
+            })
             .populate('user', 'username')
-            .sort({createdAt: -1})
+            .sort({ createdAt: -1 })
             .skip((pageNum - 1) * pageLimit)
             .limit(pageLimit)
             .lean();
@@ -60,10 +106,14 @@ export const getNotesByTag = async (req, res) => {
                 isPrivate: false,
                 tags: { $elemMatch: { $regex: `^${tag}$`, $options: 'i' } }
             })
-            .select('title user category createdAt tags')
-            .populate('category', 'name')
-            .populate('user', 'username profileImage email')
-            .sort({ createdAt: -1 });
+                .select('title user category createdAt tags')
+                .populate({
+                    path: "category",
+                    select: "name categoryType",
+                    populate: { path: "categoryType", select: "name" },
+                })
+                .populate('user', 'username profileImage email')
+                .sort({ createdAt: -1 });
             return res.json(notes);
         } catch (error) {
             console.error('Error fetching notes by tag:', error);
@@ -107,6 +157,45 @@ export const getAllTags = async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch tags' });
     }
 };
+export const getMyTags = async (req, res) => {
+  try {
+    const { page = 1, limit = 15, search = "" } = req.query;
+
+    const notes = await Note.find(
+      { user: req.user._id },
+      "tags"
+    ).lean();
+
+    const tagCounts = {};
+
+    notes.forEach(n => {
+      (n.tags || []).forEach(tag => {
+        const key = tag.toLowerCase();
+        tagCounts[key] = (tagCounts[key] || 0) + 1;
+      });
+    });
+
+    let tags = Object.entries(tagCounts)
+      .map(([tag, count]) => ({ tag, count }))
+      .filter(t =>
+        search
+          ? t.tag.includes(search.toLowerCase())
+          : true
+      )
+      .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
+
+    const start = (page - 1) * limit;
+    const paginated = tags.slice(start, start + limit);
+
+    res.json({
+      tags: paginated,
+      hasMore: start + limit < tags.length,
+    });
+  } catch (err) {
+    console.error("getMyTags error:", err);
+    res.status(500).json({ error: "Failed to fetch tags" });
+  }
+};
 
 /**
  * Unified note creation handler for both normal and .md file uploads.
@@ -115,101 +204,111 @@ export const getAllTags = async (req, res) => {
  */
 export const createNote = async (req, res) => {
     try {
-        // Rate limiting: 5 seconds between notes, 100 notes/hour
+        // ===== rate limiting (unchanged) =====
         const lastNote = await Note.findOne({ user: req.user._id }).sort({ createdAt: -1 });
         if (lastNote) {
             const now = Date.now();
             const lastCreated = new Date(lastNote.createdAt).getTime();
             if (now - lastCreated < 5 * 1000) {
                 const wait = Math.ceil((5 * 1000 - (now - lastCreated)) / 1000);
-                return res.status(429).json({ error: `Please wait ${wait} more second(s) before creating another note.` });
+                return res.status(429).json({ error: `Please wait ${wait} second(s)` });
             }
         }
 
         const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
         const notesLastHour = await Note.countDocuments({
             user: req.user._id,
-            createdAt: { $gte: oneHourAgo }
+            createdAt: { $gte: oneHourAgo },
         });
+
         if (notesLastHour >= 200) {
-            return res.status(429).json({ error: "Note creation limit reached: Only 200 notes per hour allowed." });
+            return res.status(429).json({ error: "Note creation limit reached." });
         }
 
-        const { title, content, category, tags } = req.body;
+        // ===== input =====
+        const { title, content, category, tags, type } = req.body;
 
         let categoryDoc = null;
-        // If category is a valid ObjectId, treat as ID (for .md upload)
-        if (
-            typeof category === "string" &&
-            category.match(/^[0-9a-fA-F]{24}$/)
-        ) {
-            categoryDoc = await Category.findOne({ _id: category });
+
+        // ===== resolve category =====
+        if (typeof category === "string" && category.match(/^[0-9a-fA-F]{24}$/)) {
+            categoryDoc = await Category.findById(category);
         } else {
-            // Otherwise, treat as name (for normal note creation)
             categoryDoc = await Category.findOne({
                 name: category,
-                user: req.user._id
+                user: req.user._id,
             });
         }
 
-        // If not found, create new category (always uses name from req.body.category)
+        // ===== resolve / create category type =====
+        let categoryTypeDoc = null;
+
+        if (type && typeof type === "string") {
+            categoryTypeDoc = await CategoryType.findOneAndUpdate(
+                { name: type, user: req.user._id },
+                { name: type, user: req.user._id },
+                { upsert: true, new: true }
+            );
+        }
+
+        // ===== create category if needed =====
         if (!categoryDoc) {
             categoryDoc = new Category({
                 name: category,
                 user: req.user._id,
-                ...(req.body.type ? { type: req.body.type } : {})
+                type: type || undefined,                 // legacy
+                categoryType: categoryTypeDoc?._id,      // normalized
             });
+
             await categoryDoc.save();
 
-            await User.findByIdAndUpdate(
-                req.user._id,
-                { $addToSet: { categories: categoryDoc._id } }
-            );
+            await User.findByIdAndUpdate(req.user._id, {
+                $addToSet: { categories: categoryDoc._id },
+            });
         }
 
+        // ===== create note =====
         const note = new Note({
             title,
             content,
             category: categoryDoc._id,
             user: req.user._id,
             isPrivate: false,
-            tags: Array.isArray(tags) ? tags.map(tag => tag.trim()).filter(tag => tag.length > 0) : []
+            tags: Array.isArray(tags)
+                ? tags.map(t => t.trim()).filter(Boolean)
+                : [],
         });
+
         await note.save();
 
-        await Category.findByIdAndUpdate(
-            categoryDoc._id,
-            { $addToSet: { notes: note._id } }
-        );
+        await Category.findByIdAndUpdate(categoryDoc._id, {
+            $addToSet: { notes: note._id },
+        });
 
         res.status(201).json(note);
-
     } catch (error) {
-        if (error.code === 11000 && error.keyPattern && error.keyPattern.title && error.keyPattern.user) {
-            return res.status(400).json({ error: 'You already have a note with this title. Note titles must be unique.' });
-        }
-        console.error('Error creating note:', error);
+        console.error("Error creating note:", error);
         res.status(500).json({
-            error: 'Failed to create note',
-            details: error.message
+            error: "Failed to create note",
+            details: error.message,
         });
     }
 };
 
 // For backward compatibility, alias createNoteFromMD to createNote
 export const createNoteFromMD = createNote;
-export const updateNote=async(req,res)=>{
-    const {id}=req.params
+export const updateNote = async (req, res) => {
+    const { id } = req.params
     try {
         // Only allow updating tags if provided
         const updateData = { ...req.body };
         if (updateData.tags) {
             updateData.tags = Array.isArray(updateData.tags) ? updateData.tags.map(tag => tag.trim()).filter(tag => tag.length > 0) : [];
         }
-        const note=await Note.findOneAndUpdate(
-            {_id:id,user:req.user._id},
+        const note = await Note.findOneAndUpdate(
+            { _id: id, user: req.user._id },
             updateData,
-            {new:true, runValidators: true}
+            { new: true, runValidators: true }
         )
         res.json(note);
     } catch (error) {
@@ -224,23 +323,23 @@ export const updateNote=async(req,res)=>{
     }
 }
 
-export const deleteNote=async(req,res)=>{
-    const {id}=req.params
-    const note=await Note.findOneAndDelete({_id:id,user:req.user._id})
-    res.json({message:'Note Deleted'})
+export const deleteNote = async (req, res) => {
+    const { id } = req.params
+    const note = await Note.findOneAndDelete({ _id: id, user: req.user._id })
+    res.json({ message: 'Note Deleted' })
 }
 
 export const sanitizeNoteInput = (req, res, next) => {
-  const sanitize = (str) =>
-    typeof str === "string"
-      ? str.replace(/[$.<>]/g, "") 
-      : str;
+    const sanitize = (str) =>
+        typeof str === "string"
+            ? str.replace(/[$.<>]/g, "")
+            : str;
 
-  if (req.body.title) req.body.title = sanitize(req.body.title);
-  if (req.body.content) req.body.content = sanitize(req.body.content);
-  if (req.body.category) req.body.category = sanitize(req.body.category);
-  if (req.body.tags && Array.isArray(req.body.tags)) req.body.tags = req.body.tags.map(tag => sanitize(tag));
+    if (req.body.title) req.body.title = sanitize(req.body.title);
+    if (req.body.content) req.body.content = sanitize(req.body.content);
+    if (req.body.category) req.body.category = sanitize(req.body.category);
+    if (req.body.tags && Array.isArray(req.body.tags)) req.body.tags = req.body.tags.map(tag => sanitize(tag));
 
-  next();
+    next();
 };
 

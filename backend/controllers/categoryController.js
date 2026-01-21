@@ -1,45 +1,76 @@
 import Category from "../models/category.js";
 import User from "../models/user.js";
+import CategoryType from "../models/categoryType.js";
 
 export const getCategoryById = async (req, res) => {
-    const {id}=req.params;
-    try {
-        //console.log("getCategoryById: req.user =", req.user);
-        const category=await Category.findById(id)
-            .populate('notes')
-            .populate('user', 'username profileImage bio location website')
-        res.json(category)
-    } catch (err) {
-        console.error('Error in getCategoryById:', err);
-        res.status(500).json({ error: 'Failed to fetch category', details: err.message });
-    }
-}
+  const { id } = req.params;
+
+  try {
+    const category = await Category.findById(id)
+      .populate("categoryType", "name")
+      .populate("notes")
+      .populate("user", "username profileImage bio location website");
+
+    res.json(category);
+  } catch (err) {
+    console.error("Error in getCategoryById:", err);
+    res.status(500).json({
+      error: "Failed to fetch category",
+      details: err.message,
+    });
+  }
+};
 
 export const getUserCategories = async (req, res) => {
-    try {
-        //console.log("getUserCategories: req.user =", req.user);
-        if (!req.user) {
-            return res.status(401).json({ error: "Unauthorized" });
-        }
-        const categories = await Category.find({ user: req.user._id });
-        res.json(categories);
-    } catch (err) {
-        console.error('Error in getUserCategories:', err);
-        res.status(500).json({ error: 'Failed to fetch user categories', details: err.message });
+  try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
     }
-}
+
+    const categories = await Category.find({ user: req.user._id })
+      .populate("categoryType", "name");
+
+    res.json(categories);
+  } catch (err) {
+    console.error("Error in getUserCategories:", err);
+    res.status(500).json({
+      error: "Failed to fetch user categories",
+      details: err.message,
+    });
+  }
+};
 
 
 export const createCategory = async (req, res) => {
+  try {
+    const { name, type, isPrivate } = req.body;
+
+    let categoryTypeDoc = null;
+
+    if (type && typeof type === "string") {
+      categoryTypeDoc = await CategoryType.findOneAndUpdate(
+        { name: type, user: req.user._id },
+        { name: type, user: req.user._id },
+        { upsert: true, new: true }
+      );
+    }
+
     const category = new Category({
-        name: req.body.name,
-        type: req.body.type,
-        isPrivate: req.body.isPrivate || false,
-        user: req.user._id
-    })
-    await category.save()
-    res.status(201).json(category)
-}
+      name,
+      type,                               // legacy
+      categoryType: categoryTypeDoc?._id, // normalized
+      isPrivate: isPrivate || false,
+      user: req.user._id,
+    });
+
+    await category.save();
+
+    res.status(201).json(category);
+  } catch (error) {
+    console.error("Error creating category:", error);
+    res.status(500).json({ error: "Failed to create category" });
+  }
+};
 
 export const updateCategory = async (req, res) => {
     const { id } = req.params;
