@@ -1,6 +1,145 @@
 @import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ================= custom scrollbar ================= */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+}
 
 
+@layer utilities {
+
+  /*========================================================*/
+  /*used in most of the places*/
+  /*========================================================*/
+  .bg-type-1 {
+    @apply bg-white/10;
+  }
+
+  .bg-type-2 {
+    @apply bg-white/20;
+  }
+
+  .bg-type-3 {
+    @apply bg-white/30;
+  }
+
+  .bg-type-4 {
+    @apply bg-white/40;
+  }
+
+  .bg-type-5 {
+    @apply bg-white/50;
+  }
+
+  .bg-type-b1 {
+    @apply bg-black/10;
+  }
+
+  .bg-type-b2 {
+    @apply bg-black/20;
+  }
+
+  .bg-type-b3 {
+    @apply bg-black/30;
+  }
+
+  .bg-type-b4 {
+    @apply bg-black/40;
+  }
+
+  .bg-type-b5 {
+    @apply bg-black/50;
+  }
+
+
+  .glass-panel {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 32px 0 rgba(31, 38, 135, 0.10);
+  }
+
+
+
+
+
+
+  .border-muted {
+    @apply border-white/50;
+  }
+
+  .border-muted2 {
+    @apply border-white/70;
+  }
+
+  .text-type-1 {
+    @apply text-red-100;
+  }
+
+  .text-type-2 {
+    @apply text-red-200;
+  }
+
+  .text-type-3 {
+    @apply text-gray-400;
+  }
+
+  .text-type-4 {
+    @apply text-gray-300;
+  }
+
+  /*========================================================*/
+  /*used in Navbar,userbox and footer*/
+  /*========================================================*/
+  .underline-animation {
+    @apply relative inline-block text-white/50 no-underline;
+  }
+
+  .underline-animation::after {
+    content: "";
+    @apply absolute left-0 bottom-0 w-full h-px bg-white origin-right scale-x-0 transition-transform duration-300;
+  }
+
+  .underline-animation:hover::after {
+    @apply origin-left scale-x-100;
+  }
+
+
+
+  /*========================================================*/
+  /*used in custom buttons*/
+  /*========================================================*/
+  .hover-muted {
+    cursor: pointer;
+    transition: transform 100ms ease,
+      box-shadow 100ms ease;
+  }
+
+  .hover-muted:hover {
+    transform: translate(-4px, -4px);
+  }
+
+  .hover-muted:active {
+    transform: translate(0, 0);
+  }
+
+  .hover-shadow-muted:hover {
+    box-shadow: 4px 4px 0px rgba(255, 255, 255, 0.5);
+  }
+
+  .hover-shadow-muted:active {
+    box-shadow: none;
+  }
+
+}
 
 
 
@@ -45,7 +184,9 @@
 }
 
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   width: 100%;
   margin: 0;
@@ -59,18 +200,12 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
   font-family: 'Merriweather Variable', serif;
-
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
 
-button {
+
+/* button {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -79,16 +214,16 @@ button {
   font-family: inherit;
   cursor: pointer;
   transition: border-color 0.25s;
-}
+} */
 /* button:hover {
   border-color: #646cff;
 } */
-button:focus,
+/* button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
+} */
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #244b6b;
     background-color: #ffffff;
@@ -99,4 +234,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */

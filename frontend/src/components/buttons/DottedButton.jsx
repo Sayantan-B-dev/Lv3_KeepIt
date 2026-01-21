@@ -1,34 +1,26 @@
-
-const DottedButton = ({ text, onClick, className, style }) => {
-    const buttonClass = `
-        rounded-2xl 
-        border-dashed 
-        border-black 
-        px-4
-        py-2
-        font-semibold 
-        text-black
-        transition-all 
-        duration-300 
-        cursor-pointer
-        hover:translate-x-[-4px] 
-        hover:translate-y-[-4px] 
-        hover:rounded-md 
-        hover:shadow-[4px_4px_0px_black] 
-        active:translate-x-[0px] 
-        active:translate-y-[0px] 
-        active:rounded-2xl 
-        active:shadow-none
-    `;
-    const combinedClass = `${buttonClass} ${className || ""}`;
+const DottedButton = ({ text, onClick, style }) => {
     return (
         <button
-            className={combinedClass}
-            style={{ backgroundColor: "white", borderColor: "black", ...style, wordBreak: "break-all" }}
+            className={`
+                break-all
+                rounded-lg
+                border border-muted
+                px-4
+                py-2
+                font-semibold
+                text-white
+                bg-transparent
+                transition-all 
+                duration-100
+
+                hover-muted
+                hover-shadow-muted
+            `}
+            style={style}
             onClick={onClick}
         >
             {text}
-        </button>
+        </button >
     );
 };
 

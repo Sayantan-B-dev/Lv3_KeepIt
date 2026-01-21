@@ -8,9 +8,9 @@ const RotatingKeepIt = () => {
         className="
           flex items-center gap-3
           px-6 py-3
-          rounded-2xl
+          rounded-xl
           bg-white/10 backdrop-blur-md
-          border border-white/50
+          border border-muted
           shadow-lg
         "
       >
@@ -18,7 +18,7 @@ const RotatingKeepIt = () => {
           className="
             text-2xl sm:text-3xl md:text-4xl
             font-extrabold
-            text-white
+            text-type-1
             tracking-tight
             drop-shadow
           "
@@ -40,8 +40,8 @@ const RotatingKeepIt = () => {
             py-1 sm:py-2 md:py-3
             rounded-xl
             bg-white/10 backdrop-blur-md
-            border border-white/50
-            text-white
+            border border-muted
+            text-type-3
             font-bold
             text-xl sm:text-2xl md:text-3xl
             shadow

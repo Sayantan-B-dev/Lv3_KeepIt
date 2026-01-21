@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const fontClass = `
+const underlineAnimation = `
   relative inline-block text-white no-underline
   after:content-[''] after:absolute after:left-0 after:bottom-0
   after:w-full after:h-[1px] after:bg-white
@@ -13,15 +13,13 @@ const fontClass = `
 
 const UserBox = ({ users }) => {
   return (
-    <>
-      <h1 className="text-center mb-5 border-b border-white/50">Users</h1>
       <div
         className="
         w-full mb-5 p-5
         flex flex-wrap gap-4
-        rounded-2xl
-        border border-white/50
-        bg-white/10 backdrop-blur-md
+        rounded-xl
+        border border border-muted
+        bg-type-1 backdrop-blur-md
       "
       >
         {users.map((user) => (
@@ -35,9 +33,9 @@ const UserBox = ({ users }) => {
               className="
               inline-flex
               rounded-xl
-              border border-white/30
-              bg-white/10 backdrop-blur-md
-              hover:bg-white/20 hover:border-white/50
+              border border border-muted
+              bg-type-1 backdrop-blur-md
+              hover:bg-type-2 hover:border border-muted
               shadow-lg hover:shadow-2xl
               transition-all duration-300
               p-4
@@ -51,7 +49,7 @@ const UserBox = ({ users }) => {
                     alt={user.username}
                     className="
                     w-12 h-12 rounded-full object-cover
-                    border border-white/40
+                    border border border-muted
                   "
                     whileHover={{
                       scale: 1.15,
@@ -67,8 +65,8 @@ const UserBox = ({ users }) => {
                     flex items-center justify-center
                     text-lg font-bold
                     text-white
-                    bg-white/20
-                    border border-white/40
+                    bg-type-2
+                    border border border-muted
                     shadow-md
                   "
                     whileHover={{
@@ -91,7 +89,7 @@ const UserBox = ({ users }) => {
                   <h2
                     className={
                       "text-base sm:text-lg font-semibold text-white leading-tight whitespace-nowrap " +
-                      fontClass
+                      underlineAnimation
                     }
                   >
                     {user.username}
@@ -108,9 +106,6 @@ const UserBox = ({ users }) => {
           </motion.div>
         ))}
       </div>
-      <hr className="border-t border-white/50" />
-    </>
-
   );
 };
 

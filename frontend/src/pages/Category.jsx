@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { useAuth } from '../context/AuthContext';
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
+import DottedButton2 from "../components/buttons/DottedButton2";
 
 const backdropStyle = {
     backdropFilter: 'blur(2px)',

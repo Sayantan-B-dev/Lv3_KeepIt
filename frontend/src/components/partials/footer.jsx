@@ -1,6 +1,5 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { fontClass } from "./StickyNavbar";
 
 
 const footerLinks = [
@@ -72,16 +71,19 @@ const socialLinks = [
 const Footer = () => {
   return (
     <footer
-      className=" pt-10 pb-4 px-2 sm:px-4 md:px-8 rounded-t-3xl w-full z-50 bottom-0 "
-      style={{
-        backdropFilter: 'blur(3px)',
-        background: 'rgba(255, 255, 255, 0.06)',
-        WebkitBackdropFilter: 'blur(12px)',
-        boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-        border: '1px solid rgba(255, 255, 255, 0.47)',
-        marginTop: "auto",
-        position: "relative"  
-      }}
+      className="
+        relative
+        mt-auto
+        bottom-0
+        z-50
+        w-full
+        rounded-t-xl
+        border border-muted
+        bg-type-b1
+        pt-10 pb-4 px-2 sm:px-4 md:px-8
+        glass-panel
+      "
+
     >
 
       <div className=" mx-auto flex flex-col md:flex-row md:justify-between md:items-start gap-8 md:gap-10 w-full">
@@ -90,7 +92,7 @@ const Footer = () => {
           <Link to="/" className="flex items-center gap-2 mb-3 m-auto md:m-0">
             <span className="text-2xl font-extrabold text-indigo-300 tracking-tight m-auto md:m-0">Re-Docs</span>
           </Link>
-          <p className="text-gray-400 max-w-xs text-sm text-center md:text-left m-auto md:m-0">
+          <p className="text-type-3 max-w-xs text-sm text-center md:text-left m-auto md:m-0">
             Capture, organize, and share knowledge from across the web. Transform scattered information into meaningful content that grows with you.
           </p>
           <div className="flex gap-3 mt-5 m-auto md:m-0 justify-center md:justify-start">
@@ -112,13 +114,13 @@ const Footer = () => {
         <div className="flex flex-col sm:flex-row flex-1 justify-between gap-6 sm:gap-8 md:gap-10 w-full">
           {footerLinks.map((section) => (
             <div key={section.title} className="mb-6 sm:mb-0 min-w-[120px] text-center sm:text-left">
-              <h4 className="text-red-200 font-bold bg-white/10 px-3 py-1 rounded-lg">{section.title}</h4>
+              <h4 className="text-red-200 font-bold bg-type-1 px-3 py-1 rounded-lg">{section.title}</h4>
               <ul className="space-y-2 px-3 py-1 rounded-lg">
                 {section.links.map((link) => (
                   <li key={link.name}>
                     <Link
                       to={link.to}
-                      className={`${fontClass} text-white/40 hover:text-white/80 transition-colors text-sm`}
+                      className={`underline-animation text-white/40 hover:text-white/80 transition-colors text-sm`}
                     >
                       {link.name}
                     </Link>
@@ -130,12 +132,12 @@ const Footer = () => {
         </div>
       </div>
       {/* Bottom Bar */}
-      <div className="max-w-7xl mx-auto mt-8 pt-5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-xs text-gray-400 w-full">
+      <div className="max-w-7xl mx-auto mt-8 pt-5 border-t border-muted2 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4 text-xs text-gray-400 w-full">
         <span className="text-center">
           &copy; {new Date().getFullYear()} KeepIt. All rights reserved. @Sayantan-B-Dev
           <span className="mx-2 hidden sm:inline">|</span>
           <span className="block sm:inline mt-1 sm:mt-0">
-            <span className="text-gray-300">Check out more animated react components on &nbsp;
+            <span className="text-gray-300">Check out for more animated react components on &nbsp;
               <span
                 onClick={() => window.open("https://reactbits.dev/", "_blank", "noopener,noreferrer")}
                 role="link"

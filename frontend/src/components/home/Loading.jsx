@@ -5,18 +5,14 @@ const Loading = ({ message = "Loading..." }) => (
   <div className="w-full h-full min-h-screen flex items-center justify-center">
     <div
       className="
-        w-content
+        w-fit
         flex items-center justify-center
         rounded-[10px]
-        backdrop-blur-md
-        shadow-2xl
-        border-2 border-dashed border-white/60
+        border-1 border-muted
         p-8
+        glass-card
       "
-      style={{
-        background: "rgba(255,255,255,0.05)",
-        boxShadow: "0 4px 32px rgba(31,38,135,0.1)",
-      }}
+
     >
       <div className="flex flex-col items-center gap-4 text-center">
         <MoonLoader

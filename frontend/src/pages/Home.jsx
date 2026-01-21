@@ -44,10 +44,14 @@ const Home = () => {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-full ">
+    <div className="container mx-auto max-w-full ">
       <Hero user={user} isAuthenticated={isAuthenticated} />
-      <UserBox users={users} />
-      <RotatingKeepIt/>
+      <div>
+        <hr className="text-center pb-5 border-muted"/>
+        <UserBox users={users} />
+        <hr className="border-t border border-muted" />
+      </div>
+      <RotatingKeepIt />
 
     </div>
   );

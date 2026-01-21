@@ -1,9 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect, lazy, Suspense } from "react";
 import axiosInstance from "./api/axiosInstance";
 
 import Footer from "./components/partials/footer";
-import { StickyNavbar } from "./components/partials/StickyNavbar";
+import { SideNavbar } from "./components/partials/SideNavbar";
 import Loading from "./components/home/Loading";
 import Waiting from "./components/partials/Waiting";
 import { useAuth } from "./context/AuthContext";
@@ -28,6 +28,7 @@ function App() {
   const { user, loading: authLoading } = useAuth();
   const isAuthenticated = !!user;
 
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [notes, setNotes] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -56,18 +57,17 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <BrowserRouter>
-        {/* Sidebar is fixed, content flows beside it */}
-        <StickyNavbar />
+        {/* Sidebar (controlled) */}
+        <SideNavbar open={sidebarOpen} setOpen={setSidebarOpen} />
 
-        {/* MAIN CONTENT WRAPPER */}
+        {/* MAIN CONTENT */}
         <div
-          className="
+          className={`
             flex-1 flex flex-col
             transition-all duration-300
-            lg:ml-[17rem]
-            px-3 sm:px-6
-          "
+            p-3
+            ${sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-0"}
+          `}
         >
           {(authLoading || loading) ? (
             <Loading />
@@ -106,7 +106,6 @@ function App() {
                     path="/register"
                     element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />}
                   />
-                  <Route path="/logout" element={<Logout />} />
 
                   <Route
                     path="/profile/MyProfile"
@@ -136,7 +135,6 @@ function App() {
             </>
           )}
         </div>
-      </BrowserRouter>
     </div>
   );
 }
