@@ -24,7 +24,7 @@ const CategoryHeader = ({
 }) => {
   return (
     <div
-      className={`container mx-auto p-6 shadow-xl border border-muted mb-2 relative w-full rounded-t-lg`}
+      className={`w-full mx-auto p-6 shadow-xl border border-muted mb-2 relative w-full rounded-t-lg`}
       {...dragHandlers}
     >
       {/* Profile */}

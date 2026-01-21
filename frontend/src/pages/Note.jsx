@@ -5,24 +5,16 @@ import { toast } from "react-toastify";
 import { useAuth } from "../context/AuthContext";
 
 import Loading from "../components/home/Loading";
-import Author from "../components/Author";
 import ConfirmPopUp from "../components/ConfirmPopUp";
-import EncryptButton from "../components/buttons/EncryptButton";
 
 import NoteHeader from "./notePageComponents/NoteHeader";
-import NoteTags from "./notePageComponents/NoteTags";
 import NoteContent from "./notePageComponents/NoteContent";
 import NoteNavigation from "./notePageComponents/NoteNavigation";
 import NoteFooter from "./notePageComponents/NoteFooter";
 
-const backdropStyle = {
-  backdropFilter: "blur(2px)",
-  background: "rgba(255, 255, 255, 0.01)",
-  WebkitBackdropFilter: "blur(12px)",
-  boxShadow: "0 4px 32px 0 rgba(31, 38, 135, 0.10)",
-};
+import { noteCache } from "../utils/noteCache";
 
-const CONTENT_MAX_LENGTH = 50000;
+const CONTENT_MAX_LENGTH = 100000;
 
 const Note = () => {
   const { user: loggedInUser } = useAuth();
@@ -67,11 +59,22 @@ const Note = () => {
     navigate(`/category/${categoryId}`);
   };
 
-  const goToNote = (idx) => {
-    if (idx >= 0 && idx < categoryNotes.length) {
-      navigate(`/note/${categoryNotes[idx]._id}`);
+  const goToNote = async (idx) => {
+    if (idx < 0 || idx >= categoryNotes.length) return;
+
+    const targetId = categoryNotes[idx]._id;
+
+    const cached = noteCache.get(targetId);
+    if (cached) {
+      setNote(cached);
+      setCurrentIndex(idx);
+      navigate(`/note/${targetId}`, { replace: true });
+      return;
     }
+
+    navigate(`/note/${targetId}`);
   };
+
 
   /* ---------------- CRUD ---------------- */
 
@@ -84,7 +87,7 @@ const Note = () => {
     } catch (err) {
       toast.error(
         err.response?.data?.message ||
-          "Failed to delete note."
+        "Failed to delete note."
       );
     } finally {
       setDeleting(false);
@@ -101,7 +104,6 @@ const Note = () => {
       setContentTooLarge(true);
       return;
     }
-
     setEditMode(true);
     setEditNote({ title: note.title, content: note.content });
     setEditTags(Array.isArray(note.tags) ? note.tags : []);
@@ -136,6 +138,13 @@ const Note = () => {
     setContentTooLarge(false);
   };
 
+  const handleAddTag = () => {
+    const t = newTag.trim();
+    if (t && !editTags.includes(t)) {
+      setEditTags([...editTags, t]);
+    }
+    setNewTag("");
+  }
   const handleSave = async (e) => {
     e.preventDefault();
     setUpdateLoading(true);
@@ -168,52 +177,96 @@ const Note = () => {
   /* ---------------- Data fetch ---------------- */
 
   useEffect(() => {
-    const fetchNote = async () => {
-      setLoading(true);
-      setError(null);
+    let cancelled = false;
+
+    const run = async () => {
+      const cached = noteCache.get(noteId);
+
+      if (cached) {
+        setNote(cached);
+        setEditNote({ title: cached.title, content: cached.content });
+        setEditTags(cached.tags || []);
+      }
 
       try {
-        const noteRes = await axiosInstance.get(`/api/notes/${noteId}`);
-        setNote(noteRes.data);
-        setEditNote({
-          title: noteRes.data.title,
-          content: noteRes.data.content,
-        });
-        setEditTags(noteRes.data.tags || []);
+        const noteData = cached
+          ? cached
+          : (await axiosInstance.get(`/api/notes/${noteId}`)).data;
 
-        const categoryRes = await axiosInstance.get(
-          `/api/categories/${noteRes.data.category}`
-        );
+        if (!cached) {
+          noteCache.set(noteId, noteData);
+          setNote(noteData);
+          setEditNote({ title: noteData.title, content: noteData.content });
+          setEditTags(noteData.tags || []);
+        }
+
+        const [categoryRes, userRes] = await Promise.all([
+          axiosInstance.get(`/api/categories/${noteData.category}`),
+          axiosInstance.get(`/api/profile/${noteData.user}`),
+        ]);
+
+        if (cancelled) return;
+
         setCategory(categoryRes.data);
+        setUser(userRes.data);
 
-        const sortedNotes = (categoryRes.data.notes || []).slice().sort(
-          (a, b) =>
-            a.title.localeCompare(b.title, undefined, {
-              sensitivity: "base",
-            })
-        );
+        const sortedNotes = (categoryRes.data.notes || [])
+          .slice()
+          .sort((a, b) =>
+            a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+          );
+
         setCategoryNotes(sortedNotes);
         setCurrentIndex(
-          sortedNotes.findIndex((n) => n._id === noteRes.data._id)
+          sortedNotes.findIndex((n) => n._id === noteData._id)
         );
-
-        const userRes = await axiosInstance.get(
-          `/api/profile/${noteRes.data.user}`
-        );
-        setUser(userRes.data);
       } catch (err) {
-        setError(
-          err.response?.data?.message ||
-            "Failed to load note."
-        );
+        if (!cancelled) {
+          setError(
+            err.response?.data?.message || "Failed to load note."
+          );
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
-    fetchNote();
+    setLoading(true);
+    setError(null);
+    run();
+
+    return () => {
+      cancelled = true;
+    };
   }, [noteId]);
 
+  /* ---------------- Prefetching ---------------- */
+  useEffect(() => {
+    if (!categoryNotes.length || currentIndex === -1) return;
+
+    const PREFETCH_RANGE = 3;
+
+    const idsToPrefetch = [];
+
+    for (let offset = 1; offset <= PREFETCH_RANGE; offset++) {
+      const prev = categoryNotes[currentIndex - offset];
+      const next = categoryNotes[currentIndex + offset];
+
+      if (prev) idsToPrefetch.push(prev._id);
+      if (next) idsToPrefetch.push(next._id);
+    }
+
+    idsToPrefetch.forEach(async (id) => {
+      if (noteCache.has(id)) return;
+
+      try {
+        const res = await axiosInstance.get(`/api/notes/${id}`);
+        noteCache.set(id, res.data);
+      } catch {
+        // ignore failures, do not block UI
+      }
+    });
+  }, [currentIndex, categoryNotes]);
   /* ---------------- Guards ---------------- */
 
   if (loading) return <Loading />;
@@ -237,14 +290,12 @@ const Note = () => {
         loading={deleting}
         title="Delete Note"
         message="Are you sure you want to delete this note? This action cannot be undone."
-        backdropStyle={backdropStyle}
       />
 
       <div
-        className="container mx-auto p-6 md:p-10 max-w-3xl shadow-2xl border border-dashed border-black mt-10 mb-16 w-[90%]"
-        style={{ ...backdropStyle, borderRadius: "60px" }}
+        className="w-full"
       >
-        <Author user={user} handleUserClick={handleUserClick} />
+
 
         <NoteHeader
           note={note}
@@ -253,9 +304,10 @@ const Note = () => {
           isOwner={isOwner}
           editMode={editMode}
           editNote={editNote}
+          editTags={editTags}
+          newTag={newTag}
+          setNewTag={setNewTag}
           updateLoading={updateLoading}
-          updateError={updateError}
-          updateSuccess={updateSuccess}
           contentTooLarge={contentTooLarge}
           handleInputChange={handleInputChange}
           handleEdit={handleEdit}
@@ -263,28 +315,15 @@ const Note = () => {
           handleSave={handleSave}
           handleDelete={() => setShowDeletePopup(true)}
           handleCategoryClick={handleCategoryClick}
-          EncryptButton={EncryptButton}
-        />
-
-        <NoteTags
-          editMode={editMode}
-          editTags={editTags}
-          newTag={newTag}
-          setNewTag={setNewTag}
-          handleInputChange={handleInputChange}
-          handleAddTag={() => {
-            const t = newTag.trim();
-            if (t && !editTags.includes(t)) {
-              setEditTags([...editTags, t]);
-            }
-            setNewTag("");
-          }}
+          handleAddTag={handleAddTag}
           handleRemoveTag={(tag) =>
             setEditTags(editTags.filter((t) => t !== tag))
           }
-          note={note}
+          isAuthenticated={!!loggedInUser}
+          onUserClick={handleUserClick}
           navigate={navigate}
         />
+
 
         <NoteNavigation
           currentIndex={currentIndex}
@@ -292,11 +331,7 @@ const Note = () => {
           goToNote={goToNote}
         />
 
-        {!editMode && isOwner && (
-          <div className="text-center">
-            <EncryptButton onClick={handleEdit} />
-          </div>
-        )}
+
 
         <NoteContent
           editMode={editMode}

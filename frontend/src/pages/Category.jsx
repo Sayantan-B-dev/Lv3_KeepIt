@@ -15,12 +15,6 @@ import useMarkdownUploadQueue from "../hooks/useMarkdownUploadQueue";
 import useDragAndDrop from "../hooks/useDragAndDrop";
 import { exportCategoryAsZip } from "../utils/exportCategoryAsZip";
 
-const backdropStyle = {
-  backdropFilter: "blur(2px)",
-  background: "rgba(255, 255, 255, 0.01)",
-  WebkitBackdropFilter: "blur(12px)",
-  boxShadow: "0 4px 32px 0 rgba(31, 38, 135, 0.10)",
-};
 
 const Category = () => {
   const { user: loggedInUser } = useAuth();
@@ -147,14 +141,13 @@ const Category = () => {
   /* ---------------- Render ---------------- */
 
   return (
-    <>
+    <div className="w-full">
       <ConfirmPopUp
         open={showDeletePopup}
         onClose={() => setShowDeletePopup(false)}
         onConfirm={handleDeleteCategory}
         loading={deleting}
         message="Are you sure you want to delete this category? This will also delete all notes in this category. This action cannot be undone."
-        backdropStyle={backdropStyle}
       />
 
       <CategoryHeader
@@ -179,7 +172,7 @@ const Category = () => {
       />
 
       <div
-        className="mb-8 container mx-auto p-6 md:p-10 shadow-xl border border-muted w-full rounded-b-lg"
+        className="mb-8 mx-auto w-full md:p-10 shadow-xl border border-muted rounded-b-lg"
       >
         <MarkdownUploadBox
           dragActive={dragActive}
@@ -192,7 +185,7 @@ const Category = () => {
           onNoteClick={handleNoteClick}
         />
       </div>
-    </>
+    </div>
   );
 };
 

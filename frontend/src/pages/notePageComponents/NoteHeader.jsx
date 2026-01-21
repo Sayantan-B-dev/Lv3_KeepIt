@@ -1,5 +1,7 @@
 import React from "react";
 import DottedButton2 from "../../components/buttons/DottedButton2";
+import { motion } from "framer-motion";
+import ConfirmPopUp from "../../components/ConfirmPopUp";
 
 const NoteHeader = ({
   note,
@@ -7,87 +9,239 @@ const NoteHeader = ({
   isOwner,
   editMode,
   editNote,
-  handleInputChange,
+  editTags,
+  newTag,
+  setNewTag,
   updateLoading,
+  handleInputChange,
   handleEdit,
   handleDelete,
   deleting,
-  setShowDeletePopup,
-  showDeletePopup,
-  contentTooLarge,
   category,
   handleCategoryClick,
-  EncryptButton,
-  newTag,
-  handleAddTag,
-  editTags,
-  handleRemoveTag,
-  setNewTag,
-  updateError,
-  updateSuccess,
   handleCancel,
   handleSave,
-  ...rest
+  handleAddTag,
+  handleRemoveTag,
+  isAuthenticated,
+  onUserClick,
+  navigate,
 }) => {
+  const [tagToDelete, setTagToDelete] = React.useState(null);
+
+  React.useEffect(() => {
+    if (!editMode) setTagToDelete(null);
+  }, [editMode]);
+
   return (
-    <div className="flex items-center gap-6 mb-8  justify-center">
-      <div className="relative flex flex-col  justify-center  border-2 border-black rounded-xl p-10">
-        <p className="text-sm font-extrabold text-type-1 flex items-center gap-2 text-center justify-center">
-          Title:
-        </p>
-        <div>
+    <div className="flex justify-center mb-8">
+      {/* Tag delete confirmation */}
+      <ConfirmPopUp
+        open={!!tagToDelete}
+        title="Remove Tag"
+        message={
+          tagToDelete
+            ? `Are you sure you want to remove the tag "${tagToDelete}"?`
+            : ""
+        }
+        onClose={() => setTagToDelete(null)}
+        onConfirm={() => {
+          handleRemoveTag(tagToDelete);
+          setTagToDelete(null);
+        }}
+        loading={false}
+      />
+
+      <div className="w-full p-6 border border-muted rounded-t-lg shadow-xl glass-panel flex flex-col items-center gap-4 font-mono">
+
+        {/* Profile */}
+        {isAuthenticated && user && (
+          <div
+            className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2 w-full"
+            onClick={() => onUserClick?.(user._id)}
+          >
+            {user?.profileImage?.url ? (
+              <motion.img
+                src={user.profileImage.url}
+                alt={user.username}
+                className="w-14 h-14 rounded-full object-cover border border-muted"
+                whileHover={{ scale: 1.15 }}
+              />
+            ) : (
+              <div className="w-14 h-14 rounded-full bg-type-1 flex items-center justify-center text-type-2 font-bold">
+                {user?.username?.[0]?.toUpperCase() || "?"}
+              </div>
+            )}
+            <span className="text-sm text-type-1 underline-animation">
+              {user?.username}
+            </span>
+          </div>
+        )}
+
+        {/* Title */}
+        <div className="w-full">
           {editMode ? (
             <input
-              type="text"
               name="title"
               value={editNote.title}
               onChange={handleInputChange}
-              className="text-lg sm:text-xl md:text-2xl font-extrabold text-type-1 border border-grayi5digo-200 rounded px-2 py-1"
-              maxLength={100}
               disabled={updateLoading}
+              className="w-full text-center text-xl border border-muted rounded px-3 py-2 bg-transparent edit-activated-border"
             />
           ) : (
-            <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-type-1 flex ienter text-center justify-center gap-2" style={{ wordBreak: "break-all" }}>
+            <div className="text-xl text-center border-b border-muted py-2">
               {note.title}
-            </h3>
+            </div>
           )}
         </div>
-        {/* Tags under title */}
-        {/* ...tags and edit controls can be extracted to NoteTags if needed... */}
-        <div className="flex gap-4 mt-3 text-base text-gray-600 font-medium justify-between w-full">
-          <span className="flex items-center gap-1 text-xs    ">
-            <span className="text-xs text-gray-400">Created:</span>
-            {new Date(note.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+
+        {/* Meta row: created date + delete */}
+        <div className="flex justify-between items-center w-full text-xs text-type-3">
+          <span className="flex items-center gap-1">
+            <span className="text-type-2">Created:</span>
+            {new Date(note.createdAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
           </span>
+
           {isOwner && !editMode && (
             <button
-              className="ml-4 p-1 rounded-full text-gray-400 hover:text-red-500 transition cursor-pointer"
-              onClick={() => setShowDeletePopup(true)}
+              type="button"
+              onClick={handleDelete}
               disabled={deleting}
-              title="Delete this note"
-              style={{ background: "none", border: "none", outline: "none" }}
+              title="Delete note"
+              className="
+                p-1 rounded-full
+                border border-muted
+                text-type-3
+                hover:text-black hover:bg-red-500
+                hover:translate-y-[-4px]
+                active:scale-95
+                transition-all duration-150
+                disabled:opacity-50
+                disabled:cursor-not-allowed
+              "
             >
-              {deleting ? (
-                <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m5 0H4" />
+              {deleting ? "…" : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7V4a1 1 0 011-1h4a1 1 0 011 1v3m5 0H4"
+                  />
                 </svg>
               )}
             </button>
           )}
+
         </div>
-        {/* Category */}
-        <div className="flex items-center gap-4 m-auto ">
-          <span className="block font-semibold text-gray-700">Category:</span>
-          <DottedButton2
-            style={{ fontSize: "12px" }}
-            onClick={() => handleCategoryClick(category._id)}
-            text={category?.name || note.category}
-          />
+
+        {/* Category & Tags */}
+        <div className="flex flex-row items-start w-full gap-2">
+          <div className="flex flex-col items-start w-full gap-2 text-sm mt-2">
+
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="font-mono">Category:</span>
+              <DottedButton2
+                text={category?.name || note.category}
+                onClick={() => handleCategoryClick(category._id)}
+              />
+            </div>
+
+            <div className="flex flex-wrap gap-2 items-center">
+              <span className="font-mono">Tags:</span>
+
+              {(editMode ? editTags : note.tags || []).map((tag, i) => (
+                <span
+                  key={tag + i}
+                  className="px-3 py-1 rounded-full text-xs border border-muted bg-type-2 shadow flex items-center gap-1"
+                  onClick={
+                    !editMode
+                      ? () => navigate(`/tag/${encodeURIComponent(tag)}`)
+                      : undefined
+                  }
+                >
+                  #{tag}
+
+                  {editMode && (
+                    <button
+                      type="button"
+                      disabled={updateLoading}
+                      title="Remove tag"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setTagToDelete(tag);
+                      }}
+                      className="ml-1 text-red-500 hover:text-red-700 disabled:opacity-40"
+                    >
+                      ×
+                    </button>
+                  )}
+                </span>
+              ))}
+            </div>
+
+            {editMode && (
+              <div className="flex gap-2">
+                <input
+                  name="newTag"
+                  value={newTag}
+                  onChange={handleInputChange}
+                  className="px-3 py-1 text-xs rounded-full border border-muted bg-transparent"
+                  placeholder="Add tag"
+                />
+                <button
+                  type="button"
+                  onClick={handleAddTag}
+                  disabled={!newTag.trim()}
+                  className="px-2 rounded-full border border-muted"
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Actions */}
+          {isOwner && (
+            <div className="flex gap-3 mt-3">
+              {!editMode ? (
+                <button
+                  type="button"
+                  onClick={handleEdit}
+                  className="px-4 py-1 border border-muted rounded-lg hover:bg-white/20 hover:translate-y-[-4px] active:scale-95 transition"
+                >
+                  Edit
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    className="px-4 py-1 border border-muted rounded-lg hover:bg-white/20 hover:translate-y-[-4px] active:scale-95 transition"
+                  >
+                    Save
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCancel}
+                    className="px-4 py-1 border border-muted rounded-lg hover:bg-white/20 hover:translate-y-[-4px] active:scale-95 transition"
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

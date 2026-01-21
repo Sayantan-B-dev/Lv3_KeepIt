@@ -147,9 +147,10 @@ function App() {
                 <Route path="/tag/:tagname" element={<TagNotes />} />
               </Routes>
             </Suspense>
-            <Footer />
           </>
         )}
+            <Footer />
+
       </div>
     </div>
   );
