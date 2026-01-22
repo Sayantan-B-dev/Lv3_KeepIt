@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import ListContainer from "../components/common/ListContainer";
-import Skeleton from "../components/skeletons/Skeleton";
 import DottedButton2 from "../components/buttons/DottedButton2";
+import Loader from '../components/common/Loader';
 
 const CategoryType = () => {
   const { id } = useParams();
@@ -26,11 +26,7 @@ const CategoryType = () => {
   return (
     <ListContainer title={categoryType?.name || "Category Type"}>
       {loading && (
-        <div className="flex flex-col gap-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} />
-          ))}
-        </div>
+        <Loader  variant="dots" text="Loading…" />
       )}
 
       {!loading && categories.length === 0 && (

@@ -12,7 +12,6 @@ const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Profile = lazy(() => import("./pages/Profile"));
-const MyProfile = lazy(() => import("./pages/MyProfile"));
 const Category = lazy(() => import("./pages/Category"));
 const Note = lazy(() => import("./pages/Note"));
 const Logout = lazy(() => import("./pages/Logout"));
@@ -28,6 +27,7 @@ const MyCategories = lazy(() => import("./pages/MyCategories"));
 const MyNotes = lazy(() => import("./pages/MyNotes"));
 const MyTags = lazy(() => import("./pages/MyTags.jsx"));
 const CategoryType = lazy(() => import("./pages/CategoryType"));
+const RotatingKeepIt =lazy(() => import("./components/RotatingKeepIt"));
 
 
 
@@ -114,16 +114,16 @@ function App() {
                   element={!isAuthenticated ? <Register /> : <Navigate to="/" replace />}
                 />
 
+                {/* OWN PROFILE */}
                 <Route
                   path="/profile/MyProfile"
                   element={
-                    isAuthenticated ? (
-                      <MyProfile categories={categories} />
-                    ) : (
-                      <Navigate to="/login" replace />
-                    )
+                    isAuthenticated ? <Profile /> : <Navigate to="/login" replace />
                   }
                 />
+
+                {/* PUBLIC PROFILE */}
+                <Route path="/profile/:userId" element={<Profile />} />
 
                 <Route path="/CreateNote" element={<CreateNote categories={categories} />} />
                 <Route path="/all-categories" element={<AllCategories />} />
@@ -136,20 +136,19 @@ function App() {
                 <Route path="/my-categories" element={<MyCategories />} />
                 <Route path="/my-notes" element={<MyNotes />} />
                 <Route path="/my-tags" element={<MyTags />} />
-                <Route
-                  path="/category-type/:id"
-                  element={<CategoryType />}
-                />
 
-                <Route path="/profile/:userId" element={<Profile />} />
+                <Route path="/category-type/:id" element={<CategoryType />} />
                 <Route path="/category/:categoryId" element={<Category />} />
                 <Route path="/note/:noteId" element={<Note />} />
                 <Route path="/tag/:tagname" element={<TagNotes />} />
               </Routes>
             </Suspense>
+
           </>
         )}
-            <Footer />
+      <RotatingKeepIt />
+
+        <Footer />
 
       </div>
     </div>

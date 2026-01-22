@@ -5,6 +5,7 @@ import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from 'react-toastify';
+import DottedButton from '../components/buttons/DottedButton'
 
 const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -48,126 +49,128 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className="w-full flex items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
-        style={{
-            backdropFilter: 'blur(2px)',
-            backdropShadow: '20px',
-            background: 'rgba(255, 255, 255, 0.01)',
-            WebkitBackdropFilter: 'blur(12px)',
-            boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-            borderRadius: '60px',
-            border: '1px dashed black',
-        }} 
+        className="
+        w-full
+        lg:w-[70%]
+        p-8
+        rounded-lg
+        border border-muted
+        glass-panel
+        shadow-xl
+        font-mono
+      "
       >
-        <h2 className="text-2xl font-bold mb-6 text-center text-black">Login</h2>
+        {/* Title */}
+        <h2 className="text-2xl font-semibold text-type-1 text-center mb-6">
+          Log in
+        </h2>
+
+        {/* Error */}
         {error && (
-          <div className="mb-4 text-red-500 text-sm text-center">{error}</div>
+          <div className="mb-4 text-sm text-red-500 text-center">
+            {error}
+          </div>
         )}
-        <div className="mb-4">
-          <label className="block py-2 mb-1 font-medium text-gray-500" htmlFor="username">
+
+        {/* Username */}
+        <div className="formInputDiv">
+          <label className="block mb-1 text-sm text-type-1">
             Username
           </label>
           <input
             id="username"
             name="username"
-            placeholder="Enter your username"
             value={formData.username}
             onChange={handleChange}
-            className="w-full border-gray-300 border-1 rounded px-3 py-2 focus:outline-none focus:ring focus:border-black text-black"
+            placeholder="Enter your username"
             autoComplete="username"
             disabled={loading}
             required
+            className="textAreaStyle"
           />
         </div>
-        <div className="mb-6">
-          <label className="block py-2 mb-1 font-medium text-gray-500" htmlFor="password">
+
+        {/* Password */}
+        <div className="formInputDiv">
+          <label className="block mb-1 text-sm text-type-1">
             Password
           </label>
+
           <div className="relative">
             <input
               id="password"
               name="password"
-              placeholder="Enter your password"
               type={showPassword ? "text" : "password"}
               value={formData.password}
               onChange={handleChange}
-              className="w-full border-gray-300 border-1 rounded px-3 py-2 focus:outline-none focus:ring focus:border-black text-black pr-10"
+              placeholder="Enter your password"
               autoComplete="current-password"
               disabled={loading}
               required
+              className="textAreaStyle"
             />
-                          <div
-                type="button"
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 focus:outline-none"
-                onClick={() => setShowPassword((prev) => !prev)}
-                tabIndex={-1}
-                aria-label={showPassword ? "Hide password" : "Show password"}
-              >
-                {showPassword ? (
-                  // Eye open SVG
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path
-                      d="M1.5 12C3.5 6.5 8 3 12 3s8.5 3.5 10.5 9c-2 5.5-6.5 9-10.5 9S3.5 17.5 1.5 12z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      fill="none"
-                    />
-                    <circle
-                      cx="12"
-                      cy="12"
-                      r="3.5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      fill="none"
-                    />
-                  </svg>
-                ) : (
-                  // Eye closed SVG
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                    <path
-                      d="M1.5 12C3.5 6.5 8 3 12 3c2.1 0 4.2.7 6 2M22.5 12c-2 5.5-6.5 9-10.5 9-2.1 0-4.2-.7-6-2"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      fill="none"
-                    />
-                    <path
-                      d="M3 3l18 18"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M9.5 14.5a3.5 3.5 0 0 1 5-5"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      fill="none"
-                    />
-                  </svg>
-                )}
-              </div>
+
+            {/* Toggle password */}
+            <div
+              onClick={() => setShowPassword(v => !v)}
+              className="
+              absolute right-3 top-1/2 -translate-y-1/2
+              cursor-pointer
+              text-type-3
+              hover:text-type-1
+              transition
+            "
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                /* eye open */
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M1.5 12C3.5 6.5 8 3 12 3s8.5 3.5 10.5 9c-2 5.5-6.5 9-10.5 9S3.5 17.5 1.5 12z"
+                    stroke="currentColor" strokeWidth="1.5" />
+                  <circle cx="12" cy="12" r="3.5"
+                    stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              ) : (
+                /* eye closed */
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M3 3l18 18" stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M1.5 12C3.5 6.5 8 3 12 3c2.1 0 4.2.7 6 2"
+                    stroke="currentColor" strokeWidth="1.5" />
+                  <path d="M22.5 12c-2 5.5-6.5 9-10.5 9-2.1 0-4.2-.7-6-2"
+                    stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              )}
+            </div>
           </div>
         </div>
-        <button
-          type="submit"
-          className={`w-full bg-blue-600 text-white py-2 rounded font-semibold hover:bg-blue-700 transition ${
-            loading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
-        <div className="mt-4 text-center text-sm text-black">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">
+
+        {/* Submit */}
+        <div className="flex justify-center w-full ">
+                    <DottedButton
+                    text={loading ? "Logging in..." : "Log in"}
+                    className="w-fit text-lg"
+                    onClick={handleSubmit}
+                />
+              </div>
+        
+
+        {/* Footer */}
+        <div className="mt-5 text-center text-sm text-type-3">
+          Don’t have an account?{" "}
+          <Link
+            to="/register"
+            className="underline-animation text-type-1"
+          >
             Register
           </Link>
         </div>
       </form>
     </div>
   );
+
 };
 
 export default Login;

@@ -2,7 +2,7 @@ import React from "react";
 import DottedButton2 from "../../components/buttons/DottedButton2";
 import { motion } from "framer-motion";
 import ConfirmPopUp from "../../components/ConfirmPopUp";
-
+import ButtonType3 from "../../components/buttons/ButtonType3";
 const NoteHeader = ({
   note,
   user,
@@ -28,7 +28,6 @@ const NoteHeader = ({
   navigate,
 }) => {
   const [tagToDelete, setTagToDelete] = React.useState(null);
-
   React.useEffect(() => {
     if (!editMode) setTagToDelete(null);
   }, [editMode]);
@@ -58,21 +57,25 @@ const NoteHeader = ({
         {isAuthenticated && user && (
           <div
             className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2 w-full"
-            onClick={() => onUserClick?.(user._id)}
           >
             {user?.profileImage?.url ? (
               <motion.img
                 src={user.profileImage.url}
                 alt={user.username}
                 className="w-14 h-14 rounded-full object-cover border border-muted"
-                whileHover={{ scale: 1.15 }}
+                whileHover={{
+                  scale: 1.25,
+                  rotate: 5,
+                  filter: "brightness(1.1)",
+                }}
+                onClick={() => onUserClick?.(user._id)}
               />
             ) : (
-              <div className="w-14 h-14 rounded-full bg-type-1 flex items-center justify-center text-type-2 font-bold">
+              <div className="w-14 h-14 rounded-full bg-type-1 flex items-center justify-center text-type-2 font-bold" onClick={() => onUserClick?.(user._id)}>
                 {user?.username?.[0]?.toUpperCase() || "?"}
               </div>
             )}
-            <span className="text-sm text-type-1 underline-animation">
+            <span className="text-sm text-type-1 underline-animation" onClick={() => onUserClick?.(user._id)}>
               {user?.username}
             </span>
           </div>
@@ -86,7 +89,7 @@ const NoteHeader = ({
               value={editNote.title}
               onChange={handleInputChange}
               disabled={updateLoading}
-              className="w-full text-center text-xl border border-muted rounded px-3 py-2 bg-transparent edit-activated-border"
+              className="w-full text-center text-xl border border-muted rounded px-3 py-2 bg-transparent"
             />
           ) : (
             <div className="text-xl text-center border-b border-muted py-2">
@@ -215,29 +218,20 @@ const NoteHeader = ({
           {isOwner && (
             <div className="flex gap-3 mt-3">
               {!editMode ? (
-                <button
-                  type="button"
+                <ButtonType3
+                  text="Edit"
                   onClick={handleEdit}
-                  className="px-4 py-1 border border-muted rounded-lg hover:bg-white/20 hover:translate-y-[-4px] active:scale-95 transition"
-                >
-                  Edit
-                </button>
+                />
               ) : (
                 <>
-                  <button
-                    type="button"
+                  <ButtonType3
+                    text="Save"
                     onClick={handleSave}
-                    className="px-4 py-1 border border-muted rounded-lg hover:bg-white/20 hover:translate-y-[-4px] active:scale-95 transition"
-                  >
-                    Save
-                  </button>
-                  <button
-                    type="button"
+                  />
+                  <ButtonType3
+                    text="Cancel"
                     onClick={handleCancel}
-                    className="px-4 py-1 border border-muted rounded-lg hover:bg-white/20 hover:translate-y-[-4px] active:scale-95 transition"
-                  >
-                    Cancel
-                  </button>
+                  />
                 </>
               )}
             </div>

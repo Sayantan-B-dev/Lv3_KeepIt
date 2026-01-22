@@ -1,8 +1,7 @@
 import React, { useRef, useState } from 'react';
-const textAreaStyle =
-  "w-full border border-gray-700 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
 
-const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled = false }) => {
+
+const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled = false ,textAreaStyle}) => {
   const [input, setInput] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [error, setError] = useState('');

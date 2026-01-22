@@ -1,5 +1,6 @@
 import React from "react";
 
+
 const Loading = () => {
   return (
     <div className="w-full px-4 py-6 flex justify-center">
@@ -37,14 +38,14 @@ const Loading = () => {
           ))}
         </div>
         {/* Navigation skeleton */}
-        <div className="flex justify-center gap-3 mt-2">
+        {/* <div className="flex justify-center gap-3 mt-2">
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
               className="w-14 h-10 rounded-lg bg-type-1 border border-muted"
             />
           ))}
-        </div>
+        </div> */}
 
         {/* Content skeleton */}
         <div className="relative w-full p-6 rounded-xl border border-muted glass-panel overflow-hidden">

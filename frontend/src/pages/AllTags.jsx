@@ -1,11 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
-import ListContainer from '../components/common/ListContainer';
-import SearchBar from '../components/common/SearchBar';
-import DottedButton from '../components/buttons/DottedButton';
-import DottedButton2 from '../components/buttons/DottedButton2';
-import Skeleton from '../components/skeletons/Skeleton';
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
+import ListContainer from "../components/common/ListContainer";
+import SearchBar from "../components/common/SearchBar";
+import DottedButton from "../components/buttons/DottedButton";
+import DottedButton2 from "../components/buttons/DottedButton2";
+import Loader from '../components/common/Loader';
+
 
 const PAGE_SIZE = 15;
 
@@ -13,20 +14,19 @@ const AllTags = () => {
   const navigate = useNavigate();
 
   const [tags, setTags] = useState([]);
-  const [loading, setLoading] = useState(true);        // initial load
+  const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     axiosInstance
-      .get('/api/notes/tags')
+      .get("/api/notes/tags")
       .then(res => setTags(res.data || []))
       .catch(() => setTags([]))
       .finally(() => setLoading(false));
   }, []);
 
-  // reset page on search
   useEffect(() => {
     setPage(1);
   }, [search]);
@@ -36,7 +36,7 @@ const AllTags = () => {
       t.tag?.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) =>
-      a.tag.localeCompare(b.tag, undefined, { sensitivity: 'base' })
+      a.tag.localeCompare(b.tag, undefined, { sensitivity: "base" })
     );
 
   const visible = filtered.slice(0, page * PAGE_SIZE);
@@ -46,7 +46,6 @@ const AllTags = () => {
     if (loadingMore) return;
     setLoadingMore(true);
 
-    // simulate async load for UX parity
     setTimeout(() => {
       setPage(p => p + 1);
       setLoadingMore(false);
@@ -61,13 +60,10 @@ const AllTags = () => {
         placeholder="Search tags"
       />
 
-      {/* Initial load skeletons */}
+      {/* Initial load */}
       {loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} />
-          ))}
-        </div>
+        <Loader  variant="dots" text="Loading…" />
+
       )}
 
       {!loading && visible.length === 0 && (
@@ -77,11 +73,11 @@ const AllTags = () => {
       )}
 
       {!loading && visible.length > 0 && (
-        <div className="flex flex-col gap-3 px-2">
+        <div className="gridy">
           {visible.map(tag => (
             <DottedButton2
               key={tag.tag}
-              text={`#${tag.tag} • ${tag.count} Doc${tag.count !== 1 ? 's' : ''}`}
+              text={`#${tag.tag} • ${tag.count} Doc${tag.count !== 1 ? "s" : ""}`}
               className="w-full"
               onClick={() =>
                 navigate(`/tag/${encodeURIComponent(tag.tag)}`)
@@ -89,14 +85,10 @@ const AllTags = () => {
             />
           ))}
 
-          {/* Load-more skeletons */}
-          {loadingMore &&
-            Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={`more-${i}`} />
-            ))}
+
         </div>
       )}
-
+      {loadingMore &&<Loader  variant="dots" text="Loading…" />}
       {hasMore && !loadingMore && (
         <div className="flex justify-center mt-6">
           <DottedButton text="Load More" onClick={handleLoadMore} />

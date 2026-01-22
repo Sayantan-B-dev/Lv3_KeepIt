@@ -1,24 +1,26 @@
-import express from 'express'
-import{
-    getUserCategories,
-    createCategory,
-    updateCategory,
-    deleteCategory,
-    getCategoryById
-} from '../controllers/categoryController.js'
-import {isLoggedIn} from '../middlewares/isAuthenticated.js'
-import { aiModeration } from '../middlewares/aiModeration.js'
+import express from "express";
+import { isLoggedIn } from "../middlewares/isAuthenticated.js";
+import { aiModeration } from "../middlewares/aiModeration.js";
 
-const router=express.Router()
+import {
+  getUserCategories,
+  getCategoryById,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from "../controllers/categoryController.js";
 
-router.get('/',isLoggedIn,getUserCategories)
-router.get('/:id', isLoggedIn, getCategoryById);
+const router = express.Router();
 
-router.post('/',isLoggedIn,aiModeration,createCategory)
-router.put('/:id',isLoggedIn,aiModeration,updateCategory)
-router.delete('/:id',isLoggedIn,deleteCategory)
+/* ================= User categories ================= */
 
+router.get("/", isLoggedIn, getUserCategories);
+router.get("/:id", isLoggedIn, getCategoryById);
 
+/* ================= Mutations ================= */
 
+router.post("/", isLoggedIn, aiModeration, createCategory);
+router.put("/:id", isLoggedIn, aiModeration, updateCategory);
+router.delete("/:id", isLoggedIn, deleteCategory);
 
-export default router 
+export default router;

@@ -8,18 +8,22 @@ export const getCategoryById = async (req, res) => {
   try {
     const category = await Category.findById(id)
       .populate("categoryType", "name")
-      .populate("notes")
-      .populate("user", "username profileImage bio location website");
+      .populate("user", "username profileImage bio location website")
+      .select("-notes"); // ⛔ exclude notes explicitly
+
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
 
     res.json(category);
   } catch (err) {
     console.error("Error in getCategoryById:", err);
     res.status(500).json({
       error: "Failed to fetch category",
-      details: err.message,
     });
   }
 };
+
 
 export const getUserCategories = async (req, res) => {
   try {

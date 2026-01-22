@@ -5,7 +5,7 @@ import ListContainer from "../components/common/ListContainer";
 import SearchBar from "../components/common/SearchBar";
 import DottedButton from "../components/buttons/DottedButton";
 import DottedButton2 from "../components/buttons/DottedButton2";
-import Skeleton from "../components/skeletons/Skeleton";
+import Loader from '../components/common/Loader';
 
 const PAGE_SIZE = 15;
 
@@ -70,11 +70,8 @@ const MyTags = () => {
       />
 
       {loading && (
-        <div className="flex flex-col gap-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} />
-          ))}
-        </div>
+                <Loader variant="dots" text="Loading…" />
+
       )}
 
       {!loading && tags.length === 0 && (
@@ -84,7 +81,7 @@ const MyTags = () => {
       )}
 
       {!loading && (
-        <div className="flex flex-col gap-2">
+        <div className="gridy">
           {tags.map(t => (
             <DottedButton2
               key={t.tag}
@@ -95,14 +92,9 @@ const MyTags = () => {
               }
             />
           ))}
-
-          {loadingMore &&
-            Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={`m-${i}`} />
-            ))}
         </div>
       )}
-
+      {loadingMore &&<Loader  variant="dots" text="Loading…" />}
       {hasMore && (
         <div className="flex justify-center mt-6">
           <DottedButton

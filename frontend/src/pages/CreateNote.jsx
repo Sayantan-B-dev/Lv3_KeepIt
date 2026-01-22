@@ -20,7 +20,7 @@ import TagInput from '../components/TagInput';
 import { MdUndo, MdRedo } from "react-icons/md";
 
 const textAreaStyle =
-    "w-full border border-gray-700 rounded-lg px-4 py-2 resize-vertical focus:outline-none focus:ring-1 focus:ring-black text-black";
+    "textAreaStyle";
 
 // Key for localStorage
 const LOCAL_STORAGE_KEY = "createnote_draft_v1";
@@ -50,7 +50,7 @@ const CreateNote = () => {
                 }
                 return parsed;
             }
-        } catch (e) {}
+        } catch (e) { }
         // If no draft, use defaults
         return {
             title: "",
@@ -109,7 +109,7 @@ const CreateNote = () => {
         };
         try {
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(toSave));
-        } catch (e) {}
+        } catch (e) { }
     }, [title, content, category, tags, categoryType, preselectedCategory, isAuthenticated, success]);
 
     // Remove draft from localStorage after successful creation
@@ -143,7 +143,7 @@ const CreateNote = () => {
             return;
         }
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             const fileContent = event.target.result;
             const fileTitle = file.name.replace(/\.md$/i, "");
             setTitle(fileTitle);
@@ -152,7 +152,7 @@ const CreateNote = () => {
             setContentRedoStack([]);
             toast.success("Markdown file loaded! You can review and submit.");
         };
-        reader.onerror = function() {
+        reader.onerror = function () {
             toast.error(`Failed to read file: ${file.name}`);
         };
         reader.readAsText(file);
@@ -371,212 +371,244 @@ const CreateNote = () => {
 
     return (
         <div
-            className="container mx-auto p-6 md:p-10 max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-10 mb-16 w-[90%] max-w-full md:max-w-2xl lg:max-w-3xl"
-            style={{
-                backdropFilter: 'blur(2px)',
-                backdropShadow: '20px',
-                background: 'rgba(255, 255, 255, 0.01)',
-                WebkitBackdropFilter: 'blur(12px)',
-                boxShadow: '0 4px 32px 0 rgba(31, 38, 135, 0.10)',
-                borderRadius: '60px',
-                border: '1px dashed black',
-            }}>
-            <h2 className="text-3xl font-bold mb-6 text-gray-900">
+            className="
+                w-full
+                mb-5
+                p-6 md:p-10
+                rounded-lg
+                border border-muted
+                glass-panel
+                shadow-xl
+                bg-type-b1
+            "
+
+        >
+            {/* Header */}
+            <h2 className="
+                text-3xl
+                font-mono font-bold
+                text-type-1
+                mb-8
+                text-center
+                tracking-tight
+            ">
                 Create a New Note
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
+
+            <form onSubmit={handleSubmit} className="space-y-8 font-mono">
+
+                {/* Title */}
+                <div className="">
+                    <label className="block text-type-2 font-mono mb-2">
                         Title
                     </label>
                     <input
                         type="text"
-                        className={textAreaStyle}
+                        className={`${textAreaStyle}`}
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="Enter note title"
                     />
                 </div>
+
+                {/* Content */}
                 <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
+                    <label className="block text-type-2 font-mono mb-2">
                         Content
                     </label>
+
                     <div className="relative">
                         <textarea
                             ref={contentInputRef}
-                            className={`${textAreaStyle} h-75 pr-12`}
+                            className={`
+                                ${textAreaStyle}
+                                h-75
+                                pr-12
+                                resize
+                            `}
                             value={content}
                             onChange={handleContentChange}
-                            placeholder="Write your note here... (You can adjast the size of the text area by dragging the bottom right corner)"
-                            style={{ minHeight: 120 }}
+                            placeholder="Write your note here… (Markdown supported)"
+                            style={{ minHeight: 140 }}
                         />
-                        {/* Undo/Redo buttons, now at bottom right of textarea, smaller size */}
-                        <div
-                            className="absolute right-2 bottom-2 flex gap-0.5 z-10"
-                        >
-                            <button
-                                type="button"
-                                aria-label="Undo"
-                                className="rounded-full p-0.5 bg-white border border-black shadow hover:bg-gray-100 transition disabled:opacity-80 flex items-center justify-center"
-                                onClick={handleUndo}
-                                disabled={contentUndoStack.length <= 1}
-                                tabIndex={0}
-                                title="Undo (Ctrl+Z)"
-                                style={{ width: 18, height: 18, minWidth: 18, minHeight: 18, borderWidth: 1, borderStyle: 'solid', borderColor: 'black' }}
-                            >
-                                <span className="text-xs text-black" style={{ fontSize: 14 }}><MdUndo size={12} /></span>
-                            </button>
-                            <button
-                                type="button"
-                                aria-label="Redo"
-                                className="rounded-full p-0.5 bg-white border border-black shadow hover:bg-gray-100 transition disabled:opacity-80 flex items-center justify-center"
-                                onClick={handleRedo}
-                                disabled={contentRedoStack.length === 0}
-                                tabIndex={0}
-                                title="Redo (Ctrl+Y)"
-                                style={{ width: 18, height: 18, minWidth: 18, minHeight: 18, borderWidth: 1, borderStyle: 'solid', borderColor: 'black' }}
-                            >
-                                <span className="text-xs text-black" style={{ fontSize: 14 }}><MdRedo size={12} /></span>
-                            </button>
+
+                        {/* Undo / Redo */}
+                        <div className="absolute right-2 bottom-2 flex gap-1 z-10">
+                            {[{
+                                label: "Undo",
+                                onClick: handleUndo,
+                                disabled: contentUndoStack.length <= 1,
+                                icon: <MdUndo size={12} />
+                            }, {
+                                label: "Redo",
+                                onClick: handleRedo,
+                                disabled: contentRedoStack.length === 0,
+                                icon: <MdRedo size={12} />
+                            }].map(({ label, onClick, disabled, icon }) => (
+                                <button
+                                    key={label}
+                                    type="button"
+                                    onClick={onClick}
+                                    disabled={disabled}
+                                    title={label}
+                                    className="
+                                        w-5 h-5
+                                        flex items-center justify-center
+                                        rounded-full
+                                        border border-muted
+                                        bg-white/70
+                                        hover:bg-white
+                                        shadow
+                                        transition
+                                        disabled:opacity-50
+                                        disabled:cursor-not-allowed
+                                    "
+                                >
+                                    {icon}
+                                </button>
+                            ))}
                         </div>
                     </div>
-                    <div className="flex items-center justify-between mt-1">
-                        <div className="text-xs text-gray-500">
-                            <span>
-                                <b>Markdown supported:</b> You can use <b>**bold**</b>, <i>*italic*</i>, <code>`inline code`</code>, <code>```code blocks```</code>, lists, headings (<code>#</code>, <code>##</code>, etc.), blockquotes (<code>&gt; quote</code>), and more.<br />
-                                <b>Links:</b> Paste a full URL (e.g. <code>https://example.com</code>) and it will be clickable when viewing the note.<br />
-                            </span>
-                        </div>
-                    </div>
+
+                    <p className="text-xs text-type-2 mt-2 leading-relaxed">
+                        <b>Markdown supported:</b> **bold**, *italic*, `inline code`,
+                        ```code blocks```, lists, headings, blockquotes, and links.
+                    </p>
                 </div>
-                {/* Markdown file upload button and drag-and-drop */}
+
+                {/* Markdown Upload */}
                 <div
                     ref={dropRef}
-                    className={`transition border-2 border-dashed rounded-lg mt-2 p-4 flex flex-col items-center justify-center cursor-pointer bg-white/80 hover:bg-white/50 shadow
-                        ${isDragActive ? "border-indigo-500 bg-indigo-50" : "border-black"}
+                    className={`
+                        border
+                        rounded-lg
+                        p-5
+                        flex flex-col
+                        items-center
+                        justify-center
+                        cursor-pointer
+                        transition
+                        glass-panel
+                        ${isDragActive
+                        ? "border-indigo-500 bg-indigo-500/10"
+                        : "border-muted hover:bg-white/10"}
                     `}
-                    style={{
-                        outline: isDragActive ? "2px solid #6366f1" : "none",
-                        minHeight: "80px",
-                        position: "relative"
-                    }}
-                    tabIndex={0}
-                    aria-label="Upload or drag and drop a Markdown file"
+                    style={{ minHeight: 90 }}
                 >
-                    <label className="flex flex-col items-center justify-center cursor-pointer w-full h-full text-black">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mb-1 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                    <label className="flex flex-col items-center gap-1 cursor-pointer text-type-1">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-5 w-5 text-type-1"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round"
+                                d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"
+                            />
                         </svg>
-                        <span>
+
+                        <span className="text-sm">
                             {isDragActive
                                 ? "Drop your .md file here"
                                 : "Upload or drag & drop a .md file"}
                         </span>
+
                         <input
                             type="file"
                             accept=".md"
                             onChange={handleMdUpload}
                             className="hidden"
-                            tabIndex={-1}
                         />
                     </label>
-                    <div className="text-xs text-gray-500 mt-1 text-center w-full">
-                        Upload or drag and drop a Markdown (.md) file to auto-fill the title and content fields.
-                    </div>
+
+                    <span className="text-xs text-type-3 mt-2 text-center">
+                        Markdown file will auto-fill title and content.
+                    </span>
                 </div>
-                <div className="flex flex-row gap-4 justify-between">
-                    <div className="flex-grow">
-                        <label className="block text-gray-700 font-semibold mb-2">
+
+                {/* Category + Type */}
+                <div className="flex gap-4">
+                    <div className="flex-1">
+                        <label className="block text-type-2 font-mono mb-2">
                             Category
                         </label>
                         <input
                             type="text"
-                            className={
-                                preselectedCategory
-                                    ? `${textAreaStyle} bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed`
-                                    : textAreaStyle
-                            }
-                            value={
-                                preselectedCategory
-                                    ? preselectedCategory.name
-                                    : category
-                            }
-                            onChange={
-                                preselectedCategory
-                                    ? undefined // If thisCategory is passed, disable editing
-                                    : (e) => setCategory(e.target.value)
-                            }
-                            placeholder="e.g. Personal, Work, Ideas"
+                            placeholder="e.g., Work, Personal"
+                            className={textAreaStyle}
+                            value={preselectedCategory ? preselectedCategory.name : category}
                             disabled={!!preselectedCategory}
+                            onChange={
+                                preselectedCategory ? undefined : (e) => setCategory(e.target.value)
+                            }
                         />
-                        {preselectedCategory && (
-                            <div className="text-xs text-gray-400 mt-1 ml-1">
-                                Category is preselected and cannot be changed.
-                            </div>
-                        )}
                     </div>
-                    <div>
-                        <label className="block text-gray-700 font-semibold mb-2">
+
+                    <div className="flex-1">
+                        <label className="block text-type-2 font-mono mb-2">
                             Category Type
                         </label>
                         <input
                             type="text"
-                            className={
-                                preselectedCategory
-                                    ? `${textAreaStyle} bg-gray-100 text-gray-500 border-gray-300 cursor-not-allowed`
-                                    : textAreaStyle
-                            }
+                            placeholder="e.g., ML, WebDev"
+                            className={textAreaStyle}
                             value={
-                                preselectedCategory && preselectedCategory.type
-                                    ? preselectedCategory.type
-                                    : categoryType
+                                preselectedCategory?.type ?? categoryType
                             }
+                            disabled={!!preselectedCategory?.type}
                             onChange={
-                                preselectedCategory && preselectedCategory.type
-                                    ? undefined // If preselected, don't allow editing
+                                preselectedCategory?.type
+                                    ? undefined
                                     : (e) => setCategoryType(e.target.value)
                             }
-                            placeholder="e.g. work, personal, ideas"
                             pattern="^\\w+$"
-                            title="Type must be a single word (no spaces or special characters)."
-                            disabled={!!(preselectedCategory && preselectedCategory.type)}
                         />
-                        {preselectedCategory && preselectedCategory.type && (
-                            <div className="text-xs text-gray-400 mt-1 ml-1">
-                                Category type is preselected and cannot be changed.
-                            </div>
-                        )}
                     </div>
                 </div>
+
+                {/* Tags */}
                 <div>
-                    <label className="block text-gray-700 font-semibold mb-2">
+                    <label className="block text-type-2 font-mono mb-2">
                         Tags
                     </label>
                     <TagInput
                         value={tags}
                         onChange={setTags}
-                        placeholder="Add tags (press Enter or comma)"
-
+                        textAreaStyle={textAreaStyle}
+                        placeholder="Add tags (Enter or comma)"
                     />
-                    <div className="text-xs text-gray-500 mt-1">
-                        Add multiple tags to help organize and search your notes. Max 30 chars per tag.
-                    </div>
+                    <p className="text-xs text-type-2 mt-1">
+                        Max 30 characters per tag.
+                    </p>
                 </div>
+
+                {/* Errors */}
                 {formError && (
-                    <div className="text-red-500 font-medium text-center">{formError}</div>
-                )}
-                {success && (
-                    <div className="text-green-600 font-medium text-center">
-                        Note created! Redirecting...
+                    <div className="text-red-500 font-mono text-center">
+                        {formError}
                     </div>
                 )}
-                <DottedButton
+
+                {success && (
+                    <div className="text-green-600 font-mono text-center">
+                        Note created! Redirecting…
+                    </div>
+                )}
+
+                {/* Submit */}
+                <div className="flex justify-center w-full ">
+                    <DottedButton
                     text="Create Note"
-                    className="w-full"
+                    className="w-fit text-lg"
                     onClick={handleSubmit}
                 />
+                </div>
+                
             </form>
         </div>
+
     );
 };
 

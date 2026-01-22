@@ -4,7 +4,7 @@ import UserBox from '../components/home/UserBox';
 import Hero from '../components/home/Hero';
 import Loading from '../components/home/Loading';
 import { useAuth } from '../context/AuthContext';
-import RotatingKeepIt from "../components/RotatingKeepIt";
+
 
 
 const Home = () => {
@@ -51,7 +51,6 @@ const Home = () => {
         <UserBox users={users} />
         <hr className="border-t border border-muted" />
       </div>
-      <RotatingKeepIt />
 
     </div>
   );

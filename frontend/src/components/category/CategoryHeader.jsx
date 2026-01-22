@@ -10,7 +10,7 @@ const CategoryHeader = ({
   editType,
   saving,
   // dragActive,
-
+  onUserClick,
   onEditNameChange,
   onEditTypeChange,
   onEditSave,
@@ -22,6 +22,7 @@ const CategoryHeader = ({
   isAuthenticated,
   dragHandlers,
 }) => {
+
   return (
     <div
       className={`w-full mx-auto p-6 shadow-xl border border-muted mb-2 relative w-full rounded-t-lg`}
@@ -31,7 +32,6 @@ const CategoryHeader = ({
       {isAuthenticated && user && (
         <div
           className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2"
-          onClick={() => navigate("/profile/MyProfile")}
         >
           {user?.profileImage?.url ? (
             <motion.img
@@ -44,6 +44,7 @@ const CategoryHeader = ({
                 filter: "brightness(1.1)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              onClick={() => onUserClick?.(user._id)}
             />
           ) : (
             <motion.div
@@ -60,13 +61,14 @@ const CategoryHeader = ({
                 filter: "brightness(1.1)",
               }}
               transition={{ type: "spring", stiffness: 400, damping: 15 }}
+              onClick={() => onUserClick?.(user._id)}
             >
               {user?.username?.[0]?.toUpperCase() || "?"}
             </motion.div>
           )}
 
           {/* Static username */}
-          <span className="text-sm font-mono text-type-1 truncate underline-animation">
+          <span className="text-sm font-mono text-type-1 truncate underline-animation"           onClick={() => onUserClick?.(user._id)}>
             {user?.username}
           </span>
         </div>

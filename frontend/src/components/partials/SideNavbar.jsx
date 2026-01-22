@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { Typography } from "@material-tailwind/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "../../api/axiosInstance";
 import { useAuth } from "../../context/AuthContext";
 import DottedButton from "../buttons/DottedButton";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 /* ================= shared underline style ================= */
 
@@ -44,8 +44,20 @@ const sidebarDividerClass = `my-3 border-t border-muted`;
 
 const sidebarFooterClass = `
   pt-4 mt-4
-  border-t border-muted
   flex flex-col gap-3
+`;
+
+/* ===== active styles ===== */
+
+const sidebarNavItemActiveClass = `
+  bg-white/10
+  rounded-md
+  px-2 py-1
+`;
+
+const sidebarNavTextActiveClass = `
+  after:scale-x-100
+  after:origin-left
 `;
 
 /* ================= drawer toggle ================= */
@@ -60,8 +72,6 @@ const toggleBaseClass = `
   hover:scale-110
   transition-transform
 `;
-
-/* ================= toggle icon ================= */
 
 const SidebarToggleIcon = ({ open }) => (
   <svg
@@ -123,19 +133,19 @@ export function SideNavbar({ open, setOpen }) {
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const navigate = useNavigate();
-  const [profileHover, setProfileHover] = useState(false);
+  const location = useLocation();
+  const currentPath = location.pathname;
 
   const myItems = useMemo(
     () =>
       isAuthenticated
         ? [
-          { label: "My Profile", href: "/profile/MyProfile", icon: Icons.user },
-          { label: "My Category Types", href: "/my-category-types", icon: Icons.tag },
-          { label: "My Categories", href: "/my-categories", icon: Icons.grid },
-          { label: "My Notes", href: "/my-notes", icon: Icons.list },
-          { label: "My Tags", href: "/my-tags", icon: Icons.tag },
-        ]
-
+            { label: "My Profile", href: "/profile/MyProfile", icon: Icons.user },
+            { label: "My Category Types", href: "/my-category-types", icon: Icons.tag },
+            { label: "My Categories", href: "/my-categories", icon: Icons.grid },
+            { label: "My Notes", href: "/my-notes", icon: Icons.list },
+            { label: "My Tags", href: "/my-tags", icon: Icons.tag },
+          ]
         : [],
     [isAuthenticated]
   );
@@ -148,17 +158,43 @@ export function SideNavbar({ open, setOpen }) {
     { label: "About", href: "/about", icon: Icons.info },
   ];
 
+  const handleCreateNote = () => {
+    isAuthenticated ? navigate("/CreateNote") : navigate("/login");
+  };
+
+  const renderNavItem = (item) => {
+    const isActive = currentPath.startsWith(item.href);
+
+    return (
+      <div
+        key={item.label}
+        onClick={() => navigate(item.href)}
+        className={`
+          ${sidebarNavItemClass}
+          ${isActive ? sidebarNavItemActiveClass : ""}
+        `}
+      >
+        {item.icon}
+        <span
+          className={`
+            underline-animation text-[0.8rem]
+            ${isActive ? sidebarNavTextActiveClass : ""}
+          `}
+          style={coloredFont}
+        >
+          {item.label}
+        </span>
+      </div>
+    );
+  };
+
   return (
     <div>
       <div className={toggleBaseClass} onClick={() => setOpen(v => !v)}>
         <SidebarToggleIcon open={open} />
       </div>
 
-      <aside
-        className={`${sidebarBaseClass} ${open ? "translate-x-0" : sidebarHiddenClass
-          }`}
-      >
-        {/* Header */}
+      <aside className={`${sidebarBaseClass} ${open ? "translate-x-0" : sidebarHiddenClass}`}>
         <div className={sidebarHeaderClass}>
           <Typography
             as="div"
@@ -170,73 +206,43 @@ export function SideNavbar({ open, setOpen }) {
           </Typography>
         </div>
 
-        {/* Profile */}
         {isAuthenticated && user && (
           <div
             className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2"
             onClick={() => navigate("/profile/MyProfile")}
           >
-            {user?.profileImage?.url ? (
+            {user.profileImage?.url ? (
               <motion.img
                 src={user.profileImage.url}
-                alt={user.username}
                 className="w-14 h-14 rounded-full object-cover border border-muted shadow-2xl"
-                whileHover={{
-                  scale: 1.25,
-                  rotate: 5,
-                  filter: "brightness(1.1)",
-                }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                whileHover={{ scale: 1.25, rotate: 5 }}
               />
             ) : (
               <motion.div
-                className="
-          w-14 h-14 rounded-full
-          bg-type-1
-          flex items-center justify-center
-          text-2xl font-bold text-type-2
-          border border-muted shadow-2xl
-        "
-                whileHover={{
-                  scale: 1.25,
-                  rotate: 5,
-                  filter: "brightness(1.1)",
-                }}
-                transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                className="w-14 h-14 rounded-full bg-type-1 flex items-center justify-center text-2xl font-bold text-type-2 border border-muted shadow-2xl"
+                whileHover={{ scale: 1.25, rotate: 5 }}
               >
-                {user?.username?.[0]?.toUpperCase() || "?"}
+                {user.username?.[0]?.toUpperCase() || "?"}
               </motion.div>
             )}
-
-            {/* Static username */}
-            <span className="text-sm font-mono text-type-1 truncate underline-animation">
-              {user?.username}
+            <span className="text-sm font-mono text-type-1 underline-animation">
+              {user.username}
             </span>
           </div>
         )}
 
+        {isAuthenticated && (
+          <div className="mb-3 w-full flex justify-center border-b border-muted pb-5">
+            <DottedButton text="Create Note" className="w-full" onClick={handleCreateNote} />
+          </div>
+        )}
 
-        {/* Nav */}
         <nav className={sidebarNavListClass}>
           {isAuthenticated && (
             <>
               <div className={sidebarGroupLabelClass}>My Space</div>
               <div className={sidebarIndentClass}>
-                {myItems.map(item => (
-                  <div
-                    key={item.label}
-                    className={sidebarNavItemClass}
-                    onClick={() => navigate(item.href)}
-                  >
-                    {item.icon}
-                    <span
-                      className="underline-animation text-[0.8rem]"
-                      style={coloredFont}
-                    >
-                      {item.label}
-                    </span>
-                  </div>
-                ))}
+                {myItems.map(renderNavItem)}
               </div>
               <div className={sidebarDividerClass} />
             </>
@@ -244,33 +250,15 @@ export function SideNavbar({ open, setOpen }) {
 
           <div className={sidebarGroupLabelClass}>Community</div>
           <div className={sidebarIndentClass}>
-            {communityItems.map(item => (
-              <div
-                key={item.label}
-                className={sidebarNavItemClass}
-                onClick={() => navigate(item.href)}
-              >
-                {item.icon}
-                <span
-                  className="underline-animation text-[0.8rem]"
-                  style={coloredFont}
-                >
-                  {item.label}
-                </span>
-              </div>
-            ))}
+            {communityItems.map(renderNavItem)}
           </div>
         </nav>
 
-        {/* Footer */}
         <div className={sidebarFooterClass}>
           {!isAuthenticated ? (
             <>
               <DottedButton text="LOG IN" onClick={() => navigate("/login")} />
-              <DottedButton
-                text="SIGN IN"
-                onClick={() => navigate("/register")}
-              />
+              <DottedButton text="SIGN IN" onClick={() => navigate("/register")} />
             </>
           ) : (
             <DottedButton
@@ -278,7 +266,7 @@ export function SideNavbar({ open, setOpen }) {
               onClick={async () => {
                 try {
                   await axiosInstance.post("/api/auth/logout");
-                } catch { }
+                } catch {}
                 localStorage.removeItem("user");
                 toast.success("Logged out successfully");
                 navigate("/");

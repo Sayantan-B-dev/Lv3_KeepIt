@@ -1,55 +1,78 @@
-import express from 'express'
-import { validateBody } from '../middlewares/validate.js'
-import { noteSchema,categorySchema } from '../validators/auth.js'
+import express from "express";
+import rateLimit from "express-rate-limit";
+import { validateBody } from "../middlewares/validate.js";
+import { noteSchema, categorySchema } from "../validators/auth.js";
+import { isLoggedIn } from "../middlewares/isAuthenticated.js";
+import { aiModeration } from "../middlewares/aiModeration.js";
+
 import {
-    getUserNotes,
-    getPublicNotesbyUser,
-    getAllPublicNotes,
-    createNote,
-    updateNote,
-    deleteNote,
-    getNotesById,
-    getNotesByTag,
-    getAllTags,
-    getMyNotesPaginated,
-    getMyTags
-    // createNoteFromMD
-} from '../controllers/noteController.js'
-import {isLoggedIn} from '../middlewares/isAuthenticated.js'
-import { aiModeration } from '../middlewares/aiModeration.js'
-import rateLimit from 'express-rate-limit';
+  getNotesById,
+  getCategoryNotes,
+  getPublicNotesbyUser,
+  getAllPublicNotes,
+  getNotesByTag,
+  getAllTags,
+  getMyNotesPaginated,
+  getMyTags,
+  createNote,
+  updateNote,
+  deleteNote,
+} from "../controllers/noteController.js";
+
+const router = express.Router();
+
+/* ================= Rate limit ================= */
 
 const noteLimiter = rateLimit({
-  windowMs: 5 * 60 * 1000, // 5 minutes
-  max: 20, // limit each IP to 20 note creations per windowMs
-  handler: (req, res, next, options) => {
-    const retryAfter = Math.ceil((options.windowMs - (Date.now() - options.store.hits[req.ip].resetTime)) / 1000);
-    res.set('Retry-After', retryAfter);
-    res.status(429).json({
-      error: `Too many notes created. Please try again later.`,
-      retryAfterSeconds: retryAfter,
-      message: `Please wait ${retryAfter} seconds before creating another note.`
-    });
-  }
+  windowMs: 5 * 60 * 1000,
+  max: 20,
 });
 
-const router=express.Router()
+/* ================= Public ================= */
 
-// Public routes
-router.get('/public/all',getAllPublicNotes)
-router.get('/public/:userId',isLoggedIn,getPublicNotesbyUser)
+router.get("/public/all", getAllPublicNotes);
+router.get("/public/:userId", isLoggedIn, getPublicNotesbyUser);
+router.get("/tags", getAllTags);
+router.get("/", getNotesByTag);
 
-router.get('/', getNotesByTag)
-router.post('/', noteLimiter, isLoggedIn, validateBody(noteSchema), aiModeration, createNote);
-// router.post('/md', noteLimiter, isLoggedIn, validateBody(noteSchema), aiModeration, createNoteFromMD);
-router.get('/tags', getAllTags)
+/* ================= User ================= */
+
 router.get("/my", isLoggedIn, getMyNotesPaginated);
 router.get("/my-tags", isLoggedIn, getMyTags);
-router.get('/:id', isLoggedIn, getNotesById);
-router.put('/:id',isLoggedIn,validateBody(noteSchema || categorySchema),aiModeration,updateNote)
-router.put('/:id/edit',isLoggedIn,validateBody(noteSchema || categorySchema),aiModeration,updateNote)
-router.delete('/:id',isLoggedIn,deleteNote)
 
+/* ================= Category notes (PAGINATED) ================= */
 
+router.get(
+  "/category/:id",
+  isLoggedIn,
+  getCategoryNotes
+);
 
-export default router
+/* ================= Single note ================= */
+
+router.get("/:id", isLoggedIn, getNotesById);
+
+/* ================= Create / Update ================= */
+
+router.post(
+  "/",
+  noteLimiter,
+  isLoggedIn,
+  validateBody(noteSchema),
+  aiModeration,
+  createNote
+);
+
+router.put(
+  "/:id",
+  isLoggedIn,
+  validateBody(noteSchema || categorySchema),
+  aiModeration,
+  updateNote
+);
+
+/* ================= Delete ================= */
+
+router.delete("/:id", isLoggedIn, deleteNote);
+
+export default router;

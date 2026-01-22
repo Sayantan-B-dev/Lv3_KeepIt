@@ -8,7 +8,39 @@ export const getNotesById = async (req, res) => {
     const note = await Note.findById(id)
     res.json(note)
 }
+export const getCategoryNotes = async (req, res) => {
+  const { id } = req.params;
 
+  const page = Math.max(parseInt(req.query.page) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+  const skip = (page - 1) * limit;
+
+  try {
+    const [notes, total] = await Promise.all([
+      Note.find({ category: id, user: req.user._id })
+        .select("_id title updatedAt")
+        .sort({ title: 1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      Note.countDocuments({ category: id, user: req.user._id }),
+    ]);
+
+    res.json({
+      notes,
+      page,
+      limit,
+      total,
+      hasMore: skip + notes.length < total,
+    });
+  } catch (err) {
+    console.error("Error in getCategoryNotes:", err);
+    res.status(500).json({
+      error: "Failed to fetch category notes",
+    });
+  }
+};
 export const getMyNotesPaginated = async (req, res) => {
     try {
         const userId = req.user._id;
@@ -51,12 +83,54 @@ export const pinNote = async (req, res) => {
 }
 
 export const getUserNotes = async (req, res) => {
-    const notes = await Note.find({ user: req.user._id }).populate({
-        path: "category",
-        populate: { path: "categoryType", select: "name" },
+  try {
+    const userId = req.user._id;
+
+    const page = Math.max(parseInt(req.query.page) || 1, 1);
+    const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+    const skip = (page - 1) * limit;
+    const search = req.query.search?.trim();
+
+    const query = { user: userId };
+
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { content: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const [notes, total] = await Promise.all([
+      Note.find(query)
+        .select("_id title updatedAt category isPinned isPrivate")
+        .populate({
+          path: "category",
+          select: "name categoryType",
+          populate: { path: "categoryType", select: "name" },
+        })
+        .sort({ updatedAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      Note.countDocuments(query),
+    ]);
+
+    res.json({
+      notes,
+      page,
+      limit,
+      total,
+      hasMore: skip + notes.length < total,
     });
-    res.json(notes)
-}
+  } catch (err) {
+    console.error("Error in getUserNotes:", err);
+    res.status(500).json({
+      error: "Failed to fetch user notes",
+    });
+  }
+};
+
 
 export const getPublicNotesbyUser = async (req, res) => {
     const userId = req.params.userId;

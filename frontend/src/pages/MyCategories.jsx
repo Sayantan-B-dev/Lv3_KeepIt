@@ -5,7 +5,7 @@ import ListContainer from "../components/common/ListContainer";
 import SearchBar from "../components/common/SearchBar";
 import DottedButton from "../components/buttons/DottedButton";
 import DottedButton2 from "../components/buttons/DottedButton2";
-import Skeleton from "../components/skeletons/Skeleton";
+import Loader from '../components/common/Loader';
 
 const PAGE_SIZE = 15;
 
@@ -57,9 +57,8 @@ const MyCategories = () => {
       <SearchBar value={search} onChange={setSearch} placeholder="Search categories" />
 
       {loading && (
-        <div className="flex flex-col gap-4">
-          {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} />)}
-        </div>
+                <Loader variant="dots" text="Loading…" />
+
       )}
 
       {!loading && categories.length === 0 && (
@@ -67,7 +66,7 @@ const MyCategories = () => {
       )}
 
       {!loading && (
-        <div className="flex flex-col gap-2">
+        <div className="gridy">
           {categories.map(cat => (
             <DottedButton2
               key={cat._id}
@@ -77,10 +76,10 @@ const MyCategories = () => {
             />
           ))}
 
-          {loadingMore &&
-            Array.from({ length: 3 }).map((_, i) => <Skeleton key={`m-${i}`} />)}
+          
         </div>
       )}
+                {loadingMore &&<Loader  variant="dots" text="Loading…" />}
 
       {hasMore && (
         <div className="flex justify-center mt-6">

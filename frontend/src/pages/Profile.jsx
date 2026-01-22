@@ -1,82 +1,191 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 import Loading from "../components/home/Loading";
-import { useAuth } from '../context/AuthContext';
-import PublicProfileHeader from "../components/myprofile/PublicProfileHeader";
-import PublicCategoryList from "../components/myprofile/PublicCategoryList";
+import ConfirmPopUp from "../components/ConfirmPopUp";
+
+/* shared components */
+import ProfileHeader from "../components/myprofile/ProfileHeader";
+import ProfileForm from "../components/myprofile/ProfileForm";
+import CategoryList from "../components/myprofile/CategoryList";
+import DeleteAccountSection from "../components/myprofile/DeleteAccountSection";
+
+/* public-only */
 import NoteModal from "../components/myprofile/NoteModal";
+
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 
 const Profile = () => {
-  const { user: loggedInUser } = useAuth();
   const { userId } = useParams();
   const navigate = useNavigate();
+  const { user, loading: authLoading, error: authError } = useAuth();
+
+  /* ================= Context ================= */
+
+  const isOwnProfile = !userId || userId === user?._id;
+
+  /* ================= Core state ================= */
 
   const [profile, setProfile] = useState(null);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [categories, setCategories] = useState([]);
+
+  /* ================= Edit profile ================= */
+
+  const [editMode, setEditMode] = useState(false);
+  const [editProfile, setEditProfile] = useState({});
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateError, setUpdateError] = useState(null);
+  const [updateSuccess, setUpdateSuccess] = useState(null);
+
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  /* ================= Delete account ================= */
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState(null);
+  const [deleteSuccess, setDeleteSuccess] = useState(null);
+
+  /* ================= Categories / notes ================= */
+
   const [openCategoryId, setOpenCategoryId] = useState(null);
-  const [categoryNotes, setCategoryNotes] = useState({}); // { [catId]: [notes] }
-  const [notesLoading, setNotesLoading] = useState({}); // { [catId]: bool }
-  const [notesError, setNotesError] = useState({}); // { [catId]: string }
-  const [openNote, setOpenNote] = useState(null); // note object
+  const [categoryNotes, setCategoryNotes] = useState({});
+  const [notesLoading, setNotesLoading] = useState({});
+  const [notesError, setNotesError] = useState({});
+
+  const [categoryPage, setCategoryPage] = useState({});
+  const [categoryHasMore, setCategoryHasMore] = useState({});
+
+  /* ================= Public note modal ================= */
+
   const [noteModalOpen, setNoteModalOpen] = useState(false);
+  const [openNote, setOpenNote] = useState(null);
   const [noteModalLoading, setNoteModalLoading] = useState(false);
   const [noteModalError, setNoteModalError] = useState(null);
+
+  /* ================= Fetch profile ================= */
 
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       setError(null);
+
       try {
-        const res = await axiosInstance.get(`/api/profile/${userId}`);
+        const endpoint = isOwnProfile
+          ? "/api/profile/MyProfile"
+          : `/api/profile/${userId}`;
+
+        const res = await axiosInstance.get(endpoint);
+
         setProfile(res.data);
         setCategories(res.data.categories || []);
+
+        if (isOwnProfile) {
+          setEditProfile({
+            bio: res.data.bio || "",
+            website: res.data.website || "",
+          });
+          setProfileImagePreview(res.data.profileImage?.url || null);
+        }
       } catch (err) {
         setError(
-          err.response?.data?.message ||
-            "Failed to load profile. Please try again later."
+          err?.response?.data?.message ||
+            "Failed to load profile. Please try again."
         );
-        setProfile(null);
       } finally {
         setLoading(false);
       }
     };
+
     fetchProfile();
-  }, [userId]);
+  }, [userId, isOwnProfile]);
+
+  /* ================= Category dropdown ================= */
 
   const handleCategoryDropdown = async (catId) => {
     if (openCategoryId === catId) {
       setOpenCategoryId(null);
       return;
     }
+
     setOpenCategoryId(catId);
-    if (!categoryNotes[catId]) {
-      setNotesLoading((prev) => ({ ...prev, [catId]: true }));
-      setNotesError((prev) => ({ ...prev, [catId]: null }));
-      try {
-        const res = await axiosInstance.get(`/api/categories/${catId}`);
-        // Sort notes by title (case-insensitive)
-        const sortedNotes = (res.data.notes || []).slice().sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }));
-        setCategoryNotes((prev) => ({ ...prev, [catId]: sortedNotes }));
-      } catch (err) {
-        setNotesError((prev) => ({ ...prev, [catId]: err?.response?.data?.message || "Failed to load notes." }));
-      } finally {
-        setNotesLoading((prev) => ({ ...prev, [catId]: false }));
+
+    if (categoryNotes[catId]) return;
+
+    setNotesLoading(p => ({ ...p, [catId]: true }));
+    setNotesError(p => ({ ...p, [catId]: null }));
+
+    try {
+      const url = isOwnProfile
+        ? `/api/notes/category/${catId}?page=1&limit=20`
+        : `/api/categories/${catId}`;
+
+      const res = await axiosInstance.get(url);
+
+      const notes = isOwnProfile
+        ? res.data.notes
+        : (res.data.notes || []).slice().sort((a, b) =>
+            a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+          );
+
+      setCategoryNotes(p => ({ ...p, [catId]: notes }));
+
+      if (isOwnProfile) {
+        setCategoryPage(p => ({ ...p, [catId]: 1 }));
+        setCategoryHasMore(p => ({ ...p, [catId]: res.data.hasMore }));
       }
+    } catch {
+      setNotesError(p => ({ ...p, [catId]: "Failed to load notes" }));
+    } finally {
+      setNotesLoading(p => ({ ...p, [catId]: false }));
     }
   };
 
-  // Handle note click: fetch full note if needed, then open modal
+  /* ================= Load more (own profile only) ================= */
+
+  const handleLoadMore = async (catId) => {
+    const nextPage = (categoryPage[catId] || 1) + 1;
+
+    setNotesLoading(p => ({ ...p, [catId]: true }));
+
+    try {
+      const res = await axiosInstance.get(
+        `/api/notes/category/${catId}?page=${nextPage}&limit=20`
+      );
+
+      setCategoryNotes(p => ({
+        ...p,
+        [catId]: [...(p[catId] || []), ...res.data.notes],
+      }));
+
+      setCategoryPage(p => ({ ...p, [catId]: nextPage }));
+      setCategoryHasMore(p => ({ ...p, [catId]: res.data.hasMore }));
+    } catch {
+      setNotesError(p => ({ ...p, [catId]: "Failed to load more notes" }));
+    } finally {
+      setNotesLoading(p => ({ ...p, [catId]: false }));
+    }
+  };
+
+  /* ================= Note click ================= */
+
   const handleNoteClick = async (note) => {
+    if (isOwnProfile) {
+      navigate(`/note/${note._id}`);
+      return;
+    }
+
+    setNoteModalOpen(true);
     setNoteModalLoading(true);
     setNoteModalError(null);
-    setNoteModalOpen(true);
+
     try {
-      // If note already has content, use it; otherwise fetch full note
       if (note.content) {
         setOpenNote(note);
       } else {
@@ -84,175 +193,138 @@ const Profile = () => {
         setOpenNote(res.data);
       }
     } catch (err) {
-      setNoteModalError(
-        err?.response?.data?.message || err?.message || "Failed to load note."
-      );
-      setOpenNote(null);
+      setNoteModalError("Failed to load note.");
     } finally {
       setNoteModalLoading(false);
     }
   };
-  const closeNoteModal = () => {
-    setNoteModalOpen(false);
-    setOpenNote(null);
-    setNoteModalError(null);
-  };
 
-  if (loading) {
-    return <Loading />;
-  }
+  /* ================= Guards ================= */
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center min-h-[40vh]">
-        <span className="text-red-500">{error}</span>
-      </div>
-    );
-  }
+  if (authLoading || loading) return <Loading />;
+  if (authError) return <div className="text-red-500">{authError}</div>;
+  if (error) return <div className="text-red-500">{error}</div>;
+  if (!profile) return <div>User not found.</div>;
 
-  if (!profile) {
-    return (
-      <div className="flex justify-center items-center min-h-[40vh]">
-        <span className="text-gray-500">User not found.</span>
-      </div>
-    );
-  }
+  const getWebsiteHref = (website) =>
+    /^https?:\/\//i.test(website) ? website : `//${website}`;
 
-  const getWebsiteHref = (website) => {
-    if (!website) return "";
-    if (/^https?:\/\//i.test(website)) {
-      return website;
-    }
-    if (/^\/\//.test(website)) {
-      return website;
-    }
-    return "//" + website;
-  };
+  /* ================= Render ================= */
 
   return (
-      <>
-      <div
-        className="mx-auto p-4 sm:p-6 md:p-10 w-[90%] max-w-full md:w-[90%] md:max-w-2xl lg:max-w-3xl bg-gradient-to-br from-white via-indigo-50 to-blue-50 shadow-2xl border border-indigo-100 mt-8 md:mt-10 mb-12 md:mb-16 rounded-3xl md:rounded-[60px] transition-all"
-        style={{
-          backdropFilter: "blur(2px)",
-          backdropShadow: "20px",
-          background: "rgba(255, 255, 255, 0.01)",
-          WebkitBackdropFilter: "blur(12px)",
-          boxShadow: "0 4px 32px 0 rgba(31, 38, 135, 0.20)",
-          borderRadius: "60px",
-          border: "1px dashed black",
-        }}
-      >
-        <PublicProfileHeader profile={profile} />
-        {/* Profile Details (bio, website) */}
-        <div className="flex flex-col justify-start gap-2">
-          <div className="flex flex-col sm:flex-row gap-2 items-center">
-            <label className="block text-sm font-semibold text-gray-700 mb-1 text-center text-nowrap min-w-[60px]">
-              Bio :
-            </label>
-            <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-full sm:w-fit">
-              <p className="text-black" style={{ wordBreak: "break-all" }}>
-                {profile.bio ? (
-                  `"${profile.bio}"`
-                ) : (
-                  <span className="italic text-gray-400">No bio</span>
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 items-center">
-            <label className="block text-sm font-semibold text-gray-700 mb-1 text-nowrap min-w-[60px]">
-              Website :
-            </label>
-            <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-full sm:w-fit">
-              {profile.website ? (
-                <a
-                  href={getWebsiteHref(profile.website)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-black break-all"
-                  style={{ wordBreak: "break-all" }}
-                >
-                  {profile.website}
-                </a>
-              ) : (
-                <span className="italic text-gray-400">No website</span>
-              )}
-            </div>
-          </div>
-        </div>
-        <PublicCategoryList
+    <>
+      {isOwnProfile && (
+        <ConfirmPopUp
+          open={showDeleteConfirm}
+          onClose={() => setShowDeleteConfirm(false)}
+          onConfirm={async () => {
+            setDeleteLoading(true);
+            try {
+              await axiosInstance.delete("/api/profile/MyProfile");
+              setDeleteSuccess("Account deleted.");
+              setTimeout(() => navigate("/login"), 1500);
+            } catch {
+              setDeleteError("Failed to delete account.");
+            } finally {
+              setDeleteLoading(false);
+            }
+          }}
+          loading={deleteLoading}
+          message="Are you sure you want to delete your account?"
+        />
+      )}
+
+      <div className="mx-auto p-6 w-full border border-muted glass-panel rounded-lg shadow-xl mb-8">
+        <ProfileHeader
+          profile={profile}
+          editable={isOwnProfile}
+          profileImagePreview={profileImagePreview}
+          editMode={editMode}
+          handleProfileImageClick={() =>
+            editMode && fileInputRef.current?.click()
+          }
+          fileInputRef={fileInputRef}
+          handleProfileImageChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            setProfileImageFile(file);
+            setProfileImagePreview(URL.createObjectURL(file));
+          }}
+          handleCreateNote={() => navigate("/CreateNote")}
+        />
+
+        {isOwnProfile && (
+          <ProfileForm
+            editMode={editMode}
+            editProfile={editProfile}
+            handleInputChange={(e) =>
+              setEditProfile(p => ({ ...p, [e.target.name]: e.target.value }))
+            }
+            profile={profile}
+            getWebsiteHref={getWebsiteHref}
+            handleSave={async (e) => {
+              e.preventDefault();
+              setUpdateLoading(true);
+              try {
+                await axiosInstance.put("/api/profile/MyProfile", editProfile);
+                setEditMode(false);
+                setUpdateSuccess("Profile updated");
+              } catch {
+                setUpdateError("Failed to update profile");
+              } finally {
+                setUpdateLoading(false);
+              }
+            }}
+            handleCancel={() => setEditMode(false)}
+            updateLoading={updateLoading}
+            updateError={updateError}
+            updateSuccess={updateSuccess}
+            onEdit={() => setEditMode(true)}
+          />
+        )}
+
+        <CategoryList
           categories={categories}
           openCategoryId={openCategoryId}
           handleCategoryDropdown={handleCategoryDropdown}
           notesLoading={notesLoading}
           notesError={notesError}
           categoryNotes={categoryNotes}
-          navigate={navigate}
+          categoryHasMore={isOwnProfile ? categoryHasMore : {}}
+          handleLoadMore={isOwnProfile ? handleLoadMore : null}
           handleNoteClick={handleNoteClick}
+          navigate={navigate}
+          readOnly={!isOwnProfile}
         />
-        {/* Footer */}
-        <div className="mt-10 text-center">
-          <p className="text-gray-500 text-sm italic">
-            Viewing <span className="font-bold">{profile.username}</span>
-            {"'"}s profile.
-          </p>
-        </div>
+
+        {isOwnProfile && (
+          <DeleteAccountSection
+            deleteLoading={deleteLoading}
+            setShowDeleteConfirm={setShowDeleteConfirm}
+            deleteError={deleteError}
+            deleteSuccess={deleteSuccess}
+          />
+        )}
       </div>
-      <NoteModal
-        noteModalOpen={noteModalOpen}
-        openNote={openNote}
-        closeNoteModal={closeNoteModal}
-        noteContentHtml={openNote && openNote.content ?
-          DOMPurify.sanitize(
-            marked(openNote.content || "", {
-              highlight: function (code, lang) {
-                return code;
-              }
-            })
-          )
-            .replace(
-              /<a /g,
-              '<a target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline; font-weight: 500; word-break: break-all; overflow-wrap: anywhere;" '
-            )
-            .replace(
-              /<pre>/g,
-              '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;">'
-            )
-            .replace(
-              /<pre[^>]*>\s*<code( class=".*?")?>/g,
-              '<pre style="background: #23272e; color: #f8f8f2; padding: 1em; border-radius: 10px; margin: 1em 0; overflow-x: auto; font-size: 0.97em;"><code style="background: transparent; color: inherit; padding: 0; border-radius: 0; font-size: inherit;">'
-            )
-            .replace(
-              /<code( class=".*?")?>/g,
-              '<code style="background: #f3f4f6; color: #23272e; padding: 2px 6px; border-radius: 4px; font-size: 0.97em; border: 1px solid #e5e7eb;">'
-            )
-            .replace(
-              /<table>/g,
-              '<div style="overflow-x:auto; max-width:100vw;"><table style="min-width:400px; width:100%; border-collapse:collapse; margin:1.5em 0; font-size:0.98em; background:#f8fafc; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px 0 rgba(31,38,135,0.05);">'
-            )
-            .replace(
-              /<thead>/g,
-              '<thead style="background:#e0e7ef;">'
-            )
-            .replace(
-              /<th>/g,
-              '<th style="padding:10px 16px; border-bottom:2px solid #c7d2fe; font-weight:700; text-align:left; color:#1e293b;">'
-            )
-            .replace(
-              /<tr>/g,
-              '<tr style="border-bottom:1px solid #e5e7eb;">'
-            )
-            .replace(
-              /<td>/g,
-              '<td style="padding:10px 16px; border-bottom:1px solid #e5e7eb; color:#334155; vertical-align:top;">'
-            )
-            .replace(
-              /<\/table>/g,
-              '</table></div>'
-            ) : ""}
-      />
-      </>
+
+      {!isOwnProfile && (
+        <NoteModal
+          noteModalOpen={noteModalOpen}
+          openNote={openNote}
+          closeNoteModal={() => {
+            setNoteModalOpen(false);
+            setOpenNote(null);
+          }}
+          noteModalLoading={noteModalLoading}
+          noteModalError={noteModalError}
+          noteContentHtml={
+            openNote?.content
+              ? DOMPurify.sanitize(marked(openNote.content))
+              : ""
+          }
+        />
+      )}
+    </>
   );
 };
 

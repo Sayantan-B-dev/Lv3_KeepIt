@@ -1,4 +1,5 @@
 import React from "react";
+import ButtonType3 from "../buttons/ButtonType3";
 
 const ProfileForm = ({
   editMode,
@@ -12,99 +13,167 @@ const ProfileForm = ({
   updateError,
   updateSuccess,
   onEdit,
-  EncryptButton,
 }) => (
-  <form onSubmit={handleSave}>
-    <div className="flex flex-col justify-start gap-2">
-      <div className="flex flex-col sm:flex-row gap-2 items-center">
-        <label className="block text-sm font-semibold text-gray-700 mb-1 text-center text-nowrap min-w-[60px]">
-          Bio :
+  <form
+    onSubmit={handleSave}
+    className="
+      w-full
+      mt-6
+      p-6 sm:p-8
+      rounded-2xl
+      border border-muted
+      glass-panel
+      shadow-xl
+      flex flex-row justify-between item-center gap-6
+      font-mono
+    "
+  >
+    {/* ================= Fields ================= */}
+    <div className="flex flex-col gap-4">
+      {/* Bio */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <label className="text-sm font-semibold text-type-1 min-w-[70px]">
+          Bio
         </label>
+
         {editMode ? (
           <textarea
             name="bio"
             value={editProfile.bio}
             onChange={handleInputChange}
-            className="w-full h-15 border text-black border-indigo-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300"
             rows={3}
             maxLength={200}
+            className="
+              w-full
+              rounded-xl
+              border border-muted
+              px-3 py-2
+              text-type-1
+              bg-transparent
+              focus:outline-none
+              focus:ring-1 focus:ring-white/40
+            "
+            placeholder="Write something about yourself…"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           />
         ) : (
-          <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-full sm:w-fit">
-            <p className="text-black" style={{ wordBreak: "break-all" }}>
+          <div
+            className="
+              w-full sm:w-fit
+              px-4 py-2
+              rounded-xl
+              border border-muted
+              bg-white/5
+              shadow
+            "
+          >
+            <p className="text-sm text-type-1 break-all">
               {profile.bio ? (
                 `"${profile.bio}"`
               ) : (
-                <span className="italic text-gray-400">No bio</span>
+                <span className="italic text-type-3">No bio</span>
               )}
             </p>
           </div>
         )}
       </div>
-      <div className="flex flex-col sm:flex-row gap-2 items-center">
-        <label className="block text-sm font-semibold text-gray-700 mb-1 text-nowrap min-w-[60px]">
-          Website :
+
+      {/* Website */}
+      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <label className="text-sm font-semibold text-type-1 min-w-[70px]">
+          Website
         </label>
+
         {editMode ? (
           <input
             type="text"
             name="website"
             value={editProfile.website}
             onChange={handleInputChange}
-            className="w-full border border-indigo-200 text-black rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300"
             maxLength={128}
-            placeholder="e.g. example.com or https://example.com"
+            placeholder="example.com or https://example.com"
             autoComplete="off"
+            className="
+              w-full
+              rounded-xl
+              border border-muted
+              px-3 py-2
+              text-type-1
+              bg-transparent
+              focus:outline-none
+              focus:ring-1 focus:ring-white/40
+            "
           />
         ) : (
-          <div className="text-xs rounded-xl px-3 py-2 shadow-xl border border-indigo-50 w-full sm:w-fit">
+          <div
+            className="
+              w-full sm:w-fit
+              px-4 py-2
+              rounded-xl
+              border border-muted
+              bg-white/5
+              shadow
+            "
+          >
             {profile.website ? (
               <a
                 href={getWebsiteHref(profile.website)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-black break-all"
-                style={{ wordBreak: "break-all" }}
+                className="text-sm text-type-1 underline-animation break-all"
               >
                 {profile.website}
               </a>
             ) : (
-              <span className="italic text-gray-400">No website</span>
+              <span className="italic text-type-3 text-sm">
+                No website
+              </span>
             )}
           </div>
         )}
       </div>
     </div>
-    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+
+    {/* ================= Actions ================= */}
+    <div className="flex flex-col sm:flex-row gap-4 justify-center my-auto">
       {!editMode ? (
-        <div onClick={onEdit}>
-          <EncryptButton />
+        <div className="w-fit">
+          <ButtonType3
+            text="Edit"
+            onClick={onEdit}
+          />
         </div>
       ) : (
         <>
-          <button
-            type="submit"
-            className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-blue-400/20 transition border border-dashed border-black"
+          <ButtonType3
+            text={updateLoading ? "Saving..." : "Save"}
+            onClick={handleSave}
             disabled={updateLoading}
-          >
-            {updateLoading ? "Saving..." : "Save"}
-          </button>
-          <button
-            type="button"
-            className="text-black px-6 py-2 rounded-lg font-semibold shadow hover:bg-red-400/20 transition"
-            style={{ borderColor: "black", borderWidth: "1px", borderStyle: "dashed" }}
+            type="submit"
+          />
+
+          <ButtonType3
+            text="Cancel"
             onClick={handleCancel}
             disabled={updateLoading}
-          >
-            Cancel
-          </button>
+          />
         </>
       )}
     </div>
-    {updateError && <div className="mt-4 text-red-500">{updateError}</div>}
-    {updateSuccess && <div className="mt-4 text-green-600">{updateSuccess}</div>}
+
+    {/* ================= Status ================= */}
+    {updateError && (
+      <div className="text-sm text-red-400 text-center">
+        {updateError}
+      </div>
+    )}
+
+    {updateSuccess && (
+      <div className="text-sm text-green-400 text-center">
+        {updateSuccess}
+      </div>
+    )}
   </form>
 );
 
-export default ProfileForm; 
+export default ProfileForm;

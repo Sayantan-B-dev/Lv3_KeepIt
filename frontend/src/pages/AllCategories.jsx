@@ -7,7 +7,7 @@ import SearchBar from '../components/common/SearchBar';
 import DottedButton from '../components/buttons/DottedButton';
 import DottedButton2 from '../components/buttons/DottedButton2';
 import Author from '../components/Author';
-import Skeleton from '../components/skeletons/Skeleton';
+import Loader from '../components/common/Loader';
 
 const PAGE_SIZE = 15;
 
@@ -87,11 +87,7 @@ const AllCategories = () => {
 
       {/* Initial load */}
       {loading && (
-        <div className="flex flex-col gap-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} />
-          ))}
-        </div>
+        <Loader  variant="dots" text="Loading…" />
       )}
 
       {!loading && categories.length === 0 && (
@@ -101,7 +97,7 @@ const AllCategories = () => {
       )}
 
       {!loading && (
-        <div className="flex flex-col gap-2 w-full text-sm">
+        <div className="gridy">
           {categories.map(cat => (
             <div
               key={cat._id}
@@ -111,28 +107,23 @@ const AllCategories = () => {
                 text={cat.name}
                 className="w-full"
                 onClick={() => navigate(`/category/${cat._id}`)}
+                innerComponent={
+                  <div className="w-12 h-12">
+                    <Author
+                      user={cat.user}
+                      handleUserClick={handleUserClick}
+                    />
+                  </div>
+                }
               />
-              <div className="w-12 h-12">
-                <Author
-                  user={cat.user}
-                  handleUserClick={handleUserClick}
-                />
-              </div>
             </div>
+
           ))}
 
-          {/* Load-more skeletons */}
-          {loadingMore && (
-            <div className="flex flex-col gap-3 mt-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={`more-${i}`} />
-              ))}
-            </div>
-          )}
         </div>
       )}
-
-      {hasMore && (
+      {loadingMore &&<Loader  variant="dots" text="Loading…" />}
+      {!loading && hasMore && (
         <div className="flex justify-center mt-6">
           <DottedButton
             text={loadingMore ? 'Loading…' : 'Load More'}

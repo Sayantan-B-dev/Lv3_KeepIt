@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
-import { useAuth } from '../context/AuthContext';
-import ListContainer from '../components/common/ListContainer';
-import SearchBar from '../components/common/SearchBar';
-import DottedButton from '../components/buttons/DottedButton';
-import DottedButton2 from '../components/buttons/DottedButton2';
-import Author from '../components/Author';
-import Skeleton from '../components/skeletons/Skeleton';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
+import ListContainer from "../components/common/ListContainer";
+import SearchBar from "../components/common/SearchBar";
+import DottedButton from "../components/buttons/DottedButton";
+import DottedButton2 from "../components/buttons/DottedButton2";
+import Author from "../components/Author";
+import Loader from '../components/common/Loader';
+
 
 const PAGE_SIZE = 15;
 
@@ -16,9 +17,9 @@ const AllNotes = () => {
   const { user } = useAuth();
 
   const [notes, setNotes] = useState([]);
-  const [loading, setLoading] = useState(true);        // initial load
+  const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
@@ -29,7 +30,7 @@ const AllNotes = () => {
     else setLoading(true);
 
     try {
-      const res = await axiosInstance.get('/api/global/all-notes', {
+      const res = await axiosInstance.get("/api/global/all-notes", {
         params: {
           page: pageNum,
           limit: PAGE_SIZE,
@@ -39,10 +40,7 @@ const AllNotes = () => {
 
       const data = res.data?.notes || res.data || [];
 
-      setNotes(prev =>
-        append ? [...prev, ...data] : data
-      );
-
+      setNotes(prev => (append ? [...prev, ...data] : data));
       setHasMore(data.length === PAGE_SIZE);
     } finally {
       setLoading(false);
@@ -70,7 +68,7 @@ const AllNotes = () => {
 
   const handleUserClick = (userId) => {
     if (user && userId === user._id) {
-      navigate('/profile/MyProfile');
+      navigate("/profile/MyProfile");
     } else {
       navigate(`/profile/${userId}`);
     }
@@ -86,15 +84,11 @@ const AllNotes = () => {
 
       {/* Initial loading */}
       {loading && (
-        <div className="flex flex-col gap-5">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} />
-          ))}
-        </div>
+        <Loader  variant="dots" text="Loading…" />
       )}
 
       {!loading && (
-        <div className="flex flex-col gap-2 w-full text-sm">
+        <div className="gridy">
           {notes.map(note => (
             <div
               key={note._id}
@@ -104,33 +98,27 @@ const AllNotes = () => {
                 text={note.title}
                 className="w-full text-center"
                 onClick={() => navigate(`/note/${note._id}`)}
+                innerComponent={
+                  <div className="w-12 h-12">
+                    <Author
+                      user={note.user}
+                      handleUserClick={handleUserClick}
+                    />
+                  </div>
+                }
               />
-              <div className="w-12 h-12">
-                <Author
-                  user={note.user}
-                  handleUserClick={handleUserClick}
-                />
-              </div>
             </div>
           ))}
 
-          {/* Loading-more skeletons */}
-          {loadingMore && (
-            <div className="flex flex-col gap-5 mt-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={`more-${i}`} />
-              ))}
-            </div>
-          )}
-
-          {hasMore && (
-            <div className="flex justify-center mt-6">
-              <DottedButton
-                text={loadingMore ? 'Loading…' : 'Load More'}
-                onClick={handleLoadMore}
-              />
-            </div>
-          )}
+        </div>
+      )}
+      {loadingMore &&<Loader  variant="dots" text="Loading…" />}
+      {hasMore && (
+        <div className="flex justify-center mt-6">
+          <DottedButton
+            text={loadingMore ? "Loading…" : "Load More"}
+            onClick={handleLoadMore}
+          />
         </div>
       )}
     </ListContainer>

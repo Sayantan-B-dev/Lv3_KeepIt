@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import DottedButton2 from "../buttons/DottedButton2";
 import DottedButton from "../buttons/DottedButton";
-import Skeleton from "../skeletons/Skeleton";
+import Loader from '../common/Loader';
 
 const PAGE_SIZE = 12;
 
@@ -42,12 +42,14 @@ const CategoryNotesList = ({ notes = [], onNoteClick }) => {
 
       {/* Notes */}
       {notes.length > 0 && (
-        <ul className="flex flex-wrap gap-3">
+        <ul
+          className="gridy"
+        >
           {visibleNotes.map((note) => (
-            <li key={note._id} className="w-full">
+            <li key={note._id} className="w-full h-full">
               <DottedButton2
+                className="w-full h-full text-left"
                 style={{ fontSize: "12px" }}
-                className="w-full text-left"
                 text={note.title}
                 tags={note.tags}
                 onClick={() => onNoteClick(note._id)}
@@ -55,13 +57,12 @@ const CategoryNotesList = ({ notes = [], onNoteClick }) => {
             </li>
           ))}
 
-          {/* Load-more skeletons */}
-          {loadingMore &&
-            Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={`more-${i}`} />
-            ))}
+
         </ul>
+
       )}
+
+          {loadingMore &&<Loader  variant="dots" text="Loading…" />}
 
       {/* Load more */}
       {hasMore && !loadingMore && (

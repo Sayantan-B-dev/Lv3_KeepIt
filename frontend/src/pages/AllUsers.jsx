@@ -4,7 +4,8 @@ import ListContainer from '../components/common/ListContainer';
 import SearchBar from '../components/common/SearchBar';
 import DottedButton from '../components/buttons/DottedButton';
 import UserBox from '../components/home/UserBox';
-import Skeleton from '../components/skeletons/Skeleton';
+import Loader from '../components/common/Loader';
+
 
 const PAGE_SIZE = 15;
 
@@ -78,11 +79,8 @@ const AllUsers = () => {
 
       {/* Initial loading */}
       {loading && (
-        <div className="flex flex-col gap-4 py-2">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} />
-          ))}
-        </div>
+        <Loader  variant="dots" text="Loading…" />
+
       )}
 
       {!loading && users.length === 0 && (
@@ -97,16 +95,9 @@ const AllUsers = () => {
             <UserBox key={user._id} users={[user]} />
           ))}
 
-          {/* Load-more skeletons */}
-          {loadingMore && (
-            <div className="flex flex-col gap-4 mt-2">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={`more-${i}`} />
-              ))}
-            </div>
-          )}
         </div>
       )}
+          {loadingMore &&<Loader  variant="dots" text="Loading…" />}
 
       {hasMore && (
         <div className="flex justify-center mt-6">

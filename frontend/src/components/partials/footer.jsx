@@ -75,7 +75,7 @@ const Footer = () => {
         relative
         mt-auto
         bottom-0
-        z-50
+        z-45
         w-full
         rounded-t-xl
         border border-muted

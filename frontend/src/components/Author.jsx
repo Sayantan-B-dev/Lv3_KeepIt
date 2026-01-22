@@ -16,7 +16,7 @@ const Author = ({ user, handleUserClick }) => {
                         <motion.img
                             src={user.profileImage.url}
                             alt={user.username}
-                            className="w-12 h-12 rounded-full object-cover cursor-pointer border border-muted shadow-2xl"
+                            className="w-12 h-12 rounded-full object-cover cursor-pointer border border-muted shadow-2xl z-1000"
                             whileHover={{
                                 scale: 1.3,
                                 rotate: 5,
@@ -47,8 +47,7 @@ const Author = ({ user, handleUserClick }) => {
                                 animate={{ opacity: 1, y: 4, scale: 1 }}
                                 exit={{ opacity: 0, y: 10, scale: 0.8 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                                className="mt-2 px-3 py-1 rounded-lg bg-type-b3 shadow text-type-1 text-sm font-mono border border-muted z-150 glass-panel"
-                                style={{ pointerEvents: "none" }}
+                                className="mt-2 px-3 py-1 rounded-lg bg-black/70 shadow text-type-1 text-sm font-mono border border-muted z-1500 glass-panel"
                             >
                                 {user?.username}
                             </motion.div>

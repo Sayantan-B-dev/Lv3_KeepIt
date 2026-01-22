@@ -5,7 +5,7 @@ import DottedButton from '../components/buttons/DottedButton';
 import DottedButton2 from '../components/buttons/DottedButton2';
 import Author from '../components/Author';
 import SearchBar from '../components/common/SearchBar';
-import Skeleton from '../components/skeletons/Skeleton';
+import Loader from '../components/common/Loader';
 
 const PAGE_SIZE = 15;
 
@@ -110,11 +110,7 @@ const TagNotes = () => {
 
       {/* Initial load skeletons */}
       {loading && (
-        <div className="flex flex-col gap-3 mt-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} />
-          ))}
-        </div>
+        <Loader  variant="dots" text="Loading…" />
       )}
 
       {error && (
@@ -151,14 +147,8 @@ const TagNotes = () => {
                 </div>
               ))
             )}
-
-            {/* Load-more skeletons */}
-            {loadingMore &&
-              Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={`more-${i}`} />
-              ))}
           </div>
-
+          {loadingMore &&<Loader  variant="dots" text="Loading…" />}
           {hasMore && !loadingMore && (
             <div className="flex justify-center mt-6">
               <DottedButton text="Load More" onClick={handleLoadMore} />
