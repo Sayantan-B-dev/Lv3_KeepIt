@@ -1,5 +1,6 @@
 import React from "react";
-import DottedButton from "../buttons/DottedButton";
+import { DottedButton } from "@/components/ui/buttons";
+
 
 const CategoryList = ({
   categories,
@@ -61,7 +62,7 @@ const CategoryList = ({
                 }}
                 className="
                   mb-4
-                  text-lg font-bold tracking-wide
+                  text-lg font-mono tracking-wide
                   text-type-1
                   underline-animation
                   w-fit
@@ -71,7 +72,7 @@ const CategoryList = ({
                 "
                 title="Open category type"
               >
-                {type}
+                <span className="font-bold">Type :</span> {type}
               </div>
 
               {/* ================= Categories ================= */}

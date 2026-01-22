@@ -1,11 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
-import axiosInstance from '../api/axiosInstance';
-import ListContainer from '../components/common/ListContainer';
-import SearchBar from '../components/common/SearchBar';
-import DottedButton from '../components/buttons/DottedButton';
-import UserBox from '../components/home/UserBox';
-import Loader from '../components/common/Loader';
+import axiosInstance from "@/api/axiosInstance";
+import { UserBox } from "@/features/home";
 
+import { ListContainer, SearchBar, Loader } from "@/components/ui";
+import { DottedButton } from "@/components/ui/buttons";
 
 const PAGE_SIZE = 15;
 

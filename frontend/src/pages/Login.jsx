@@ -1,11 +1,14 @@
 
 
 import { useState } from "react";
-import axiosInstance from "../api/axiosInstance";
-import { useAuth } from "../context/AuthContext";
+import axiosInstance from "@/api/axiosInstance";
+;
+import { useAuth } from "@/context/AuthContext";
+;
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from 'react-toastify';
-import DottedButton from '../components/buttons/DottedButton'
+import { DottedButton } from "@/components/ui/buttons";
+
 
 const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });

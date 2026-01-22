@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import DottedButton from "../buttons/DottedButton"
+import { DottedButton } from "@/components/ui/buttons";
+
 
 const ProfileHeader = ({
   profile,

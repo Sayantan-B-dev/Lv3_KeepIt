@@ -1,6 +1,7 @@
 import React from "react";
 import { saveAs } from "file-saver";
-import DottedButton from "../../components/buttons/DottedButton";
+import { DottedButton } from "@/components/ui/buttons";
+
 
 function sanitizeFilename(name) {
   return (

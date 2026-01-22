@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { toast } from "react-toastify";
-import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "@/api/axiosInstance";
+;
 
 const UPLOAD_QUEUE_KEY = "mdUploadQueue";
 

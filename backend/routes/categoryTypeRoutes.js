@@ -12,7 +12,7 @@ import { aiModeration } from "../middlewares/aiModeration.js";
 const router = express.Router();
 
 // My category types
-router.get("/my", isLoggedIn, getMyCategoryTypes);
+router.get("/my-category-types", isLoggedIn, getMyCategoryTypes);
 
 // Create
 router.post("/", isLoggedIn, aiModeration, createCategoryType);

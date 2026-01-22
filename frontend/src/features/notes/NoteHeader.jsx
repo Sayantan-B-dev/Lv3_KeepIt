@@ -1,8 +1,8 @@
 import React from "react";
-import DottedButton2 from "../../components/buttons/DottedButton2";
 import { motion } from "framer-motion";
-import ConfirmPopUp from "../../components/ConfirmPopUp";
-import ButtonType3 from "../../components/buttons/ButtonType3";
+import { DottedButton2, ButtonType3 } from "@/components/ui/buttons";
+import { ConfirmPopUp } from "@/components/ui";
+
 const NoteHeader = ({
   note,
   user,

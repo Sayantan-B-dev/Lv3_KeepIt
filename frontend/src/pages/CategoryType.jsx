@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
-import ListContainer from "../components/common/ListContainer";
-import DottedButton2 from "../components/buttons/DottedButton2";
-import Loader from '../components/common/Loader';
+import axiosInstance from "@/api/axiosInstance";
+;
+import { ListContainer } from "@/components/ui";
+import { DottedButton2 } from "@/components/ui/buttons";
+import { Loader } from "@/components/ui";
 
 const CategoryType = () => {
   const { id } = useParams();

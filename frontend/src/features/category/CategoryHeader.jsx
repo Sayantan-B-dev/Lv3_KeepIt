@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import DottedButton from "../buttons/DottedButton"
+import { DottedButton } from "@/components/ui/buttons";
 
 const CategoryHeader = ({
   category,

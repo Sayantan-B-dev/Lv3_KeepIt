@@ -1,13 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
-import { useAuth } from '../context/AuthContext';
-import ListContainer from '../components/common/ListContainer';
-import SearchBar from '../components/common/SearchBar';
-import DottedButton from '../components/buttons/DottedButton';
-import DottedButton2 from '../components/buttons/DottedButton2';
-import Author from '../components/Author';
-import Loader from '../components/common/Loader';
+import axiosInstance from "@/api/axiosInstance";
+import { useAuth } from "@/context/AuthContext";
+
+import { ListContainer, SearchBar, Loader } from "@/components/ui";
+import { DottedButton, DottedButton2 } from "@/components/ui/buttons";
+import Author from "@/components/common/Author";
 
 const PAGE_SIZE = 15;
 

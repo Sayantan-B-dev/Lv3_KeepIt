@@ -1,5 +1,5 @@
 import React from "react";
-import DottedButton from "../buttons/DottedButton";
+import { DottedButton } from "@/components/ui/buttons";
 import { useNavigate } from "react-router-dom";
 
 const boxes = [
@@ -28,7 +28,7 @@ const Hero = ({ user, loading, error, isAuthenticated }) => {
       className="
         border border-muted
         relative overflow-hidden
-        mb-10 rounded-xl flex items-center
+        mb-5 rounded-xl flex items-center
         p-4 sm:p-6 md:p-10
         bg-cover bg-center bg-no-repeat
         min-h-[500px] md:min-h-[800px] h-auto

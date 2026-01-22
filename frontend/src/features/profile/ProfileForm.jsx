@@ -1,5 +1,6 @@
 import React from "react";
-import ButtonType3 from "../buttons/ButtonType3";
+import { ButtonType3 } from "@/components/ui/buttons";
+
 
 const ProfileForm = ({
   editMode,

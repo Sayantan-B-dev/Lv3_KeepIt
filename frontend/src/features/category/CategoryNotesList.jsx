@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import DottedButton2 from "../buttons/DottedButton2";
-import DottedButton from "../buttons/DottedButton";
-import Loader from '../common/Loader';
+import { DottedButton, DottedButton2 } from "@/components/ui/buttons";
+import { Loader } from "@/components/ui";
+
 
 const PAGE_SIZE = 12;
 

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
-import ListContainer from "../components/common/ListContainer";
-import SearchBar from "../components/common/SearchBar";
-import DottedButton from "../components/buttons/DottedButton";
-import DottedButton2 from "../components/buttons/DottedButton2";
-import Loader from '../components/common/Loader';
+import axiosInstance from "@/api/axiosInstance";
+;
+import { ListContainer } from "@/components/ui";
+import { SearchBar } from "@/components/ui";
+import { DottedButton } from "@/components/ui/buttons";
+import { DottedButton2 } from "@/components/ui/buttons";
+import { Loader } from "@/components/ui";
+
 
 const PAGE_SIZE = 15;
 
@@ -18,14 +20,13 @@ const MyCategoryTypes = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-
   const searchTimeout = useRef(null);
 
   const fetchTypes = async ({ pageNum = 1, append = false }) => {
     append ? setLoadingMore(true) : setLoading(true);
 
     try {
-      const res = await axiosInstance.get("/api/category-types/my", {
+      const res = await axiosInstance.get("/api/category-types/my-category-types", {
         params: {
           page: pageNum,
           limit: PAGE_SIZE,
@@ -37,6 +38,7 @@ const MyCategoryTypes = () => {
 
       setTypes(prev => (append ? [...prev, ...data] : data));
       setHasMore(res.data.hasMore);
+      
     } finally {
       setLoading(false);
       setLoadingMore(false);

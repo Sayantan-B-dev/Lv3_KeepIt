@@ -2,9 +2,9 @@ import React, { useMemo, useState } from "react";
 import { Typography } from "@material-tailwind/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
-import axiosInstance from "../../api/axiosInstance";
-import { useAuth } from "../../context/AuthContext";
-import DottedButton from "../buttons/DottedButton";
+import axiosInstance from "@/api/axiosInstance";
+import { useAuth } from "@/context/AuthContext";
+import { DottedButton } from "@/components/ui/buttons";
 import { motion } from "framer-motion";
 
 /* ================= shared underline style ================= */
@@ -202,7 +202,7 @@ export function SideNavbar({ open, setOpen }) {
             style={coloredFont}
             onClick={() => navigate("/")}
           >
-            Docs
+            Re-Docs
           </Typography>
         </div>
 

@@ -1,5 +1,6 @@
 import React from "react";
-import RotatingText from "./advance/RotatingText";
+import RotatingText from "@/components/advanced/RotatingText";
+
 
 const RotatingKeepIt = () => {
   return (

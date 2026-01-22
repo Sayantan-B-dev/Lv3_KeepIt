@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
-import axiosInstance from '../api/axiosInstance';
-import UserBox from '../components/home/UserBox';
-import Hero from '../components/home/Hero';
-import Loading from '../components/home/Loading';
-import { useAuth } from '../context/AuthContext';
+import axiosInstance from "@/api/axiosInstance";
+import { UserBox, Hero, Loading } from "@/features/home";
+import { useAuth } from "@/context/AuthContext";
+
 
 
 

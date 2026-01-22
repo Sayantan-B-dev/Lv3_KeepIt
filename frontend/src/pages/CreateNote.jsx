@@ -10,13 +10,14 @@
 // ----------------------------------------------------------
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "@/api/axiosInstance";
+;
 import { useNavigate, useLocation } from "react-router-dom";
-import DottedButton from "../components/buttons/DottedButton";
-import Loading from "../components/home/Loading";
+import { DottedButton } from "@/components/ui/buttons";
+import { Loading } from "@/features/home";
 import { toast } from "react-toastify";
-import { useAuth } from '../context/AuthContext';
-import TagInput from '../components/TagInput';
+import { useAuth } from "@/context/AuthContext";
+import TagInput from "@/components/common/TagInput";
 import { MdUndo, MdRedo } from "react-icons/md";
 
 const textAreaStyle =

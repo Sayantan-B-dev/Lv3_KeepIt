@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "@/api/axiosInstance";
+;
 import { toast } from "react-toastify";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
+;
 
-import Loading from "../components/home/Loading";
-import ConfirmPopUp from "../components/ConfirmPopUp";
-
-import NoteHeader from "./notePageComponents/NoteHeader";
-import NoteContent from "./notePageComponents/NoteContent";
-import NoteNavigation from "./notePageComponents/NoteNavigation";
-import NoteFooter from "./notePageComponents/NoteFooter";
-
-import { noteCache } from "../utils/noteCache";
+import { Loading } from "@/features/home";
+import { ConfirmPopUp } from "@/components/ui";
+import {
+  NoteHeader,
+  NoteContent,
+  NoteNavigation,
+  NoteFooter
+} from "@/features/notes";
+import { noteCache } from "@/utils/noteCache";
 
 const CONTENT_MAX_LENGTH = 100000;
 

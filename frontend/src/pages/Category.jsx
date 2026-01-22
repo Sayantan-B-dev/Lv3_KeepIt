@@ -1,19 +1,20 @@
-  import { useEffect, useState } from "react";
-  import { useParams, useNavigate } from "react-router-dom";
-  import axiosInstance from "../api/axiosInstance";
-  import { toast } from "react-toastify";
-  import { useAuth } from "../context/AuthContext";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axiosInstance from "@/api/axiosInstance";
+import { toast } from "react-toastify";
+import { useAuth } from "@/context/AuthContext";
 
-  import Loading from "../components/home/Loading";
-  import ConfirmPopUp from "../components/ConfirmPopUp";
+import { Loading } from "@/features/home";
+import { ConfirmPopUp } from "@/components/ui";
 
-  import CategoryHeader from "../components/category/CategoryHeader";
-  import CategoryNotesList from "../components/category/CategoryNotesList";
-  import MarkdownUploadBox from "../components/category/MarkdownUploadBox";
+import CategoryHeader from "@/features/category/CategoryHeader";
+import CategoryNotesList from "@/features/category/CategoryNotesList";
+import MarkdownUploadBox from "@/features/category/MarkdownUploadBox";
 
-  import useMarkdownUploadQueue from "../hooks/useMarkdownUploadQueue";
-  import useDragAndDrop from "../hooks/useDragAndDrop";
-  import { exportCategoryAsZip } from "../utils/exportCategoryAsZip";
+import useMarkdownUploadQueue from "@/hooks/useMarkdownUploadQueue";
+import useDragAndDrop from "@/hooks/useDragAndDrop";
+import { exportCategoryAsZip } from "@/utils/exportCategoryAsZip";
+
 
 
   const Category = () => {

@@ -1,18 +1,20 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
-import { useAuth } from "../context/AuthContext";
-import Loading from "../components/home/Loading";
-import ConfirmPopUp from "../components/ConfirmPopUp";
+import axiosInstance from "@/api/axiosInstance";
+;
+import { useAuth } from "@/context/AuthContext";
+;
 
-/* shared components */
-import ProfileHeader from "../components/myprofile/ProfileHeader";
-import ProfileForm from "../components/myprofile/ProfileForm";
-import CategoryList from "../components/myprofile/CategoryList";
-import DeleteAccountSection from "../components/myprofile/DeleteAccountSection";
+import { AuthContext } from "@/context/AuthContext";
 
-/* public-only */
-import NoteModal from "../components/myprofile/NoteModal";
+import { Loading } from "@/features/home";
+import { ConfirmPopUp } from "@/components/ui";
+import ProfileHeader from "@/features/profile/ProfileHeader";
+import ProfileForm from "@/features/profile/ProfileForm";
+import CategoryList from "@/features/profile/CategoryList";
+import DeleteAccountSection from "@/features/profile/DeleteAccountSection";
+import NoteModal from "@/features/profile/NoteModal";
+
 
 import { marked } from "marked";
 import DOMPurify from "dompurify";
@@ -21,7 +23,6 @@ const Profile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
   const { user, loading: authLoading, error: authError } = useAuth();
-
   /* ================= Context ================= */
 
   const isOwnProfile = !userId || userId === user?._id;

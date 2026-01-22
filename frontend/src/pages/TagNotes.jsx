@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axiosInstance from '../api/axiosInstance';
-import DottedButton from '../components/buttons/DottedButton';
-import DottedButton2 from '../components/buttons/DottedButton2';
-import Author from '../components/Author';
-import SearchBar from '../components/common/SearchBar';
-import Loader from '../components/common/Loader';
+import axiosInstance from "@/api/axiosInstance";
+
+
+import { DottedButton, DottedButton2 } from "@/components/ui/buttons";
+import Author from "@/components/common/Author";
+import { SearchBar, Loader } from "@/components/ui";
+
+
 
 const PAGE_SIZE = 15;
 
