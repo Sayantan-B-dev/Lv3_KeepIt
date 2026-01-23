@@ -78,7 +78,6 @@ const AllUsers = () => {
       {/* Initial loading */}
       {loading && (
         <Loader  variant="dots" text="Loading…" />
-
       )}
 
       {!loading && users.length === 0 && (

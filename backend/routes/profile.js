@@ -1,7 +1,7 @@
 import express from 'express';
 import { getUserProfile, getAllUsers, myProfile, updateProfile, followUser, unfollowUser,deleteUser } from '../controllers/profileController.js';
 import {isLoggedIn} from '../middlewares/isAuthenticated.js'
-import { aiModeration } from '../middlewares/aiModeration.js'
+import upload from '../utils/multer.js';
 
 const router = express.Router();
 
@@ -13,7 +13,12 @@ router.get('/MyProfile', isLoggedIn, myProfile)
 
 router.get('/:userId', getUserProfile);
 
-router.put('/MyProfile', isLoggedIn, aiModeration, updateProfile);
+router.put(
+  '/MyProfile',
+  isLoggedIn,
+  upload.single('profileImage'),
+  updateProfile
+);
 
 // Follow a user
 router.post('/:userId/follow', isLoggedIn, followUser); 

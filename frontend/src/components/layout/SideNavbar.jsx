@@ -263,14 +263,7 @@ export function SideNavbar({ open, setOpen }) {
           ) : (
             <DottedButton
               text="LOG OUT"
-              onClick={async () => {
-                try {
-                  await axiosInstance.post("/api/auth/logout");
-                } catch {}
-                localStorage.removeItem("user");
-                toast.success("Logged out successfully");
-                navigate("/");
-              }}
+              onClick={() => navigate("/logout")}
             />
           )}
         </div>

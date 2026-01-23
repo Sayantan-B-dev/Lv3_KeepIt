@@ -4,10 +4,10 @@ import {
   getMyCategoryTypes,
   createCategoryType,
   deleteCategoryType,
-  getCategoriesByCategoryType
+  getCategoriesByCategoryType,
+  getPublicCategoriesByCategoryType
 } from "../controllers/categoryTypeController.js";
 import { isLoggedIn } from "../middlewares/isAuthenticated.js";
-import { aiModeration } from "../middlewares/aiModeration.js";
 
 const router = express.Router();
 
@@ -15,12 +15,13 @@ const router = express.Router();
 router.get("/my-category-types", isLoggedIn, getMyCategoryTypes);
 
 // Create
-router.post("/", isLoggedIn, aiModeration, createCategoryType);
+router.post("/", isLoggedIn, createCategoryType);
 
 // Delete
 router.delete("/:id", isLoggedIn, deleteCategoryType);
 
 // Get categories under a category type (public / own)
 router.get("/:id/categories", isLoggedIn, getCategoriesByCategoryType);
+router.get("/:id/public/categories", getPublicCategoriesByCategoryType);
 
 export default router;

@@ -3,7 +3,6 @@ import rateLimit from "express-rate-limit";
 import { validateBody } from "../middlewares/validate.js";
 import { noteSchema, categorySchema } from "../validators/auth.js";
 import { isLoggedIn } from "../middlewares/isAuthenticated.js";
-import { aiModeration } from "../middlewares/aiModeration.js";
 
 import {
   getNotesById,
@@ -17,6 +16,7 @@ import {
   createNote,
   updateNote,
   deleteNote,
+  getPublicCategoryNotes
 } from "../controllers/noteController.js";
 
 const router = express.Router();
@@ -51,7 +51,10 @@ router.get(
 /* ================= Single note ================= */
 
 router.get("/:id", isLoggedIn, getNotesById);
-
+router.get(
+  "/category/:id/public",
+  getPublicCategoryNotes
+);
 /* ================= Create / Update ================= */
 
 router.post(
@@ -59,7 +62,6 @@ router.post(
   noteLimiter,
   isLoggedIn,
   validateBody(noteSchema),
-  aiModeration,
   createNote
 );
 
@@ -67,7 +69,6 @@ router.put(
   "/:id",
   isLoggedIn,
   validateBody(noteSchema || categorySchema),
-  aiModeration,
   updateNote
 );
 

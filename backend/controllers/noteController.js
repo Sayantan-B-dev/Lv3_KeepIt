@@ -1,7 +1,45 @@
+//noteController.js
 import Note from "../models/note.js"
 import Category from "../models/category.js"
 import User from "../models/user.js"
 import CategoryType from "../models/categoryType.js";
+
+export const getPublicCategoryNotes = async (req, res) => {
+  const { id } = req.params;
+
+  const page = Math.max(parseInt(req.query.page) || 1, 1);
+  const limit = Math.min(parseInt(req.query.limit) || 10, 50);
+  const skip = (page - 1) * limit;
+
+  try {
+    const [notes, total] = await Promise.all([
+      Note.find({
+        category: id,
+        isPrivate: false,
+      })
+        .select("_id title createdAt")
+        .sort({ title: 1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
+
+      Note.countDocuments({
+        category: id,
+        isPrivate: false,
+      }),
+    ]);
+
+    res.json({
+      notes,
+      page,
+      limit,
+      total,
+      hasMore: skip + notes.length < total,
+    });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch public notes" });
+  }
+};
 
 export const getNotesById = async (req, res) => {
     const { id } = req.params;
@@ -398,10 +436,27 @@ export const updateNote = async (req, res) => {
 }
 
 export const deleteNote = async (req, res) => {
-    const { id } = req.params
-    const note = await Note.findOneAndDelete({ _id: id, user: req.user._id })
-    res.json({ message: 'Note Deleted' })
-}
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const note = await Note.findOneAndDelete({ _id: id, user: userId });
+    if (!note) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    await Category.updateOne(
+      { _id: note.category },
+      { $pull: { notes: note._id } }
+    );
+
+    res.json({ message: "Note deleted." });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete note" });
+  }
+};
+
+
 
 export const sanitizeNoteInput = (req, res, next) => {
     const sanitize = (str) =>

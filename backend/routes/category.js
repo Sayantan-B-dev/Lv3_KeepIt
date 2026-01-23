@@ -1,6 +1,6 @@
 import express from "express";
 import { isLoggedIn } from "../middlewares/isAuthenticated.js";
-import { aiModeration } from "../middlewares/aiModeration.js";
+import User from "../models/user.js";
 
 import {
   getUserCategories,
@@ -8,6 +8,7 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
+  getPublicCategoryById
 } from "../controllers/categoryController.js";
 
 const router = express.Router();
@@ -16,11 +17,13 @@ const router = express.Router();
 
 router.get("/", isLoggedIn, getUserCategories);
 router.get("/:id", isLoggedIn, getCategoryById);
+router.get("/:id/public", getPublicCategoryById);
+
 
 /* ================= Mutations ================= */
 
-router.post("/", isLoggedIn, aiModeration, createCategory);
-router.put("/:id", isLoggedIn, aiModeration, updateCategory);
+router.post("/", isLoggedIn, createCategory);
+router.put("/:id", isLoggedIn, updateCategory);
 router.delete("/:id", isLoggedIn, deleteCategory);
 
 export default router;

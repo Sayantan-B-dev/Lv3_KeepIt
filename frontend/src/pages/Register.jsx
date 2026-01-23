@@ -1,11 +1,11 @@
 import { useState, useRef } from "react";
 import axiosInstance from "@/api/axiosInstance";
-;
 import { useAuth } from "@/context/AuthContext";
-;
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { DottedButton } from "@/components/ui/buttons";
+
+import { handleProfileImage } from "@/utils/handleProfileImage";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -24,37 +24,20 @@ const Register = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
+  /* ================= INPUT HANDLER ================= */
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
 
     if (name === "profileImage") {
-      const file = files?.[0];
-      if (!file) return;
-
-      const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error("Only JPG, JPEG, PNG allowed.");
-        return;
-      }
-
-      if (file.size > 3 * 1024 * 1024) {
-        toast.error("Image must be under 3MB.");
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({
-          ...prev,
-          profileImage: file,
-          profileImagePreview: reader.result,
-        }));
-      };
-      reader.readAsDataURL(file);
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      handleProfileImage(files?.[0], setFormData);
+      return;
     }
+
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  /* ================= REMOVE IMAGE ================= */
 
   const handleRemoveImage = () => {
     setFormData(prev => ({
@@ -64,6 +47,8 @@ const Register = () => {
     }));
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
+
+  /* ================= SUBMIT ================= */
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -75,13 +60,16 @@ const Register = () => {
       data.append("username", formData.username);
       data.append("email", formData.email);
       data.append("password", formData.password);
+
       if (formData.profileImage) {
         data.append("profileImage", formData.profileImage);
       }
 
-      const res = await axiosInstance.post("/api/auth/register", data, {
-        withCredentials: true,
-      });
+      const res = await axiosInstance.post(
+        "/api/auth/register",
+        data,
+        { withCredentials: true }
+      );
 
       setUser(res.data.user);
       toast.success("Registered successfully!");
@@ -97,16 +85,16 @@ const Register = () => {
     }
   };
 
+  /* ================= RENDER ================= */
+
   return (
     <div className="w-full flex justify-center">
       <form
         onSubmit={handleSubmit}
         encType="multipart/form-data"
         className="
-          w-full
-          lg:w-[70%]
-          p-8
-          mb-5
+          w-full lg:w-[70%]
+          p-8 mb-5
           rounded-lg
           border border-muted
           glass-panel
@@ -137,7 +125,6 @@ const Register = () => {
             required
             className="textAreaStyle"
             placeholder="Choose a username"
-            autoComplete="username"
           />
         </div>
 
@@ -155,7 +142,6 @@ const Register = () => {
             required
             className="textAreaStyle"
             placeholder="Enter your email"
-            autoComplete="email"
           />
         </div>
 
@@ -175,7 +161,6 @@ const Register = () => {
               required
               className="textAreaStyle"
               placeholder="Create a password"
-              autoComplete="new-password"
             />
 
             <div
@@ -185,32 +170,16 @@ const Register = () => {
                 cursor-pointer
                 text-type-3
                 hover:text-type-1
-                transition
               "
             >
-              {showPassword ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M1.5 12C3.5 6.5 8 3 12 3s8.5 3.5 10.5 9c-2 5.5-6.5 9-10.5 9S3.5 17.5 1.5 12z"
-                    stroke="currentColor" strokeWidth="1.5" />
-                  <circle cx="12" cy="12" r="3.5"
-                    stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                  <path d="M3 3l18 18" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M1.5 12C3.5 6.5 8 3 12 3c2.1 0 4.2.7 6 2"
-                    stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M22.5 12c-2 5.5-6.5 9-10.5 9-2.1 0-4.2-.7-6-2"
-                    stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              )}
+              {showPassword ? "🙈" : "👁️"}
             </div>
           </div>
         </div>
 
         {/* Profile Image */}
-        <div className="mb-6 flex items-center gap-4 w-full flex justify-center">
-          <div className="w-14 h-14 rounded-full border border-muted overflow-hidden flex items-center justify-center text-type-1">
+        <div className="mb-6 flex items-center gap-4 justify-center">
+          <div className="w-14 h-14 rounded-full border border-muted overflow-hidden flex items-center justify-center">
             {formData.profileImagePreview ? (
               <img
                 src={formData.profileImagePreview}
@@ -237,7 +206,7 @@ const Register = () => {
             <button
               type="button"
               onClick={handleRemoveImage}
-              className="text-xs text-red-400 hover:text-red-500"
+              className="text-xs text-red-400"
             >
               Remove
             </button>
@@ -248,7 +217,7 @@ const Register = () => {
         <div className="flex justify-center">
           <DottedButton
             text={loading ? "Registering..." : "Register"}
-            className="w-fit text-lg"
+            className="text-lg"
             onClick={handleSubmit}
           />
         </div>
@@ -259,10 +228,6 @@ const Register = () => {
           <Link to="/login" className="underline-animation text-type-1">
             Log in
           </Link>
-        </div>
-
-        <div className="mt-4 text-center text-xs text-type-3">
-          Make sure to keep your password safe. Forgot password is not available yet.
         </div>
       </form>
     </div>

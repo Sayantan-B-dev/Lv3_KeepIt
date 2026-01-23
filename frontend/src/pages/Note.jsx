@@ -46,6 +46,7 @@ const Note = () => {
   const [updateSuccess, setUpdateSuccess] = useState(null);
 
   const [contentTooLarge, setContentTooLarge] = useState(false);
+  const [confirmStep, setConfirmStep] = useState(1); // 👈 step 1 or 2
 
   /* ---------------- Navigation helpers ---------------- */
 
@@ -96,7 +97,14 @@ const Note = () => {
       setShowDeletePopup(false);
     }
   };
-
+// 🧠 DOUBLE CONFIRM LOGIC
+  const handleConfirmDelete = () => {
+    if (confirmStep === 1) {
+      setConfirmStep(2);
+      return;
+    }
+    handleDeleteNote();
+  };
   const handleEdit = () => {
     if (
       note.content &&
@@ -287,11 +295,17 @@ const Note = () => {
     <>
       <ConfirmPopUp
         open={showDeletePopup}
-        onClose={() => setShowDeletePopup(false)}
-        onConfirm={handleDeleteNote}
+        onClose={() => {
+          setShowDeletePopup(false);
+          setConfirmStep(1);
+        }}
+        onConfirm={handleConfirmDelete}
         loading={deleting}
-        title="Delete Note"
-        message="Are you sure you want to delete this note? This action cannot be undone."
+        message={
+          confirmStep === 1
+            ? "Are you sure you want to delete this note?"
+            : "FINAL WARNING: This will permanently delete note. This action CANNOT be undone."
+        }
       />
 
       <div
