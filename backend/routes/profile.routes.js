@@ -1,7 +1,7 @@
 import express from 'express';
-import { getUserProfile, getAllUsers, myProfile, updateProfile, followUser, unfollowUser,deleteUser } from '../controllers/profileController.js';
-import {isLoggedIn} from '../middlewares/isAuthenticated.js'
-import upload from '../utils/multer.js';
+import { getUserProfile, getAllUsers, myProfile, updateProfile, followUser, unfollowUser,deleteUser } from '../controllers/profile.controller.js';
+import {isLoggedIn} from '../middlewares/isAuthenticated.middleware.js'
+import upload from '../utils/multer.util.js';
 
 const router = express.Router();
 

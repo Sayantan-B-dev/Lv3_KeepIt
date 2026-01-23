@@ -4,7 +4,7 @@ import dotenv from "dotenv"
 import MongoStore from "connect-mongo"
 
 import app from './app.js'
-import configurePassport from "./utils/passportConfig.js"
+import configurePassport from "./config/passport.config.js"
 import passport from "passport"
 
 // Set development environment

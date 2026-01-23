@@ -1,6 +1,6 @@
-import User from "../models/user.js";
+import User from "../models/user.model.js";
 import passport from "passport";
-import { cloudinary, storage } from '../utils/cloudinary.js';
+import { cloudinary, storage } from '../utils/cloudinary.util.js';
 import multer from 'multer';
 
 export const upload = multer({ storage });

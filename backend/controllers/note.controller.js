@@ -1,8 +1,8 @@
 //noteController.js
-import Note from "../models/note.js"
-import Category from "../models/category.js"
-import User from "../models/user.js"
-import CategoryType from "../models/categoryType.js";
+import Note from "../models/note.model.js"
+import Category from "../models/category.model.js"
+import User from "../models/user.model.js"
+import CategoryType from "../models/categoryType.model.js";
 
 export const getPublicCategoryNotes = async (req, res) => {
   const { id } = req.params;

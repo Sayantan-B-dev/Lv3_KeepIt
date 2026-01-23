@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import readline from 'readline';
-import Category from './models/category.js';
-import Note from './models/note.js';
+import Category from '../models/category.model.js';
+import Note from '../models/note.model.js';
 
 dotenv.config();
 

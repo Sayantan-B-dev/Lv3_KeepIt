@@ -1,4 +1,4 @@
-// routes/categoryTypeRoutes.js
+// routes/categoryType.routes.js
 import express from "express";
 import {
   getMyCategoryTypes,
@@ -6,8 +6,8 @@ import {
   deleteCategoryType,
   getCategoriesByCategoryType,
   getPublicCategoriesByCategoryType
-} from "../controllers/categoryTypeController.js";
-import { isLoggedIn } from "../middlewares/isAuthenticated.js";
+} from "../controllers/categoryType.controller.js";
+import { isLoggedIn } from "../middlewares/isAuthenticated.middleware.js";
 
 const router = express.Router();
 

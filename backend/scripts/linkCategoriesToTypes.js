@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import Category from "../models/category.js";
-import CategoryType from "../models/categoryType.js";
+import Category from "../models/category.model.js";
+import CategoryType from "../models/categoryType.model.js";
 
 dotenv.config({
   path: new URL("../.env", import.meta.url),

@@ -1,8 +1,8 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
-import { validateBody } from "../middlewares/validate.js";
-import { noteSchema, categorySchema } from "../validators/auth.js";
-import { isLoggedIn } from "../middlewares/isAuthenticated.js";
+import { validateBody } from "../middlewares/validate.middleware.js";
+import { noteSchema, categorySchema } from "../validators/auth.validator.js";
+import { isLoggedIn } from "../middlewares/isAuthenticated.middleware.js";
 
 import {
   getNotesById,
@@ -17,7 +17,7 @@ import {
   updateNote,
   deleteNote,
   getPublicCategoryNotes
-} from "../controllers/noteController.js";
+} from "../controllers/note.controller.js";
 
 const router = express.Router();
 

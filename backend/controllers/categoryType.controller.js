@@ -1,8 +1,8 @@
 //categoryTypeController.js
-import CategoryType from "../models/categoryType.js";
-import Category from "../models/category.js";
-import Note from "../models/note.js"
-import User from "../models/user.js";
+import CategoryType from "../models/categoryType.model.js";
+import Category from "../models/category.model.js";
+import Note from "../models/note.model.js"
+import User from "../models/user.model.js";
 
 export const getPublicCategoriesByCategoryType = async (req, res) => {
   try {

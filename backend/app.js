@@ -10,10 +10,10 @@ import helmet from "helmet"
 import compression from "compression"
 import cors from "cors";
 import dotenv from 'dotenv';
-import User from "./models/user.js"
+import User from "./models/user.model.js"
 import rateLimit from "express-rate-limit";
-import errorHandler from './middlewares/errorHandler.js';
-import categoryTypeRoutes from "./routes/categoryTypeRoutes.js";
+import errorHandler from './middlewares/errorHandler.middleware.js';
+import categoryTypeRoutes from "./routes/categoryType.routes.js";
 
 // Load environment variables
 dotenv.config();
@@ -151,11 +151,11 @@ app.use(
     })
 );
 // Import routes
-import authRoutes from "./routes/auth.js";
-import categoryRoutes from './routes/category.js';
-import noteRoutes from './routes/note.js';
-import profileRoutes from './routes/profile.js';
-import globalRoutes from './routes/globalRoutes.js';
+import authRoutes from "./routes/auth.routes.js";
+import categoryRoutes from './routes/category.routes.js';
+import noteRoutes from './routes/note.routes.js';
+import profileRoutes from './routes/profile.routes.js';
+import globalRoutes from './routes/global.routes.js';
 // Use routes
 app.use('/api/profile', profileRoutes);
 app.use('/api/auth', authRoutes);

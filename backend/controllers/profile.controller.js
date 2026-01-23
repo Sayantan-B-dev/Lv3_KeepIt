@@ -1,10 +1,10 @@
 
 //profileController.js
-import User from '../models/user.js';
-import Note from '../models/note.js';
-import Category from '../models/category.js';
-import { cloudinary } from '../utils/cloudinary.js';
-import CategoryType from "../models/categoryType.js";
+import User from '../models/user.model.js';
+import Note from '../models/note.model.js';
+import Category from '../models/category.model.js';
+import { cloudinary } from '../utils/cloudinary.util.js';
+import CategoryType from "../models/categoryType.model.js";
 
 // Get a user's public profile by ID
 export const getUserProfile = async (req, res) => {

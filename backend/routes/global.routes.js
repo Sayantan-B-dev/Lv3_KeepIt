@@ -3,7 +3,7 @@ import express from "express"
 import {
     getAllCategories,
     getAllNotes
-} from "../controllers/globalController.js"
+} from "../controllers/global.controller.js"
 
 
 

@@ -1,6 +1,6 @@
 
-import Category from "../models/category.js"
-import Note from "../models/note.js"
+import Category from "../models/category.model.js"
+import Note from "../models/note.model.js"
 
 export const getAllCategories = async (req, res) => {
   try {

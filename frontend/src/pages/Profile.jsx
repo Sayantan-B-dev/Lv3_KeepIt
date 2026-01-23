@@ -205,7 +205,6 @@ const Profile = () => {
     setDeleteLoading(true);
     try {
       await axiosInstance.delete("/api/profile/MyProfile");
-      logout();
       window.location.replace("/login");
     } catch {
       setDeleteError("Failed to delete account.");

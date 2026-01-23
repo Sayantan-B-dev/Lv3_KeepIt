@@ -6,10 +6,10 @@ import {
     checkAuth,
     uploadProfileImage,
     getAllUsers
-} from "../controllers/authController.js"
-import upload from "../utils/multer.js"
-import { validateBody } from "../middlewares/validate.js";
-import { registerSchema,profileImageSchema } from "../validators/auth.js";
+} from "../controllers/auth.controller.js"
+import upload from "../utils/multer.util.js"
+import { validateBody } from "../middlewares/validate.middleware.js";
+import { registerSchema,profileImageSchema } from "../validators/auth.validator.js";
 
 const router=express.Router()
 

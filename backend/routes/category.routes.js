@@ -1,6 +1,6 @@
 import express from "express";
-import { isLoggedIn } from "../middlewares/isAuthenticated.js";
-import User from "../models/user.js";
+import { isLoggedIn } from "../middlewares/isAuthenticated.middleware.js";
+import User from "../models/user.model.js";
 
 import {
   getUserCategories,
@@ -9,7 +9,7 @@ import {
   updateCategory,
   deleteCategory,
   getPublicCategoryById
-} from "../controllers/categoryController.js";
+} from "../controllers/category.controller.js";
 
 const router = express.Router();
 

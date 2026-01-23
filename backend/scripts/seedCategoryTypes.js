@@ -1,7 +1,7 @@
 // scripts/seedCategoryTypes.js
 import mongoose from "mongoose";
-import Category from "../models/category.js";
-import CategoryType from "../models/categoryType.js";
+import Category from "../models/category.model.js";
+import CategoryType from "../models/categoryType.model.js";
 import dotenv from "dotenv";
 
 dotenv.config({
