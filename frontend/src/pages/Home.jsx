@@ -45,11 +45,18 @@ const Home = () => {
   return (
     <div className="container mx-auto max-w-full ">
       <Hero user={user} isAuthenticated={isAuthenticated} />
-      <div>
-        <hr className="text-center pb-5 border-muted"/>
+      <hr className="text-center pb-5 border-muted" />
+
+      <div className="
+        w-full mb-5 p-5
+        flex flex-wrap gap-4
+        rounded-xl
+        border border border-muted
+        bg-type-1 backdrop-blur-md
+      ">
         <UserBox users={users} />
-        <hr className="border-t border border-muted" />
       </div>
+      <hr className="border-t border border-muted" />
 
     </div>
   );

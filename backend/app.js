@@ -1,170 +1,148 @@
-import express from "express"
-import session from "express-session"
-import MongoStore from "connect-mongo"
-import passport from "passport"
+import express from "express";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import flash from "connect-flash"
-import methodOverride from "method-override"
-import sanitize from 'mongo-sanitize';
-import helmet from "helmet"
-import compression from "compression"
-import cors from "cors";
-import dotenv from 'dotenv';
-import User from "./models/user.model.js"
 import rateLimit from "express-rate-limit";
-import errorHandler from './middlewares/errorHandler.middleware.js';
+import compression from "compression";
+import cors from "cors";
+import helmet from "helmet";
+import methodOverride from "method-override";
+import sanitize from "mongo-sanitize";
+import dotenv from "dotenv";
+
+import User from "./models/user.model.js";
+import errorHandler from "./middlewares/errorHandler.middleware.js";
+
+// Routes
+import authRoutes from "./routes/auth.routes.js";
+import categoryRoutes from "./routes/category.routes.js";
+import noteRoutes from "./routes/note.routes.js";
+import profileRoutes from "./routes/profile.routes.js";
+import globalRoutes from "./routes/global.routes.js";
 import categoryTypeRoutes from "./routes/categoryType.routes.js";
 
-// Load environment variables
 dotenv.config();
 
-const app = express()
-// HTTP compression for faster responses
-app.use(compression())
+const app = express();
+const isProduction = process.env.NODE_ENV === "production";
 
-// Rate limiting
-const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, 
-  max: 10, 
-  message: { error: "Too many login attempts. Please try again later." }
+/* ======================================================
+   1. FAST, ISOLATED HEALTH CHECK (NO MIDDLEWARE)
+====================================================== */
+app.get("/api/health", (req, res) => {
+  res.sendStatus(200);
 });
 
-// CORS: allow only trusted origins
-const allowedOrigins = [process.env.FRONTEND_URL];
-//console.log("ALLOWED ORIGINS:", allowedOrigins);
-
+/* ======================================================
+   2. LIGHTWEIGHT GLOBAL MIDDLEWARE (STATELESS)
+====================================================== */
+app.use(compression());
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // allow same-origin (e.g. Postman)
-      const allowedOrigins = [process.env.FRONTEND_URL];
-      const cleanOrigin = origin.replace(/\/$/, '');
-
-      const match = allowedOrigins.some(
-        (o) => o.replace(/\/$/, '') === cleanOrigin
-      );
-
-      if (match) callback(null, true);
-      else callback(new Error('Not allowed by CORS'));
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      const allowed = process.env.FRONTEND_URL?.replace(/\/$/, "");
+      const incoming = origin.replace(/\/$/, "");
+      if (incoming === allowed) callback(null, true);
+      else callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
   })
 );
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(methodOverride("_method"));
 
-// Middlewares
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(methodOverride('_method'))
-
-// Sanitize middleware
 app.use((req, res, next) => {
-    req.body = sanitize(req.body);
-    req.params = sanitize(req.params);
-    next();
+  req.body = sanitize(req.body);
+  req.params = sanitize(req.params);
+  next();
 });
 
-const workerSrcUrls = [
-    "'self'",
-    "blob:"
-];//this allows the home page to run..donno why
+/* ======================================================
+   3. SECURITY HEADERS (NO SESSION DEPENDENCY)
+====================================================== */
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
 
-// 🔹 Session Configuration (Before Passport)
-const store = MongoStore.create({
-    mongoUrl: process.env.DATABASE_URL,
-    touchAfter: 24 * 60 * 60,
-    // Remove crypto if not using encrypted session store
-    // crypto: {
-    //     secret: process.env.SESSION_SECRET,
-    // }
-})
-store.on("error", function (e) {
-    console.error("Session Store error: ", e)
-})
-
-const isProduction = process.env.NODE_ENV === 'production';
+/* ======================================================
+   4. SESSION + PASSPORT (SCOPED, NOT GLOBAL)
+====================================================== */
 if (isProduction) {
-    app.set('trust proxy', 1); // ✅ required for secure cookies to work on Render
-  }
-  
+  app.set("trust proxy", 1);
+}
+
+const sessionStore = MongoStore.create({
+  mongoUrl: process.env.DATABASE_URL,
+  touchAfter: 24 * 60 * 60,
+});
 
 const sessionConfig = {
-    store,
-    name: "connect.sid", // Use a consistent session cookie name
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false, // Only save sessions when something is stored
-    cookie: {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
-        sameSite: isProduction ? "none" : "lax",
-        secure: isProduction
-    }
-}
+  store: sessionStore,
+  name: "connect.sid",
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    sameSite: isProduction ? "none" : "lax",
+    secure: isProduction,
+    maxAge: 1000 * 60 * 60 * 24 * 30,
+  },
+};
 
-if (isProduction) {
-    // Trust the first proxy (Render, Vercel, etc.)
-    app.set('trust proxy', 1);
-}
-
-// Main session middleware
-app.use(session(sessionConfig));
-app.use(flash());
-
-// 🔹 Passport Configuration (After Session)
-app.use(passport.initialize())
-app.use(passport.session())
 passport.use(new LocalStrategy(User.authenticate()));
-
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+/* ======================================================
+   5. AUTH / SESSION ROUTER (ONLY WHERE NEEDED)
+====================================================== */
+const sessionRouter = express.Router();
 
-// 🔹 Flash Messages Middleware (After Passport)
-app.use((req, res, next) => {
+sessionRouter.use(session(sessionConfig));
+sessionRouter.use(passport.initialize());
+sessionRouter.use(passport.session());
 
-    res.locals.currentUser = req.user
-    res.locals.success = req.flash('success');
-    res.locals.error = req.flash('error');
-    next();
-})
+/* ======================================================
+   6. RATE LIMITING (LOGIN ONLY)
+====================================================== */
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
-// Helmet CSP should come AFTER session/flash/passport
-app.use(
-    helmet.contentSecurityPolicy({
-        directives: {
-            defaultSrc: ["'self'"],
-            workerSrc: workerSrcUrls,
-            connectSrc: ["'self'", process.env.FRONTEND_URL, "http://localhost:5000"],
-            scriptSrc: ["'self'", "'unsafe-inline'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            fontSrc: ["'self'"],
-            imgSrc: [
-                "'self'",
-                "blob:",
-                "data:",
-                "https://res.cloudinary.com/",
-                "https://api.maptiler.com/",
-            ],
-        },
-    })
-);
-// Import routes
-import authRoutes from "./routes/auth.routes.js";
-import categoryRoutes from './routes/category.routes.js';
-import noteRoutes from './routes/note.routes.js';
-import profileRoutes from './routes/profile.routes.js';
-import globalRoutes from './routes/global.routes.js';
-// Use routes
-app.use('/api/profile', profileRoutes);
-app.use('/api/auth', authRoutes);
-app.use('/api/categories', categoryRoutes);
-app.use('/api/notes', noteRoutes);
-app.use('/api/global', globalRoutes);
+/* ======================================================
+   7. ROUTES
+====================================================== */
+
+// Auth (session-based)
+sessionRouter.use("/auth/login", loginLimiter, authRoutes);
+sessionRouter.use("/auth", authRoutes);
+
+// Protected session routes
+sessionRouter.use("/profile", profileRoutes);
+sessionRouter.use("/notes", noteRoutes);
+sessionRouter.use("/categories", categoryRoutes);
+
+// Public / low-cost routes
+app.use("/api/global", globalRoutes);
 app.use("/api/category-types", categoryTypeRoutes);
-app.use('/api/auth/login', loginLimiter, authRoutes);
 
+// Mount sessioned API
+app.use("/api", sessionRouter);
+
+/* ======================================================
+   8. ERROR HANDLER (LAST)
+====================================================== */
 app.use(errorHandler);
 
 export default app;

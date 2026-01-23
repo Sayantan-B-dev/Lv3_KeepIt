@@ -149,7 +149,7 @@ const Note = () => {
     setUpdateError(null);
 
     try {
-      const res = await axiosInstance.put(`/api/notes/${noteId}/edit`, {
+      const res = await axiosInstance.put(`/api/notes/${noteId}`, {
         title: editNote.title,
         content: editNote.content,
         category: note.category?._id || note.category,

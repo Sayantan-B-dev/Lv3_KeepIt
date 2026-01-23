@@ -409,8 +409,10 @@ export const createNote = async (req, res) => {
 
 // For backward compatibility, alias createNoteFromMD to createNote
 export const createNoteFromMD = createNote;
+
 export const updateNote = async (req, res) => {
     const { id } = req.params
+    console.log(req.user)
     try {
         // Only allow updating tags if provided
         const updateData = { ...req.body };

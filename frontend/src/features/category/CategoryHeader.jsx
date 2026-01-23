@@ -172,7 +172,7 @@ const CategoryHeader = ({
           </div>
 
 
-          <DottedButton text="Add a new Note" onClick={onCreateNote} />
+          {isOwner && <DottedButton text="Add a new Note" onClick={onCreateNote} />}
 
         </div>
       </div>
