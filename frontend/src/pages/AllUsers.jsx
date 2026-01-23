@@ -87,16 +87,20 @@ const AllUsers = () => {
       )}
 
       {!loading && (
-        <div className="flex flex-col gap-4">
+        <div className="
+        w-full mb-5 p-5
+        flex flex-wrap gap-4
+        rounded-xl
+        border border border-muted
+        bg-type-1 backdrop-blur-md
+      " >
           {users.map(user => (
             <UserBox key={user._id} users={[user]} />
           ))}
-
         </div>
       )}
-          {loadingMore &&<Loader  variant="dots" text="Loading…" />}
-
-      {hasMore && (
+      {loadingMore &&<Loader  variant="dots" text="Loading…" />}
+      {hasMore && !loading && !loadingMore && (
         <div className="flex justify-center mt-6">
           <DottedButton
             text={loadingMore ? 'Loading…' : 'Load More'}

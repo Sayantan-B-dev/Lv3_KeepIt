@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "@/api/axiosInstance";
-;
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
-;
 
 import { Loading } from "@/features/home";
 import { ConfirmPopUp } from "@/components/ui";
@@ -23,6 +21,8 @@ const Note = () => {
   const { noteId } = useParams();
   const navigate = useNavigate();
 
+  const activeNoteIdRef = useRef(noteId);
+
   const [note, setNote] = useState(null);
   const [category, setCategory] = useState(null);
   const [user, setUser] = useState(null);
@@ -35,6 +35,7 @@ const Note = () => {
 
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [confirmStep, setConfirmStep] = useState(1);
 
   const [editMode, setEditMode] = useState(false);
   const [editNote, setEditNote] = useState({ title: "", content: "" });
@@ -46,9 +47,17 @@ const Note = () => {
   const [updateSuccess, setUpdateSuccess] = useState(null);
 
   const [contentTooLarge, setContentTooLarge] = useState(false);
-  const [confirmStep, setConfirmStep] = useState(1); // 👈 step 1 or 2
 
   /* ---------------- Navigation helpers ---------------- */
+
+  useEffect(() => {
+    activeNoteIdRef.current = noteId;
+  }, [noteId]);
+
+  const goToNote = (idx) => {
+    if (idx < 0 || idx >= categoryNotes.length) return;
+    navigate(`/note/${categoryNotes[idx]._id}`);
+  };
 
   const handleUserClick = (userId) => {
     if (loggedInUser && userId === loggedInUser._id) {
@@ -62,23 +71,6 @@ const Note = () => {
     navigate(`/category/${categoryId}`);
   };
 
-  const goToNote = async (idx) => {
-    if (idx < 0 || idx >= categoryNotes.length) return;
-
-    const targetId = categoryNotes[idx]._id;
-
-    const cached = noteCache.get(targetId);
-    if (cached) {
-      setNote(cached);
-      setCurrentIndex(idx);
-      navigate(`/note/${targetId}`, { replace: true });
-      return;
-    }
-
-    navigate(`/note/${targetId}`);
-  };
-
-
   /* ---------------- CRUD ---------------- */
 
   const handleDeleteNote = async () => {
@@ -89,15 +81,15 @@ const Note = () => {
       navigate(`/category/${category?._id || note.category}`);
     } catch (err) {
       toast.error(
-        err.response?.data?.message ||
-        "Failed to delete note."
+        err.response?.data?.message || "Failed to delete note."
       );
     } finally {
       setDeleting(false);
       setShowDeletePopup(false);
+      setConfirmStep(1);
     }
   };
-// 🧠 DOUBLE CONFIRM LOGIC
+
   const handleConfirmDelete = () => {
     if (confirmStep === 1) {
       setConfirmStep(2);
@@ -105,18 +97,17 @@ const Note = () => {
     }
     handleDeleteNote();
   };
+
+  /* ---------------- Edit ---------------- */
+
   const handleEdit = () => {
-    if (
-      note.content &&
-      CONTENT_MAX_LENGTH &&
-      note.content.length > CONTENT_MAX_LENGTH
-    ) {
+    if (note.content?.length > CONTENT_MAX_LENGTH) {
       setContentTooLarge(true);
       return;
     }
     setEditMode(true);
     setEditNote({ title: note.title, content: note.content });
-    setEditTags(Array.isArray(note.tags) ? note.tags : []);
+    setEditTags(note.tags || []);
     setUpdateError(null);
     setUpdateSuccess(null);
   };
@@ -130,11 +121,7 @@ const Note = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    if (
-      name === "content" &&
-      CONTENT_MAX_LENGTH &&
-      value.length > CONTENT_MAX_LENGTH
-    ) {
+    if (name === "content" && value.length > CONTENT_MAX_LENGTH) {
       setContentTooLarge(true);
       return;
     }
@@ -154,7 +141,8 @@ const Note = () => {
       setEditTags([...editTags, t]);
     }
     setNewTag("");
-  }
+  };
+
   const handleSave = async (e) => {
     e.preventDefault();
     setUpdateLoading(true);
@@ -190,25 +178,19 @@ const Note = () => {
     let cancelled = false;
 
     const run = async () => {
-      const cached = noteCache.get(noteId);
-
-      if (cached) {
-        setNote(cached);
-        setEditNote({ title: cached.title, content: cached.content });
-        setEditTags(cached.tags || []);
-      }
+      setLoading(true);
+      setError(null);
 
       try {
+        const cached = noteCache.get(noteId);
         const noteData = cached
           ? cached
           : (await axiosInstance.get(`/api/notes/${noteId}`)).data;
 
-        if (!cached) {
-          noteCache.set(noteId, noteData);
-          setNote(noteData);
-          setEditNote({ title: noteData.title, content: noteData.content });
-          setEditTags(noteData.tags || []);
-        }
+        noteCache.set(noteId, noteData);
+        setNote(noteData);
+        setEditNote({ title: noteData.title, content: noteData.content });
+        setEditTags(noteData.tags || []);
 
         const [categoryRes, userRes] = await Promise.all([
           axiosInstance.get(`/api/categories/${noteData.category}`),
@@ -232,36 +214,32 @@ const Note = () => {
         );
       } catch (err) {
         if (!cancelled) {
-          setError(
-            err.response?.data?.message || "Failed to load note."
-          );
+          setError(err.response?.data?.message || "Failed to load note.");
         }
       } finally {
         if (!cancelled) setLoading(false);
       }
     };
 
-    setLoading(true);
-    setError(null);
     run();
-
     return () => {
       cancelled = true;
     };
   }, [noteId]);
 
-  /* ---------------- Prefetching ---------------- */
+  /* ---------------- Prefetching (GUARDED) ---------------- */
+
   useEffect(() => {
     if (!categoryNotes.length || currentIndex === -1) return;
 
     const PREFETCH_RANGE = 3;
+    const baseNoteId = activeNoteIdRef.current;
 
     const idsToPrefetch = [];
 
-    for (let offset = 1; offset <= PREFETCH_RANGE; offset++) {
-      const prev = categoryNotes[currentIndex - offset];
-      const next = categoryNotes[currentIndex + offset];
-
+    for (let i = 1; i <= PREFETCH_RANGE; i++) {
+      const prev = categoryNotes[currentIndex - i];
+      const next = categoryNotes[currentIndex + i];
       if (prev) idsToPrefetch.push(prev._id);
       if (next) idsToPrefetch.push(next._id);
     }
@@ -271,12 +249,16 @@ const Note = () => {
 
       try {
         const res = await axiosInstance.get(`/api/notes/${id}`);
+
+        if (activeNoteIdRef.current !== baseNoteId) return;
+
         noteCache.set(id, res.data);
       } catch {
-        // ignore failures, do not block UI
+        // ignore
       }
     });
   }, [currentIndex, categoryNotes]);
+
   /* ---------------- Guards ---------------- */
 
   if (loading) return <Loading />;
@@ -285,9 +267,7 @@ const Note = () => {
 
   const isOwner =
     loggedInUser &&
-    note.user &&
-    (loggedInUser._id === note.user._id ||
-      loggedInUser._id === note.user);
+    (loggedInUser._id === note.user?._id || loggedInUser._id === note.user);
 
   /* ---------------- Render ---------------- */
 
@@ -308,11 +288,7 @@ const Note = () => {
         }
       />
 
-      <div
-        className="w-full"
-      >
-
-
+      <div className="w-full">
         <NoteHeader
           note={note}
           user={user}
@@ -340,14 +316,11 @@ const Note = () => {
           navigate={navigate}
         />
 
-
         <NoteNavigation
           currentIndex={currentIndex}
           categoryNotes={categoryNotes}
           goToNote={goToNote}
         />
-
-
 
         <NoteContent
           editMode={editMode}

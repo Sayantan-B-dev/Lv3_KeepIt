@@ -116,7 +116,7 @@ const AllNotes = () => {
         </div>
       )}
       {loadingMore &&<Loader  variant="dots" text="Loading…" />}
-      {hasMore && (
+      {hasMore && !loading && !loadingMore && (
         <div className="flex justify-center mt-6">
           <DottedButton
             text={loadingMore ? "Loading…" : "Load More"}

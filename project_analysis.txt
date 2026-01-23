@@ -1,0 +1,843 @@
+PROJECT STRUCTURE + IMPORTS / EXPORTS (MERN)
+Generated on: Fri Jan 23 18:41:19 IST 2026
+==================================================
+
+FILE TREE
+--------------------------------------------------
+./.gitignore
+./backend/.env
+./backend/Lv3_KeepIt.env
+./backend/app.js
+./backend/config/passport.config.js
+./backend/controllers/auth.controller.js
+./backend/controllers/category.controller.js
+./backend/controllers/categoryType.controller.js
+./backend/controllers/global.controller.js
+./backend/controllers/note.controller.js
+./backend/controllers/profile.controller.js
+./backend/devJunks/.sh
+./backend/devJunks/quicktag.js
+./backend/middlewares/errorHandler.middleware.js
+./backend/middlewares/isAuthenticated.middleware.js
+./backend/middlewares/sanitizeInput.middleware.js
+./backend/middlewares/validate.middleware.js
+./backend/models/category.model.js
+./backend/models/categoryType.model.js
+./backend/models/note.model.js
+./backend/models/user.model.js
+./backend/package-lock.json
+./backend/package.json
+./backend/routes/auth.routes.js
+./backend/routes/category.routes.js
+./backend/routes/categoryType.routes.js
+./backend/routes/global.routes.js
+./backend/routes/note.routes.js
+./backend/routes/profile.routes.js
+./backend/scripts/linkCategoriesToCategoryTypes.js
+./backend/scripts/linkCategoriesToTypes.js
+./backend/scripts/seedCategoryTypes.js
+./backend/scripts/seedData.js
+./backend/server.js
+./backend/utils/bannedWords.util.js
+./backend/utils/cloudinary.util.js
+./backend/utils/multer.util.js
+./backend/validators/auth.validator.js
+./backend/vercel.json
+./frontend/.depcheckrc
+./frontend/.env
+./frontend/.gitignore
+./frontend/components.json
+./frontend/eslint.config.js
+./frontend/index.html
+./frontend/jsconfig.json
+./frontend/package-lock.json
+./frontend/package.json
+./frontend/postcss.config.mjs
+./frontend/public/assets/logo.png
+./frontend/public/assets/user-svgrepo-com.svg
+./frontend/public/vite.svg
+./frontend/src/api/axios.js
+./frontend/src/api/axiosInstance.js
+./frontend/src/app/App.jsx
+./frontend/src/app/main.jsx
+./frontend/src/assets/images/1.jpg
+./frontend/src/assets/images/edit.png
+./frontend/src/assets/styles/styles.css
+./frontend/src/components/advanced/Iridescence.jsx
+./frontend/src/components/advanced/RotatingText.jsx
+./frontend/src/components/advanced/Squares.css
+./frontend/src/components/advanced/Squares.jsx
+./frontend/src/components/advanced/TiltedCard.css
+./frontend/src/components/advanced/TiltedCard.jsx
+./frontend/src/components/common/Author.jsx
+./frontend/src/components/common/LinkifyText.jsx
+./frontend/src/components/common/RotatingKeepIt.jsx
+./frontend/src/components/common/TagInput.jsx
+./frontend/src/components/common/VariableProximity.jsx
+./frontend/src/components/layout/Footer.jsx
+./frontend/src/components/layout/SideNavbar.jsx
+./frontend/src/components/layout/Waiting.jsx
+./frontend/src/components/layout/index.js
+./frontend/src/components/ui/ConfirmPopUp.jsx
+./frontend/src/components/ui/ListContainer.jsx
+./frontend/src/components/ui/Loader.jsx
+./frontend/src/components/ui/SearchBar.jsx
+./frontend/src/components/ui/buttons/ButtonType3.jsx
+./frontend/src/components/ui/buttons/DottedButton.jsx
+./frontend/src/components/ui/buttons/DottedButton2.jsx
+./frontend/src/components/ui/buttons/index.js
+./frontend/src/components/ui/index.js
+./frontend/src/context/AuthContext.jsx
+./frontend/src/features/category/CategoryHeader.jsx
+./frontend/src/features/category/CategoryNotesList.jsx
+./frontend/src/features/category/MarkdownUploadBox.jsx
+./frontend/src/features/home/Hero.jsx
+./frontend/src/features/home/Loading.jsx
+./frontend/src/features/home/UserBox.jsx
+./frontend/src/features/home/index.js
+./frontend/src/features/notes/MathContent.jsx
+./frontend/src/features/notes/NoteContent.jsx
+./frontend/src/features/notes/NoteFooter.jsx
+./frontend/src/features/notes/NoteHeader.jsx
+./frontend/src/features/notes/NoteNavigation.jsx
+./frontend/src/features/notes/index.js
+./frontend/src/features/profile/CategoryList.jsx
+./frontend/src/features/profile/DeleteAccountSection.jsx
+./frontend/src/features/profile/NoteModal.jsx
+./frontend/src/features/profile/ProfileForm.jsx
+./frontend/src/features/profile/ProfileHeader.jsx
+./frontend/src/features/profile/PublicCategoryList.jsx
+./frontend/src/features/profile/PublicProfileHeader.jsx
+./frontend/src/features/profile/index.js
+./frontend/src/hooks/useDebouncedSearch.js
+./frontend/src/hooks/useDragAndDrop.js
+./frontend/src/hooks/useMarkdownUploadQueue.js
+./frontend/src/index.css
+./frontend/src/lib/utils.js
+./frontend/src/pages/About.jsx
+./frontend/src/pages/AllCategories.jsx
+./frontend/src/pages/AllNotes.jsx
+./frontend/src/pages/AllTags.jsx
+./frontend/src/pages/AllUsers.jsx
+./frontend/src/pages/Category.jsx
+./frontend/src/pages/CategoryType.jsx
+./frontend/src/pages/CreateNote.jsx
+./frontend/src/pages/Home.jsx
+./frontend/src/pages/Login.jsx
+./frontend/src/pages/Logout.jsx
+./frontend/src/pages/MyCategories.jsx
+./frontend/src/pages/MyCategoryTypes.jsx
+./frontend/src/pages/MyNotes.jsx
+./frontend/src/pages/MyTags.jsx
+./frontend/src/pages/Note.jsx
+./frontend/src/pages/Profile.jsx
+./frontend/src/pages/Register.jsx
+./frontend/src/pages/TagNotes.jsx
+./frontend/src/utils/exportCategoryAsZip.js
+./frontend/src/utils/handleProfileImage.js
+./frontend/src/utils/noteCache.js
+./frontend/tailwind.config.mjs
+./frontend/vercel.json
+./frontend/vite.config.mjs
+./package-lock.json
+./package.json
+./project_analysis.txt
+
+==================================================
+IMPORTS / EXPORTS (NORMALIZED)
+--------------------------------------------------
+
+FILE: ./backend/app.js
+----------------------------------------------
+import express from "express"
+import session from "express-session"
+import MongoStore from "connect-mongo"
+import passport from "passport"
+import { Strategy as LocalStrategy } from "passport-local";
+import flash from "connect-flash"
+import methodOverride from "method-override"
+import sanitize from 'mongo-sanitize';
+import helmet from "helmet"
+import compression from "compression"
+import cors from "cors";
+import dotenv from 'dotenv';
+import User from "./models/user.model.js"
+import rateLimit from "express-rate-limit";
+import errorHandler from './middlewares/errorHandler.middleware.js';
+import categoryTypeRoutes from "./routes/categoryType.routes.js";
+import authRoutes from "./routes/auth.routes.js";
+import categoryRoutes from './routes/category.routes.js';
+import noteRoutes from './routes/note.routes.js';
+import profileRoutes from './routes/profile.routes.js';
+import globalRoutes from './routes/global.routes.js';
+
+FILE: ./backend/config/passport.config.js
+----------------------------------------------
+import passport  from "passport";
+import LocalStrategy from "passport-local"
+import User from "../models/user.model.js"
+
+export default function configurePassport(){
+    passport.use(new LocalStrategy(User.authenticate()))
+
+    passport.serializeUser(User.serializeUser())
+    passport.deserializeUser(User.deserializeUser())
+}
+
+FILE: ./backend/controllers/auth.controller.js
+----------------------------------------------
+import User from "../models/user.model.js";
+import passport from "passport";
+import { cloudinary, storage } from '../utils/cloudinary.util.js';
+import multer from 'multer';
+export const upload = {...}
+export const uploadProfileImage = {...}
+export const registerUser = {...}
+export const loginUser = {...}
+export const postLogin = {...}
+export const logoutUser = {...}
+export const checkAuth = {...}
+export const getAllUsers = {...}
+
+FILE: ./backend/controllers/category.controller.js
+----------------------------------------------
+import Category from "../models/category.model.js";
+import User from "../models/user.model.js";
+import CategoryType from "../models/categoryType.model.js";
+import Note from "../models/note.model.js"
+
+export const getPublicCategoryById = async (req, res) => {
+  const { id } = req.params;
+export const getCategoryById = {...}
+export const getUserCategories = {...}
+export const createCategory = {...}
+export const updateCategory = {...}
+export const deleteCategory = {...}
+
+FILE: ./backend/controllers/categoryType.controller.js
+----------------------------------------------
+import CategoryType from "../models/categoryType.model.js";
+import Category from "../models/category.model.js";
+import Note from "../models/note.model.js"
+import User from "../models/user.model.js";
+export const getPublicCategoriesByCategoryType = {...}
+export const getMyCategoryTypes = {...}
+export const createCategoryType = {...}
+export const deleteCategoryType = {...}
+export const getCategoriesByCategoryType = {...}
+
+FILE: ./backend/controllers/global.controller.js
+----------------------------------------------
+import Category from "../models/category.model.js"
+import Note from "../models/note.model.js"
+
+export const getAllCategories = async (req, res) => {
+  try {
+    const { page = 1, limit = 15, search = "" } = req.query;
+export const getAllNotes = {...}
+
+FILE: ./backend/controllers/note.controller.js
+----------------------------------------------
+import Note from "../models/note.model.js"
+import Category from "../models/category.model.js"
+import User from "../models/user.model.js"
+import CategoryType from "../models/categoryType.model.js";
+export const getPublicCategoryNotes = {...}
+export const getNotesById = {...}
+export const getCategoryNotes = {...}
+export const getMyNotesPaginated = {...}
+export const pinNote = {...}
+export const getUserNotes = {...}
+export const getPublicNotesbyUser = {...}
+export const getAllPublicNotes = {...}
+export const getNotesByTag = {...}
+export const getAllTags = {...}
+export const getMyTags = {...}
+export const createNote = {...}
+export const createNoteFromMD = {...}
+export const updateNote = {...}
+export const deleteNote = {...}
+export const sanitizeNoteInput = {...}
+
+FILE: ./backend/controllers/profile.controller.js
+----------------------------------------------
+import User from '../models/user.model.js';
+import Note from '../models/note.model.js';
+import Category from '../models/category.model.js';
+import { cloudinary } from '../utils/cloudinary.util.js';
+import CategoryType from "../models/categoryType.model.js";
+export const getUserProfile = {...}
+export const getAllUsers = {...}
+export const myProfile = {...}
+export const updateProfile = {...}
+export const followUser = {...}
+export const unfollowUser = {...}
+export const deleteUser = {...}
+
+FILE: ./backend/devJunks/quicktag.js
+----------------------------------------------
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import readline from 'readline';
+import Category from '../models/category.model.js';
+import Note from '../models/note.model.js';
+
+FILE: ./backend/middlewares/errorHandler.middleware.js
+----------------------------------------------
+
+FILE: ./backend/middlewares/isAuthenticated.middleware.js
+----------------------------------------------
+import dotenv from 'dotenv'
+dotenv.config()
+
+export function isLoggedIn(req,res,next){
+    //console.log("isLoggedIn: req.user =", req.user);
+
+FILE: ./backend/middlewares/sanitizeInput.middleware.js
+----------------------------------------------
+
+FILE: ./backend/middlewares/validate.middleware.js
+----------------------------------------------
+import Joi from "joi";
+export const validateBody = {...}
+
+FILE: ./backend/models/category.model.js
+----------------------------------------------
+import mongoose from "mongoose";
+
+FILE: ./backend/models/categoryType.model.js
+----------------------------------------------
+import mongoose from "mongoose";
+
+FILE: ./backend/models/note.model.js
+----------------------------------------------
+import mongoose from "mongoose";
+
+FILE: ./backend/models/user.model.js
+----------------------------------------------
+import mongoose from "mongoose";
+import passportLocalMongoose from "passport-local-mongoose";
+
+FILE: ./backend/routes/auth.routes.js
+----------------------------------------------
+import express from "express"
+import {
+    registerUser,
+    loginUser,
+    logoutUser,
+    checkAuth,
+    uploadProfileImage,
+    getAllUsers
+} from "../controllers/auth.controller.js"
+import upload from "../utils/multer.util.js"
+import { validateBody } from "../middlewares/validate.middleware.js";
+import { registerSchema,profileImageSchema } from "../validators/auth.validator.js";
+
+FILE: ./backend/routes/category.routes.js
+----------------------------------------------
+import express from "express";
+import { isLoggedIn } from "../middlewares/isAuthenticated.middleware.js";
+import User from "../models/user.model.js";
+import {
+  getUserCategories,
+  getCategoryById,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getPublicCategoryById
+} from "../controllers/category.controller.js";
+
+FILE: ./backend/routes/categoryType.routes.js
+----------------------------------------------
+import express from "express";
+import {
+  getMyCategoryTypes,
+  createCategoryType,
+  deleteCategoryType,
+  getCategoriesByCategoryType,
+  getPublicCategoriesByCategoryType
+} from "../controllers/categoryType.controller.js";
+import { isLoggedIn } from "../middlewares/isAuthenticated.middleware.js";
+
+FILE: ./backend/routes/global.routes.js
+----------------------------------------------
+import express from "express"
+import {
+    getAllCategories,
+    getAllNotes
+} from "../controllers/global.controller.js"
+
+
+
+
+
+const router=express.Router()
+
+router.route('/all-categories').get(getAllCategories)
+router.route('/all-notes').get(getAllNotes)
+
+//router.route('/my-profile').get(myProfile)
+
+
+export default router
+
+FILE: ./backend/routes/note.routes.js
+----------------------------------------------
+import express from "express";
+import rateLimit from "express-rate-limit";
+import { validateBody } from "../middlewares/validate.middleware.js";
+import { noteSchema, categorySchema } from "../validators/auth.validator.js";
+import { isLoggedIn } from "../middlewares/isAuthenticated.middleware.js";
+import {
+  getNotesById,
+  getCategoryNotes,
+  getPublicNotesbyUser,
+  getAllPublicNotes,
+  getNotesByTag,
+  getAllTags,
+  getMyNotesPaginated,
+  getMyTags,
+  createNote,
+  updateNote,
+  deleteNote,
+  getPublicCategoryNotes
+} from "../controllers/note.controller.js";
+
+FILE: ./backend/routes/profile.routes.js
+----------------------------------------------
+import express from 'express';
+import { getUserProfile, getAllUsers, myProfile, updateProfile, followUser, unfollowUser,deleteUser } from '../controllers/profile.controller.js';
+import {isLoggedIn} from '../middlewares/isAuthenticated.middleware.js'
+import upload from '../utils/multer.util.js';
+
+FILE: ./backend/scripts/linkCategoriesToCategoryTypes.js
+----------------------------------------------
+import mongoose from "mongoose";
+import Category from "../models/category.model.js";
+import CategoryType from "../models/categoryType.model.js";
+import dotenv from "dotenv";
+
+FILE: ./backend/scripts/linkCategoriesToTypes.js
+----------------------------------------------
+import mongoose from "mongoose";
+import dotenv from "dotenv";
+import Category from "../models/category.model.js";
+import CategoryType from "../models/categoryType.model.js";
+
+FILE: ./backend/scripts/seedCategoryTypes.js
+----------------------------------------------
+import mongoose from "mongoose";
+import Category from "../models/category.model.js";
+import CategoryType from "../models/categoryType.model.js";
+import dotenv from "dotenv";
+
+FILE: ./backend/scripts/seedData.js
+----------------------------------------------
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import dotenv from 'dotenv';
+import User from '../models/user.model.js';
+import Category from '../models/category.model.js';
+import Note from '../models/note.model.js';
+
+FILE: ./backend/server.js
+----------------------------------------------
+import express from "express"
+import mongoose from "mongoose"
+import dotenv from "dotenv"
+import MongoStore from "connect-mongo"
+
+import app from './app.js'
+import configurePassport from "./config/passport.config.js"
+import passport from "passport"
+
+// Set development environment
+process.env.NODE_ENV = 'development'
+
+const PORT = process.env.PORT || 5000
+mongoose.connect(process.env.DATABASE_URL)
+    .then(() => {
+        console.log("DB Connected!!")
+        configurePassport()
+        app.listen(PORT, () => {
+            console.log(`🚀Server running on http://localhost:${PORT} in ${process.env.NODE_ENV} mode`)
+        })
+    })
+    .catch((e) => {
+        console.log("MongoDB Error : " + e)
+        process.exit(1)
+    })
+
+FILE: ./backend/utils/bannedWords.util.js
+----------------------------------------------
+export const bannedWords = {...}
+
+FILE: ./backend/utils/cloudinary.util.js
+----------------------------------------------
+import {v2 as cloudinary } from 'cloudinary'
+import {CloudinaryStorage} from 'multer-storage-cloudinary'
+import dotenv from "dotenv"
+
+dotenv.config()
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+
+const storage = new CloudinaryStorage({
+
+    cloudinary,
+    params:{
+        folder:'mern-notes-users',
+        allowed_formats:["jpeg",'png','jpg'],
+    }
+})
+export {cloudinary,storage}
+
+FILE: ./backend/utils/multer.util.js
+----------------------------------------------
+import multer  from "multer";
+import { storage } from "../utils/cloudinary.util.js";
+
+FILE: ./backend/validators/auth.validator.js
+----------------------------------------------
+import Joi from "joi";
+export const registerSchema = {...}
+export const profileImageSchema = {...}
+export const loginSchema = {...}
+export const noteSchema = {...}
+export const categorySchema = {...}
+export const userSchema = {...}
+
+FILE: ./frontend/eslint.config.js
+----------------------------------------------
+import js from '@eslint/js'
+import globals from 'globals'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+
+export default [
+  { ignores: ['dist'] },
+  {
+    files: ['**/*.{js,jsx}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      globals: globals.browser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module',
+      },
+    },
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh,
+    },
+    rules: {
+      ...js.configs.recommended.rules,
+      ...reactHooks.configs.recommended.rules,
+      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true },
+      ],
+    },
+  },
+]
+
+FILE: ./frontend/src/api/axios.js
+----------------------------------------------
+
+FILE: ./frontend/src/api/axiosInstance.js
+----------------------------------------------
+import axios from "axios";
+
+FILE: ./frontend/src/app/App.jsx
+----------------------------------------------
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useState, useEffect, lazy, Suspense } from "react";
+import axiosInstance from "@/api/axiosInstance";
+import { Footer, SideNavbar, Waiting } from "@/components/layout";
+import { Loading } from "@/features/home";
+import { useAuth } from "@/context/AuthContext";
+
+FILE: ./frontend/src/app/main.jsx
+----------------------------------------------
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "@/app/App";
+import "@/index.css";
+import { AuthProvider } from "@/context/AuthContext";
+import '@fontsource-variable/merriweather';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { BrowserRouter } from "react-router-dom";
+
+FILE: ./frontend/src/components/advanced/Iridescence.jsx
+----------------------------------------------
+import { Renderer, Program, Mesh, Color, Triangle } from "ogl";
+import { useEffect, useRef } from "react";
+export default function Iridescence( {...}
+
+FILE: ./frontend/src/components/advanced/RotatingText.jsx
+----------------------------------------------
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+} from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+FILE: ./frontend/src/components/advanced/Squares.jsx
+----------------------------------------------
+import { useRef, useEffect } from 'react';
+import './Squares.css';
+
+FILE: ./frontend/src/components/advanced/TiltedCard.jsx
+----------------------------------------------
+import { useRef } from "react";
+import { motion, useSpring } from "framer-motion";
+export default function TiltedCard( {...}
+
+FILE: ./frontend/src/components/common/Author.jsx
+----------------------------------------------
+import React, { useState } from 'react'
+import { motion, AnimatePresence } from "framer-motion";
+
+FILE: ./frontend/src/components/common/LinkifyText.jsx
+----------------------------------------------
+import React from "react";
+
+FILE: ./frontend/src/components/common/RotatingKeepIt.jsx
+----------------------------------------------
+import React from "react";
+import RotatingText from "@/components/advanced/RotatingText";
+
+FILE: ./frontend/src/components/common/TagInput.jsx
+----------------------------------------------
+import React, { useRef, useState } from 'react';
+
+FILE: ./frontend/src/components/common/VariableProximity.jsx
+----------------------------------------------
+import { forwardRef, useMemo, useRef, useEffect } from 'react';
+import { motion } from 'motion/react';
+
+FILE: ./frontend/src/components/layout/Footer.jsx
+----------------------------------------------
+import React from "react";
+import { Link } from "react-router-dom";
+
+FILE: ./frontend/src/components/layout/SideNavbar.jsx
+----------------------------------------------
+import React, { useMemo, useState } from "react";
+import { Typography } from "@material-tailwind/react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "react-toastify";
+import axiosInstance from "@/api/axiosInstance";
+import { useAuth } from "@/context/AuthContext";
+import { DottedButton } from "@/components/ui/buttons";
+import { motion } from "framer-motion";
+export function SideNavbar( {...}
+
+FILE: ./frontend/src/components/layout/Waiting.jsx
+----------------------------------------------
+import React from "react";
+
+FILE: ./frontend/src/components/layout/index.js
+----------------------------------------------
+export { default as Footer } from "./Footer";
+export { SideNavbar } from "./SideNavbar";
+export { default as Waiting } from "./Waiting";
+
+FILE: ./frontend/src/components/ui/ConfirmPopUp.jsx
+----------------------------------------------
+
+FILE: ./frontend/src/components/ui/ListContainer.jsx
+----------------------------------------------
+
+FILE: ./frontend/src/components/ui/Loader.jsx
+----------------------------------------------
+import React from "react";
+import {
+  Oval,
+  TailSpin,
+  ThreeDots,
+  Bars,
+  Rings,
+  Grid,
+} from "react-loader-spinner";
+
+FILE: ./frontend/src/components/ui/SearchBar.jsx
+----------------------------------------------
+
+FILE: ./frontend/src/components/ui/buttons/ButtonType3.jsx
+----------------------------------------------
+import React from "react";
+
+FILE: ./frontend/src/components/ui/buttons/DottedButton.jsx
+----------------------------------------------
+
+FILE: ./frontend/src/components/ui/buttons/DottedButton2.jsx
+----------------------------------------------
+
+FILE: ./frontend/src/components/ui/buttons/index.js
+----------------------------------------------
+export { default as DottedButton } from "./DottedButton";
+export { default as DottedButton2 } from "./DottedButton2";
+export { default as ButtonType3 } from "./ButtonType3";
+
+FILE: ./frontend/src/components/ui/index.js
+----------------------------------------------
+export { default as Loader } from "./Loader";
+export { default as ListContainer } from "./ListContainer";
+export { default as SearchBar } from "./SearchBar";
+export { default as ConfirmPopUp } from "./ConfirmPopUp";
+
+FILE: ./frontend/src/context/AuthContext.jsx
+----------------------------------------------
+import { createContext, useContext, useState, useEffect } from "react";
+import axios from "../api/axiosInstance";
+export { AuthContext, AuthProvider, useAuth };
+
+FILE: ./frontend/src/features/category/CategoryHeader.jsx
+----------------------------------------------
+import { motion, AnimatePresence } from "framer-motion";
+import { DottedButton } from "@/components/ui/buttons";
+
+FILE: ./frontend/src/features/category/CategoryNotesList.jsx
+----------------------------------------------
+import { useEffect, useState } from "react";
+import { DottedButton, DottedButton2 } from "@/components/ui/buttons";
+import { Loader } from "@/components/ui";
+
+FILE: ./frontend/src/features/category/MarkdownUploadBox.jsx
+----------------------------------------------
+
+FILE: ./frontend/src/features/home/Hero.jsx
+----------------------------------------------
+import React from "react";
+import { DottedButton } from "@/components/ui/buttons";
+import { useNavigate } from "react-router-dom";
+
+FILE: ./frontend/src/features/home/Loading.jsx
+----------------------------------------------
+import React from "react";
+
+FILE: ./frontend/src/features/home/UserBox.jsx
+----------------------------------------------
+import React from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+
+FILE: ./frontend/src/features/home/index.js
+----------------------------------------------
+export { default as Hero } from "./Hero";
+export { default as UserBox } from "./UserBox";
+export { default as Loading } from "./Loading";
+
+FILE: ./frontend/src/features/notes/MathContent.jsx
+----------------------------------------------
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import remarkGfm from "remark-gfm";
+import "katex/dist/katex.min.css";
+
+FILE: ./frontend/src/features/notes/NoteContent.jsx
+----------------------------------------------
+import React from "react";
+import MathContent from "./MathContent";
+
+FILE: ./frontend/src/features/notes/NoteFooter.jsx
+----------------------------------------------
+import React from "react";
+import { saveAs } from "file-saver";
+import { DottedButton } from "@/components/ui/buttons";
+
+FILE: ./frontend/src/features/notes/NoteHeader.jsx
+----------------------------------------------
+import React from "react";
+import { motion } from "framer-motion";
+import { DottedButton2, ButtonType3 } from "@/components/ui/buttons";
+import { ConfirmPopUp } from "@/components/ui";
+
+FILE: ./frontend/src/features/notes/NoteNavigation.jsx
+----------------------------------------------
+import React from "react";
+
+FILE: ./frontend/src/features/notes/index.js
+----------------------------------------------
+export { default as MathContent } from "./MathContent";
+export { default as NoteContent } from "./NoteContent";
+export { default as NoteFooter } from "./NoteFooter";
+export { default as NoteHeader } from "./NoteHeader";
+export { default as NoteNavigation } from "./NoteNavigation";
+
+FILE: ./frontend/src/features/profile/CategoryList.jsx
+----------------------------------------------
+import React from "react";
+import { DottedButton } from "@/components/ui/buttons";
+import { Loader } from "@/components/ui";
+
+FILE: ./frontend/src/features/profile/DeleteAccountSection.jsx
+----------------------------------------------
+import React from "react";
+
+FILE: ./frontend/src/features/profile/NoteModal.jsx
+----------------------------------------------
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+FILE: ./frontend/src/features/profile/ProfileForm.jsx
+----------------------------------------------
+import React from "react";
+import { ButtonType3 } from "@/components/ui/buttons";
+
+FILE: ./frontend/src/features/profile/ProfileHeader.jsx
+----------------------------------------------
+import React from "react";
+import { motion } from "framer-motion";
+import { DottedButton } from "@/components/ui/buttons";
+
+FILE: ./frontend/src/features/profile/PublicCategoryList.jsx
+----------------------------------------------
+import React from "react";
+
+FILE: ./frontend/src/features/profile/PublicProfileHeader.jsx
+----------------------------------------------
+import React from "react";
+
+FILE: ./frontend/src/features/profile/index.js
+----------------------------------------------
+export { default as ProfileHeader } from "./ProfileHeader";
+export { default as ProfileForm } from "./ProfileForm";
+export { default as CategoryList } from "./CategoryList";
+export { default as DeleteAccountSection } from "./DeleteAccountSection";
+export { default as NoteModal } from "./NoteModal";
+export { default as PublicCategoryList } from "./PublicCategoryList";
+export { default as PublicProfileHeader } from "./PublicProfileHeader";
+
+FILE: ./frontend/src/hooks/useDebouncedSearch.js
+----------------------------------------------
+import { useEffect, useRef, useState } from 'react';
+
+FILE: ./frontend/src/hooks/useDragAndDrop.js
+----------------------------------------------
+import { useState, useCallback } from "react";
+export default function useDragAndDrop( {...}
+
+FILE: ./frontend/src/hooks/useMarkdownUploadQueue.js
+----------------------------------------------
+import { useRef } from "react";
+import { toast } from "react-toastify";
+import axiosInstance from "@/api/axiosInstance";
+export default function useMarkdownUploadQueue(categoryId, setNotes)  {...}
+
+FILE: ./frontend/src/lib/utils.js
+----------------------------------------------

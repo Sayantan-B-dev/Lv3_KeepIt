@@ -76,7 +76,6 @@ const MyCategoryTypes = () => {
       {/* initial skeleton */}
       {loading && (
                 <Loader variant="dots" text="Loading…" />
-
       )}
 
       {!loading && types.length === 0 && (
@@ -98,7 +97,7 @@ const MyCategoryTypes = () => {
         </div>
       )}
       {loadingMore &&<Loader  variant="dots" text="Loading…" />}
-      {hasMore && (
+      {hasMore && !loading && !loadingMore && (
         <div className="flex justify-center mt-6">
           <DottedButton
             text={loadingMore ? "Loading…" : "Load More"}

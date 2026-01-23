@@ -5,6 +5,7 @@ import { ListContainer, Loader, ConfirmPopUp } from "@/components/ui";
 import { DottedButton2 } from "@/components/ui/buttons";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
+import TrashIcon from "@/assets/svg/TrashIcon";
 
 const CategoryType = () => {
   const { id } = useParams();
@@ -18,60 +19,44 @@ const CategoryType = () => {
   const [deleting, setDeleting] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [confirmStep, setConfirmStep] = useState(1);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
 
-useEffect(() => {
-  let alive = true;
+      try {
+        // OWNER route
+        const res = await axiosInstance.get(
+          `/api/category-types/${id}/categories`
+        );
 
-  const fetchData = async () => {
-    setLoading(true);
+        setCategoryType(res.data.categoryType);
+        setCategories(res.data.categories || []);
+      } catch (err) {
+        const status = err.response?.status;
 
-    try {
-      // 1️⃣ Attempt OWNER route
-      const res = await axiosInstance.get(
-        `/api/category-types/${id}/categories`
-      );
+        if (status === 401 || status === 403 || status === 404) {
+          try {
+            // PUBLIC fallback
+            const res = await axiosInstance.get(
+              `/api/category-types/${id}/public/categories`
+            );
 
-      if (!alive) return;
-
-      setCategoryType(res.data.categoryType);
-      setCategories(res.data.categories || []);
-      return;
-    } catch (err) {
-      // Only fallback if explicitly forbidden / not owner
-      const status = err.response?.status;
-
-      if (status !== 404 && status !== 403) {
-        console.error(err.response?.data || err);
-        toast.error("Failed to load category type");
+            setCategoryType(res.data.categoryType);
+            setCategories(res.data.categories || []);
+          } catch (err) {
+            toast.error("Failed to load category type");
+          }
+        } else {
+          toast.error("Failed to load category type");
+        }
+      } finally {
         setLoading(false);
-        return;
       }
-    }
+    };
 
-    // 2️⃣ PUBLIC fallback
-    try {
-      const res = await axiosInstance.get(
-        `/api/category-types/${id}/public/categories`
-      );
+    fetchData();
+  }, [id]);
 
-      if (!alive) return;
-
-      setCategoryType(res.data.categoryType);
-      setCategories(res.data.categories || []);
-    } catch (err) {
-      console.error(err.response?.data || err);
-      toast.error("Failed to load category type");
-    } finally {
-      if (alive) setLoading(false);
-    }
-  };
-
-  fetchData();
-
-  return () => {
-    alive = false;
-  };
-}, [id]);
 
 
 
@@ -125,10 +110,9 @@ useEffect(() => {
           <div className="flex justify-end mb-4">
             <div
               className={`p-2 rounded-full border border-muted transition-all duration-150
-                ${
-                  deleting
-                    ? "opacity-50 cursor-not-allowed"
-                    : "cursor-pointer text-type-3 hover:text-black hover:bg-red-500 hover:translate-y-[-4px]"
+                ${deleting
+                  ? "opacity-50 cursor-not-allowed"
+                  : "cursor-pointer text-type-3 hover:text-black hover:bg-red-500 hover:translate-y-[-4px]"
                 }`}
               title="Delete this category type"
               onClick={() => {
@@ -136,7 +120,7 @@ useEffect(() => {
                 setShowDeletePopup(true);
               }}
             >
-              🗑
+              <TrashIcon />
             </div>
           </div>
         )}

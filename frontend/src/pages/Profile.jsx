@@ -299,6 +299,7 @@ const Profile = () => {
           handleCategoryDropdown={handleCategoryDropdown}
           notesLoading={notesLoading}
           notesError={notesError}
+          navigate={navigate}
           categoryNotes={categoryNotes}
           categoryHasMore={categoryHasMore}
           handleLoadMore={handleLoadMore}

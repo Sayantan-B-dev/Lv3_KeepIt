@@ -17,7 +17,6 @@ const CategoryList = ({
   readOnly = false,
 }) => {
   /* ================= GROUP BY TYPE ================= */
-
   const typeGroups = {};
 
   categories.forEach((cat) => {
