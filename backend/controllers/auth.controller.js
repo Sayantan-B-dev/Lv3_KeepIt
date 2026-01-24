@@ -4,6 +4,7 @@ import { cloudinary, storage } from '../utils/cloudinary.util.js';
 import multer from 'multer';
 import crypto from 'crypto';
 import sendEmail from '../utils/sendEmail.js';
+import generateOTP from '../utils/generateOTP.js';
 
 export const upload = multer({ storage });
 
@@ -35,7 +36,12 @@ export const registerUser = async (req, res, next) => {
         if (recentCount >= userLimit) {
             return res.status(429).json({ error: `Registration limit reached: Only ${userLimit} accounts per day allowed from this IP.` });
         }
-        const user = new User({ username, email, registrationIp: ip });
+
+        const user = new User({
+            username,
+            email,
+            registrationIp: ip
+        });
 
         if (req.file) {
             user.profileImage = {
@@ -46,13 +52,9 @@ export const registerUser = async (req, res, next) => {
 
         const registeredUser = await User.register(user, password);
 
-        // Explicitly log in the user after registration
-        req.logIn(registeredUser, function (err) {
-            if (err) {
-                req.flash("error", err.message);
-                return res.status(400).json({ error: err.message });
-            }
-            req.flash("success", 'Welcome to Notes App');
+        req.logIn(registeredUser, (err) => {
+            if (err) return next(err);
+
             return res.status(201).json({
                 message: "Registered successfully",
                 user: {
@@ -64,7 +66,6 @@ export const registerUser = async (req, res, next) => {
             });
         });
     } catch (e) {
-        req.flash("error", e.message);
         res.status(400).json({ error: e.message });
     }
 };
@@ -75,11 +76,9 @@ export const loginUser = (req, res, next) => {
         if (!user) {
             return res.status(401).json({ message: info?.message || "Invalid credentials" });
         }
+
         req.logIn(user, (err) => {
             if (err) return next(err);
-            // console.log("✅ req.user after login:", req.user);
-            // console.log("✅ req.sessionID after login:", req.sessionID);
-            // console.log("✅ Session content:", req.session);
 
             req.flash('success', 'welcome back');
             return res.status(200).json({
@@ -187,7 +186,8 @@ export const forgotPassword = async (req, res, next) => {
             await sendEmail({
                 to: user.email,
                 subject: "Password Reset Request",
-                text: message,
+                html: message,
+                text: `Please use this link to reset your password: ${resetUrl}`,
             });
 
             res.status(200).json({ success: true, data: "Email Sent" });

@@ -43,9 +43,25 @@ export const getPublicCategoryNotes = async (req, res) => {
 
 export const getNotesById = async (req, res) => {
   const { id } = req.params;
-  const note = await Note.findById(id)
-  res.json(note)
-}
+  try {
+    const note = await Note.findById(id);
+    if (!note) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    // Access control: if private, only owner can see it
+    if (note.isPrivate) {
+      // If user not logged in or not the owner
+      if (!req.user || req.user._id.toString() !== note.user.toString()) {
+        return res.status(403).json({ error: "This note is private" });
+      }
+    }
+
+    res.json(note);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch note" });
+  }
+};
 export const getCategoryNotes = async (req, res) => {
   const { id } = req.params;
 

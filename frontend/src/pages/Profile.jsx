@@ -4,11 +4,11 @@ import axiosInstance from "@/api/axiosInstance";
 import { useAuth } from "@/context/AuthContext";
 
 import { Loading } from "@/features/home";
-import { ConfirmPopUp } from "@/components/ui";
 import ProfileHeader from "@/features/profile/ProfileHeader";
 import ProfileForm from "@/features/profile/ProfileForm";
 import CategoryList from "@/features/profile/CategoryList";
 import DeleteAccountSection from "@/features/profile/DeleteAccountSection";
+import DeleteAccountModal from "@/features/profile/DeleteAccountModal";
 
 import { handleProfileImage } from "@/utils/handleProfileImage";
 
@@ -45,10 +45,7 @@ const Profile = () => {
   /* ================= DELETE ================= */
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [deleteStep, setDeleteStep] = useState(1);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [deleteError, setDeleteError] = useState(null);
-  const [deleteSuccess, setDeleteSuccess] = useState(null);
+
 
   /* ================= NOTES ================= */
 
@@ -196,24 +193,7 @@ const Profile = () => {
 
   /* ================= DELETE ================= */
 
-  const handleConfirmDeleteAccount = async () => {
-    if (deleteStep < 3) {
-      setDeleteStep(p => p + 1);
-      return;
-    }
 
-    setDeleteLoading(true);
-    try {
-      await axiosInstance.delete("/api/profile/MyProfile");
-      window.location.replace("/login");
-    } catch {
-      setDeleteError("Failed to delete account.");
-    } finally {
-      setDeleteLoading(false);
-      setShowDeleteConfirm(false);
-      setDeleteStep(1);
-    }
-  };
 
   /* ================= GUARDS ================= */
 
@@ -232,21 +212,9 @@ const Profile = () => {
   return (
     <>
       {isOwnProfile && (
-        <ConfirmPopUp
+        <DeleteAccountModal
           open={showDeleteConfirm}
-          onClose={() => {
-            setShowDeleteConfirm(false);
-            setDeleteStep(1);
-          }}
-          onConfirm={handleConfirmDeleteAccount}
-          loading={deleteLoading}
-          message={
-            deleteStep === 1
-              ? "Are you sure you want to delete your account?"
-              : deleteStep === 2
-              ? "This will permanently delete ALL your categories and notes."
-              : "FINAL WARNING: ALL data will be erased permanently."
-          }
+          onClose={() => setShowDeleteConfirm(false)}
         />
       )}
 
@@ -294,7 +262,7 @@ const Profile = () => {
         )}
 
         <CategoryList
-        isOwnProfile={isOwnProfile}
+          isOwnProfile={isOwnProfile}
           categories={categories}
           openCategoryId={openCategoryId}
           handleCategoryDropdown={handleCategoryDropdown}
@@ -311,13 +279,7 @@ const Profile = () => {
 
         {isOwnProfile && (
           <DeleteAccountSection
-            deleteLoading={deleteLoading}
-            setShowDeleteConfirm={(v) => {
-              setDeleteStep(1);
-              setShowDeleteConfirm(v);
-            }}
-            deleteError={deleteError}
-            deleteSuccess={deleteSuccess}
+            setShowDeleteConfirm={setShowDeleteConfirm}
           />
         )}
       </div>

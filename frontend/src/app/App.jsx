@@ -30,6 +30,7 @@ const CategoryType = lazy(() => import("@/pages/CategoryType"));
 const RotatingKeepIt = lazy(() => import("@/components/common/RotatingKeepIt"));
 const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+import LiquidEther from "@/components/advanced/LiquidEther";
 
 function App() {
   const { user, loading: authLoading } = useAuth();
@@ -37,12 +38,43 @@ function App() {
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // Performance Optimization for Liquid Ether / Galaxy
+  const isMobile = window.innerWidth < 768;
+  const isLowEnd = isMobile || navigator.hardwareConcurrency < 4;
+
+  const galaxyConfig = {
+    density: isLowEnd ? 0.6 : 1.0,
+    numLayers: isLowEnd ? 2.0 : 4.0,
+    dpr: isLowEnd ? Math.min(window.devicePixelRatio, 1.25) : window.devicePixelRatio,
+    glowIntensity: isLowEnd ? 0.2 : 0.3,
+    twinkleIntensity: isLowEnd ? 0.2 : 0.3,
+  };
+
   if (authLoading) {
     return <Loading />;
   }
 
   return (
     <div className="min-h-screen flex flex-col">
+      {/* <div className="absolute inset-0 z-0 ">
+          <LiquidEther
+            colors={['#dad4ee', '#dac2d9', '#ffffff']}
+            mouseForce={10}
+            cursorSize={40}
+            isViscous
+            viscous={30}
+            iterationsViscous={4}
+            iterationsPoisson={4}
+            resolution={0.25}
+            isBounce={false}
+            autoDemo
+            autoSpeed={0.5}
+            autoIntensity={2.2}
+            takeoverDuration={0.25}
+            autoResumeDelay={300}
+            autoRampDuration={0.6}
+          />
+      </div> */}
       {/* Sidebar */}
       <SideNavbar open={sidebarOpen} setOpen={setSidebarOpen} />
 
@@ -100,6 +132,8 @@ function App() {
                 )
               }
             />
+
+
 
             {/* Own profile */}
             <Route

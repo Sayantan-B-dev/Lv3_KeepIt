@@ -1,6 +1,6 @@
 import express from 'express';
-import { getUserProfile, getAllUsers, myProfile, updateProfile, followUser, unfollowUser,deleteUser } from '../controllers/profile.controller.js';
-import {isLoggedIn} from '../middlewares/isAuthenticated.middleware.js'
+import { getUserProfile, getAllUsers, myProfile, updateProfile, followUser, unfollowUser, deleteUser, requestDeleteOTP } from '../controllers/profile.controller.js';
+import { isLoggedIn } from '../middlewares/isAuthenticated.middleware.js'
 import upload from '../utils/multer.util.js';
 
 const router = express.Router();
@@ -21,11 +21,12 @@ router.put(
 );
 
 // Follow a user
-router.post('/:userId/follow', isLoggedIn, followUser); 
+router.post('/:userId/follow', isLoggedIn, followUser);
 
 // Unfollow a user
 router.post('/:userId/unfollow', isLoggedIn, unfollowUser);
-router.delete('/MyProfile', isLoggedIn,deleteUser);
+router.delete('/MyProfile', isLoggedIn, deleteUser);
+router.post('/request-delete-otp', isLoggedIn, requestDeleteOTP);
 
 
 

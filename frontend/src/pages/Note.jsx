@@ -288,7 +288,13 @@ const Note = () => {
         }
       />
 
-      <div className="w-full">
+      <div className="w-full pb-32 relative">
+        <NoteNavigation
+          currentIndex={currentIndex}
+          categoryNotes={categoryNotes}
+          goToNote={goToNote}
+        />
+
         <NoteHeader
           note={note}
           user={user}
@@ -314,12 +320,6 @@ const Note = () => {
           isAuthenticated={!!loggedInUser}
           onUserClick={handleUserClick}
           navigate={navigate}
-        />
-
-        <NoteNavigation
-          currentIndex={currentIndex}
-          categoryNotes={categoryNotes}
-          goToNote={goToNote}
         />
 
         <NoteContent

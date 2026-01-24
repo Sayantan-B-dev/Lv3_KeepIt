@@ -1,5 +1,4 @@
 import React, { useMemo, useState } from "react";
-import { Typography } from "@material-tailwind/react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "@/api/axiosInstance";
@@ -34,7 +33,7 @@ const sidebarBaseClass = `
 
 const sidebarHiddenClass = `-translate-x-[500px]`;
 
-const sidebarHeaderClass = `mb-3 flex items-center justify-between`;
+const sidebarHeaderClass = `mb-3 flex items-center justify-between text-2xl font-bold cursor-pointer`;
 const sidebarBrandClass = `text-xl font-bold cursor-pointer`;
 const sidebarNavListClass = `flex flex-col gap-3 flex-1 overflow-y-auto pr-1`;
 const sidebarNavItemClass = `flex items-center gap-x-3 cursor-pointer`;
@@ -195,15 +194,8 @@ export function SideNavbar({ open, setOpen }) {
       </div>
 
       <aside className={`${sidebarBaseClass} ${open ? "translate-x-0" : sidebarHiddenClass}`}>
-        <div className={sidebarHeaderClass}>
-          <Typography
-            as="div"
-            className={`${sidebarBrandClass} underline-animation`}
-            style={coloredFont}
-            onClick={() => navigate("/")}
-          >
+        <div className={sidebarHeaderClass} onClick={() => navigate("/")}>
             Re-Docs
-          </Typography>
         </div>
 
         {isAuthenticated && user && (

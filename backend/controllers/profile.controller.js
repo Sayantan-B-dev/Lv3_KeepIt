@@ -5,6 +5,8 @@ import Note from '../models/note.model.js';
 import Category from '../models/category.model.js';
 import { cloudinary } from '../utils/cloudinary.util.js';
 import CategoryType from "../models/categoryType.model.js";
+import sendEmail from '../utils/sendEmail.js';
+import generateOTP from '../utils/generateOTP.js';
 
 // Get a user's public profile by ID
 export const getUserProfile = async (req, res) => {
@@ -183,11 +185,47 @@ export const unfollowUser = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "Server error", error: err.message });
   }
+}
+
+
+export const requestDeleteOTP = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Simplified: Always generate a NEW one to ensure fresh typing experience, 
+    // OR keep reuse but shorter. Let's keep reuse for 1 min to prevent spamming.
+    const ONE_MINUTE = 60 * 1000;
+    const isRecentlyGenerated = user.otp && user.otpExpires && (user.otpExpires - Date.now() > (10 * 60 * 1000 - ONE_MINUTE));
+
+    let otp = user.otp;
+    if (!isRecentlyGenerated || !otp) {
+      otp = generateOTP();
+      user.otp = otp;
+      user.otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+      await user.save();
+    }
+
+    // Return OTP directly to frontend
+    res.json({ otp });
+  } catch (err) {
+    console.error("requestDeleteOTP Error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 };
 
 export const deleteUser = async (req, res) => {
   try {
     const userId = req.user._id;
+    const { otp } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+
+    if (!user.otp || user.otp !== otp || user.otpExpires < Date.now()) {
+      return res.status(400).json({ error: "Invalid or expired OTP" });
+    }
 
     // cloudinary cleanup
     if (req.user.profileImage?.filename) {

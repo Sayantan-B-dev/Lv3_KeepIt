@@ -5,6 +5,8 @@ function ConfirmPopUp({
   loading,
   message,
   title = "Confirm Action",
+  confirmText = "Delete",
+  cancelText = "Cancel",
 }) {
   if (!open) return null;
 
@@ -35,10 +37,10 @@ function ConfirmPopUp({
         </h2>
 
         {/* Message */}
-        <p className="text-sm text-type-3 mb-6 leading-relaxed">
+        <div className="text-sm text-type-3 mb-6 leading-relaxed">
           {message ||
             "Are you sure you want to proceed? This action cannot be undone."}
-        </p>
+        </div>
 
         {/* Actions */}
         <div className="flex justify-end gap-3">
@@ -58,7 +60,7 @@ function ConfirmPopUp({
               transition
             "
           >
-            Cancel
+            {cancelText}
           </button>
 
           <button
@@ -73,14 +75,13 @@ function ConfirmPopUp({
               transition
               cursor-pointer
               hover:text-black
-              ${
-                loading
-                  ? "border-red-300 bg-red-200 text-red-600 cursor-not-allowed"
-                  : "border-red-500 bg-red-500 text-white hover:bg-red-600"
+              ${loading
+                ? "border-red-300 bg-red-200 text-red-600 cursor-not-allowed"
+                : "border-red-500 bg-red-500 text-white hover:bg-red-600"
               }
             `}
           >
-            {loading ? "Deleting…" : "Delete"}
+            {loading ? `${confirmText}ing…` : confirmText}
           </button>
         </div>
       </div>

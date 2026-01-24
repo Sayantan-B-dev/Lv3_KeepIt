@@ -139,16 +139,16 @@ function MathContent({ content }) {
       rehypePlugins={[rehypeKatex]}
       components={{
         p({ children }) {
-          return <p style={blockReset}>{children}</p>;
+          return <p className="mb-4 leading-relaxed text-red-100/90 text-[15px]">{children}</p>;
         },
         ul({ children }) {
-          return <ul style={listReset}>{children}</ul>;
+          return <ul className="mb-4 pl-6 list-disc text-gray-300/90">{children}</ul>;
         },
         ol({ children }) {
-          return <ol style={listReset}>{children}</ol>;
+          return <ol className="mb-4 pl-6 list-decimal text-gray-300/90">{children}</ol>;
         },
         li({ children }) {
-          return <li style={liReset}>{children}</li>;
+          return <li className="mb-1.5">{children}</li>;
         },
         a({ href, children, ...props }) {
           const childText = Array.isArray(children) && children.length === 1 && typeof children[0] === "string" ? children[0] : "";
@@ -161,14 +161,14 @@ function MathContent({ content }) {
             // Playlist-only embed
             if (!yt.videoId && yt.playlistId) {
               return (
-                <div style={iframeWrapperStyle}>
-                  <div style={iframeContainerStyle}>
+                <div className="flex justify-start my-6">
+                  <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-white/10 shadow-lg">
                     <iframe
                       src={`https://www.youtube.com/embed/videoseries?list=${yt.playlistId}`}
                       title="YouTube playlist"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
-                      style={{ width: "100%", height: "100%", border: 0 }}
+                      className="absolute top-0 left-0 w-full h-full border-0"
                     />
                   </div>
                 </div>
@@ -181,14 +181,14 @@ function MathContent({ content }) {
               if (yt.playlistId) params.set('list', yt.playlistId);
               const qs = params.toString();
               return (
-                <div style={iframeWrapperStyle}>
-                  <div style={iframeContainerStyle}>
+                <div className="flex justify-start my-6">
+                  <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-white/10 shadow-lg">
                     <iframe
                       src={`https://www.youtube.com/embed/${yt.videoId}${qs ? `?${qs}` : ''}`}
                       title="YouTube video"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
-                      style={{ width: "100%", height: "100%", border: 0 }}
+                      className="absolute top-0 left-0 w-full h-full border-0"
                     />
                   </div>
                 </div>
@@ -200,14 +200,14 @@ function MathContent({ content }) {
           const vm = extractVimeo(href);
           if (vm && textEqualsHref) {
             return (
-              <div style={iframeWrapperStyle}>
-                <div style={iframeContainerStyle}>
+              <div className="flex justify-start my-6">
+                <div className="relative w-full aspect-video bg-black rounded-xl overflow-hidden border border-white/10 shadow-lg">
                   <iframe
                     src={`https://player.vimeo.com/video/${vm.id}`}
                     title="Vimeo video"
                     allow="autoplay; fullscreen; picture-in-picture"
                     allowFullScreen
-                    style={{ width: "100%", height: "100%", border: 0 }}
+                    className="absolute top-0 left-0 w-full h-full border-0"
                   />
                 </div>
               </div>
@@ -218,11 +218,11 @@ function MathContent({ content }) {
           const cp = extractCodePen(href);
           if (cp && textEqualsHref) {
             return (
-              <div style={{ ...iframeWrapperStyle }}>
-                <div style={{ ...iframeContainerStyle, aspectRatio: undefined, height: 420, background: "#1e1e1e" }}>
+              <div className="flex justify-start my-6">
+                <div className="relative w-full h-[420px] bg-[#1e1e1e] rounded-xl overflow-hidden border border-white/10 shadow-lg">
                   <iframe
                     height="100%"
-                    style={{ width: "100%", border: 0 }}
+                    className="w-full border-0"
                     scrolling="no"
                     title="CodePen"
                     src={`https://codepen.io/${cp.user}/embed/${cp.hash}?default-tab=result`}
@@ -235,67 +235,97 @@ function MathContent({ content }) {
             );
           }
 
-          // Bare-link card for other providers when text equals href
+          // Bare-link card for other providers
           if (textEqualsHref) {
             const url = parseUrl(href);
             const hostname = url ? url.hostname.replace(/^www\./, "") : href;
             const display = url ? `${hostname}${url.pathname}${url.search}` : href;
             return (
-              <a href={href} target="_blank" rel="noopener noreferrer" style={cardOuter} {...props}>
-                <div style={cardRow}>
-                  <img src={url ? getFaviconUrl(url.hostname) : ""} alt="" style={cardIcon} onError={(e)=>{ e.currentTarget.style.display='none'; }} />
-                  <div style={cardTexts}>
-                    <div style={cardTitle}>{display}</div>
-                    <div style={cardSub}>{href}</div>
+              <a
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block my-4 p-4 border border-white/10 rounded-xl bg-white/5 hover:bg-white/10 transition-all no-underline shadow-sm"
+                {...props}
+              >
+                <div className="flex items-center gap-4">
+                  <img
+                    src={url ? getFaviconUrl(url.hostname) : ""}
+                    alt=""
+                    className="w-5 h-5 rounded"
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
+                  <div className="flex flex-col min-w-0">
+                    <div className="text-red-100 font-semibold text-sm truncate">{display}</div>
+                    <div className="text-gray-400 text-xs truncate">{href}</div>
                   </div>
                 </div>
               </a>
             );
           }
 
-          // Inline link (with custom text)
+          // Inline link
           return (
-            <a href={href} target="_blank" rel="noopener noreferrer" style={linkStyle} {...props}>
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sky-300 underline decoration-sky-300/30 underline-offset-4 hover:decoration-sky-300 transition-all font-medium"
+              {...props}
+            >
               {children}
             </a>
           );
         },
         pre({ children }) {
-          return <pre style={{ background: "#23272e", color: "#f8f8f2", padding: "1em", borderRadius: 10, margin: "1em 0", overflowX: "auto", fontSize: "0.97em" }}>{children}</pre>;
+          return (
+            <pre className="my-6 p-4 bg-black/60 text-red-50 font-mono text-sm rounded-xl border-2 border-white/20 overflow-x-auto shadow-2xl relative group">
+              <div className="absolute top-2 right-2 px-2 py-0.5 text-[10px] uppercase tracking-widest text-white/30 font-sans border border-white/10 rounded pointer-events-none group-hover:text-white/50 transition-colors">
+                Code
+              </div>
+              {children}
+            </pre>
+          );
         },
         code({ inline, children, ...props }) {
           if (inline) {
-            return <code style={{ background: "#f3f4f6", color: "#23272e", padding: "2px 6px", borderRadius: 4, fontSize: "0.97em", border: "1px solid #e5e7eb" }} {...props}>{children}</code>;
+            return (
+              <code className="px-1.5 py-0.5 mx-0.5 bg-white/10 text-red-300 font-mono text-[13px] rounded border border-white/30 shadow-sm" {...props}>
+                {children}
+              </code>
+            );
           }
           return <code {...props}>{children}</code>;
         },
         table({ children }) {
           return (
-            <div style={{ overflowX: "auto", maxWidth: "100vw" }}>
-              <table style={{ minWidth: 400, width: "100%", borderCollapse: "collapse", margin: "1.2em 0", fontSize: "0.98em", background: "#f8fafc", borderRadius: 10, overflow: "hidden", boxShadow: "0 2px 8px 0 rgba(31,38,135,0.05)" }}>{children}</table>
+            <div className="overflow-x-auto my-6 border border-white/10 rounded-xl bg-black/20 shadow-lg">
+              <table className="min-w-full border-collapse text-left text-sm text-red-100/90">
+                {children}
+              </table>
             </div>
           );
         },
         thead({ children }) {
-          return <thead style={{ background: "#e0e7ef" }}>{children}</thead>;
+          return <thead className="bg-white/10 border-b border-white/20">{children}</thead>;
         },
         th({ children }) {
-          return <th style={{ padding: "10px 16px", borderBottom: "2px solid #c7d2fe", fontWeight: 700, textAlign: "left", color: "#1e293b" }}>{children}</th>;
+          return <th className="px-6 py-4 font-bold uppercase tracking-wider text-white">{children}</th>;
         },
         tr({ children }) {
-          return <tr style={{ borderBottom: "1px solid #e5e7eb" }}>{children}</tr>;
+          return <tr className="border-b border-white/10 last:border-0 hover:bg-white/5 transition-colors">{children}</tr>;
         },
         td({ children }) {
-          return <td style={{ padding: "10px 16px", borderBottom: "1px solid #e5e7eb", color: "#334155", verticalAlign: "top" }}>{children}</td>;
+          return <td className="px-6 py-4 align-top text-gray-300">{children}</td>;
         },
         h1({ children }) {
-          return <h1 style={{ fontSize: "2.2em", fontWeight: 800, margin: "1.1em 0 0.6em 0", color: "#1e293b", lineHeight: 1.15 }}>{children}</h1>;
+          return <h1 className="text-3xl font-extrabold mt-10 mb-6 text-white border-b border-white/20 pb-2">{children}</h1>;
         },
         h2({ children }) {
-          return <h2 style={{ fontSize: "1.6em", fontWeight: 700, margin: "1em 0 0.5em 0", color: "#334155", lineHeight: 1.18 }}>{children}</h2>;
+          return <h2 className="text-2xl font-bold mt-8 mb-4 text-red-200 border-l-4 border-red-500 pl-4">{children}</h2>;
         },
         h3({ children }) {
-          return <h3 style={{ fontSize: "1.25em", fontWeight: 600, margin: "0.8em 0 0.4em 0", color: "#475569", lineHeight: 1.22 }}>{children}</h3>;
+          return <h3 className="text-xl font-semibold mt-6 mb-3 text-red-300/90">{children}</h3>;
         },
       }}
     >

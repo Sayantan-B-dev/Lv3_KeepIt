@@ -40,6 +40,14 @@ const Login = () => {
         toast.error("2.Login failed. Please check your credentials and try again.");
       }
     } catch (err) {
+      if (err.response?.status === 403) {
+        toast.info(err.response.data.error);
+        if (err.response.data.email) {
+          navigate("/verify-email", { state: { email: err.response.data.email } });
+        }
+        return;
+      }
+
       console.log("Login error object:", err);
       setError(
         err.response?.data?.message ||

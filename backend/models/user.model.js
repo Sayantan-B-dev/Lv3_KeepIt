@@ -25,6 +25,8 @@ const userSchema = new mongoose.Schema({
   categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
   registrationIp: { type: String },
   googleId: { type: String, unique: true, sparse: true },
+  otp: String,
+  otpExpires: Date,
   resetPasswordToken: String,
   resetPasswordExpire: Date,
 });

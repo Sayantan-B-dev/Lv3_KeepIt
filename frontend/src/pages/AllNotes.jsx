@@ -12,7 +12,6 @@ import Author from "@/components/common/Author";
 import { Loader } from "@/components/ui";
 
 
-
 const PAGE_SIZE = 15;
 
 const AllNotes = () => {
@@ -78,7 +77,12 @@ const AllNotes = () => {
   };
 
   return (
+    <> 
+
+
     <ListContainer title="Notes">
+
+
       <SearchBar
         value={search}
         onChange={setSearch}
@@ -125,6 +129,7 @@ const AllNotes = () => {
         </div>
       )}
     </ListContainer>
+    </>
   );
 };
 

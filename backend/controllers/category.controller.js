@@ -135,11 +135,9 @@ export const deleteCategory = async (req, res) => {
     const { id } = req.params;
     const userId = req.user._id;
 
-    console.log("DELETE CATEGORY:", id);
 
     const category = await Category.findOne({ _id: id, user: userId });
     if (!category) {
-      console.log("CATEGORY NOT FOUND");
       return res.status(404).json({ error: "Category not found" });
     }
 
@@ -147,7 +145,6 @@ export const deleteCategory = async (req, res) => {
 
     await Category.deleteOne({ _id: id });
 
-    console.log("Pulling from user...");
     await User.updateOne(
       { _id: userId },
       { $pull: { categories: id } }

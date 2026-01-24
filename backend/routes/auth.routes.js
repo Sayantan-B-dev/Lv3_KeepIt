@@ -26,10 +26,6 @@ router.route('/upload-profile-image').post(upload.single('image'), validateBody(
 router.route('/forgot-password').post(forgotPassword);
 router.route('/reset-password/:resetToken').post(resetPassword);
 
-
-router.route('/forgot-password').post(forgotPassword);
-router.route('/reset-password/:resetToken').post(resetPassword);
-
 // Google OAuth Routes
 router.get("/google", passport.authenticate("google", { scope: ["email", "profile"], prompt: "select_account" }));
 
@@ -38,11 +34,8 @@ router.get(
     passport.authenticate("google", { failureRedirect: "/login", failureFlash: true }),
     (req, res) => {
         // Successful authentication
-        // We can redirect strictly to frontend
-        // Or if we need to pass data, maybe redirect with query params?
-        // But since we use session/cookies, just redirecting is fine.
         req.flash('success', 'Logged in via Google');
-        res.redirect("http://localhost:5173/"); // Adjust this to env variable later
+        res.redirect("http://localhost:5173/");
     }
 );
 
