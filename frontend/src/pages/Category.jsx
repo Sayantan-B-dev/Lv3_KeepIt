@@ -40,6 +40,11 @@ const Category = () => {
   const [saving, setSaving] = useState(false);
   const [confirmStep, setConfirmStep] = useState(1); // 👈 step 1 or 2
 
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const PAGE_SIZE = 50;
+
   const [exportState, setExportState] = useState({
     isExporting: false,
     progress: 0,
@@ -68,56 +73,75 @@ const Category = () => {
 
   /* ---------------- Data Fetch ---------------- */
 
-  useEffect(() => {
-    const fetchCategoryAndNotes = async () => {
-      setLoading(true);
-      setError(null);
+  const fetchCategoryAndNotes = async ({ pageNum = 1, append = false }) => {
+    if (append) setLoadingMore(true);
+    else setLoading(true);
+    setError(null);
 
-      try {
-        // 1️⃣ Always fetch PUBLIC category
+    try {
+      let currentCategory = category;
+
+      // 1️⃣ Fetch category metadata only on initial load or if not present
+      if (!currentCategory || !append) {
         const categoryRes = await axiosInstance.get(
           `/api/categories/${categoryId}/public`
         );
+        currentCategory = categoryRes.data;
+        setCategory(currentCategory);
+        setUser(currentCategory.user);
+        setEditName(currentCategory.name);
+        setEditType(currentCategory.type || "");
+      }
 
-        const categoryData = categoryRes.data;
-        setCategory(categoryData);
-        setUser(categoryData.user);
-        setEditName(categoryData.name);
-        setEditType(categoryData.type || "");
+      // 2️⃣ Detect ownership
+      const isOwner =
+        loggedInUser &&
+        currentCategory.user &&
+        (currentCategory.user._id === loggedInUser._id ||
+          currentCategory.user === loggedInUser._id);
 
-        // 2️⃣ Detect ownership
-        const isOwner =
-          loggedInUser &&
-          categoryData.user &&
-          (categoryData.user._id === loggedInUser._id ||
-            categoryData.user === loggedInUser._id);
+      // 3️⃣ Fetch notes based on ownership
+      const targetUrl = isOwner
+        ? `/api/notes/category/${categoryId}`
+        : `/api/notes/category/${categoryId}/public`;
 
-        // 3️⃣ Fetch notes based on ownership
-        const notesRes = isOwner
-          ? await axiosInstance.get(`/api/notes/category/${categoryId}`, {
-            params: { page: 1, limit: 100 },
-          })
-          : await axiosInstance.get(
-            `/api/notes/category/${categoryId}/public`,
-            { params: { page: 1, limit: 100 } }
-          );
+      const notesRes = await axiosInstance.get(targetUrl, {
+        params: { page: pageNum, limit: PAGE_SIZE },
+      });
 
-        const sortedNotes = (notesRes.data.notes || []).sort((a, b) =>
+      const newNotes = notesRes.data.notes || [];
+      const totalNotes = notesRes.data.total || 0;
+
+      setNotes(prev => {
+        const combined = append ? [...prev, ...newNotes] : newNotes;
+        return combined.sort((a, b) =>
           a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
         );
+      });
 
-        setNotes(sortedNotes);
-      } catch (err) {
-        setError(
-          err.response?.data?.message || "Failed to load category."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+      setHasMore(pageNum * PAGE_SIZE < totalNotes);
+    } catch (err) {
+      console.error("fetchCategoryAndNotes error:", err);
+      setError(
+        err.response?.data?.message || err.response?.data?.error || "Failed to load category."
+      );
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  };
 
-    fetchCategoryAndNotes();
+  useEffect(() => {
+    setPage(1);
+    fetchCategoryAndNotes({ pageNum: 1, append: false });
   }, [categoryId, loggedInUser]);
+
+  const handleLoadMore = () => {
+    if (!hasMore || loadingMore) return;
+    const next = page + 1;
+    setPage(next);
+    fetchCategoryAndNotes({ pageNum: next, append: true });
+  };
 
 
 
@@ -158,13 +182,17 @@ const Category = () => {
     setExportState({ isExporting: true, progress: 0, currentTitle: "Starting export..." });
 
     try {
-      await exportCategoryAsZip(category, notes, ({ current, total, title }) => {
+      await exportCategoryAsZip(category, notes, ({ progress, title }) => {
         setExportState(prev => ({
           ...prev,
-          progress: current / total,
+          progress: progress,
           currentTitle: title
         }));
-      });
+      }, isOwner);
+
+      // Delay so user actually sees the 100% bar
+      await new Promise(resolve => setTimeout(resolve, 800));
+
       toast.success("Category exported successfully!");
     } catch (err) {
       toast.error("Failed to export category.");
@@ -276,6 +304,9 @@ const Category = () => {
         <CategoryNotesList
           notes={notes}
           onNoteClick={handleNoteClick}
+          hasMore={hasMore}
+          loadingMore={loadingMore}
+          onLoadMore={handleLoadMore}
         />
       </div>
     </div>

@@ -69,7 +69,7 @@ const CategoryHeader = ({
           )}
 
           {/* Static username */}
-          <span className="text-sm font-mono text-type-1 truncate underline-animation"           onClick={() => onUserClick?.(user._id)}>
+          <span className="text-sm font-mono text-type-1 truncate underline-animation" onClick={() => onUserClick?.(user._id)}>
             {user?.username}
           </span>
         </div>
@@ -156,11 +156,15 @@ const CategoryHeader = ({
                       >
                         Edit
                       </div>
+                    </div>
+                  )}
 
+                  {isAuthenticated && (
+                    <div className="mt-2">
                       <div
-                        className="text-type-1 text-sm px-3 py-1 rounded-lg font-mono shadow border border-muted cursor-pointer hover:bg-white/20   hover:translate-y-[-4px] transition-all duration-150"
-
+                        className="text-type-1 text-sm px-3 py-1 rounded-lg font-mono shadow border border-muted cursor-pointer hover:bg-white/20   hover:translate-y-[-4px] transition-all duration-150 w-fit"
                         onClick={onDownloadAll}
+                        title="Download all public notes as ZIP"
                       >
                         Download All (ZIP)
                       </div>

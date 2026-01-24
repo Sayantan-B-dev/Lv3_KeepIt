@@ -27,6 +27,7 @@ const NoteHeader = ({
   isAuthenticated,
   onUserClick,
   navigate,
+  onDownloadNote,
 }) => {
   const [tagToDelete, setTagToDelete] = React.useState(null);
   React.useEffect(() => {
@@ -228,27 +229,36 @@ const NoteHeader = ({
           </div>
 
           {/* Actions */}
-          {isOwner && (
-            <div className="flex gap-3 mt-3">
-              {!editMode ? (
-                <ButtonType3
-                  text="Edit"
-                  onClick={handleEdit}
-                />
-              ) : (
-                <>
+          <div className="flex gap-3 mt-3 flex-wrap justify-end">
+            {isAuthenticated && !editMode && (
+              <ButtonType3
+                text="Download(.md)"
+                onClick={onDownloadNote}
+              />
+            )}
+
+            {isOwner && (
+              <div className="flex gap-3">
+                {!editMode ? (
                   <ButtonType3
-                    text="Save"
-                    onClick={handleSave}
+                    text="Edit"
+                    onClick={handleEdit}
                   />
-                  <ButtonType3
-                    text="Cancel"
-                    onClick={handleCancel}
-                  />
-                </>
-              )}
-            </div>
-          )}
+                ) : (
+                  <>
+                    <ButtonType3
+                      text="Save"
+                      onClick={handleSave}
+                    />
+                    <ButtonType3
+                      text="Cancel"
+                      onClick={handleCancel}
+                    />
+                  </>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -14,6 +14,8 @@ import {
   AccessDenied
 } from "@/features/notes";
 import { noteCache } from "@/utils/noteCache";
+import { exportCategoryAsZip } from "@/utils/exportCategoryAsZip";
+import DownloadProgress from "@/features/category/DownloadProgress";
 
 const CONTENT_MAX_LENGTH = 100000;
 
@@ -37,6 +39,12 @@ const Note = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmStep, setConfirmStep] = useState(1);
+
+  const [exportState, setExportState] = useState({
+    isExporting: false,
+    progress: 0,
+    currentTitle: ""
+  });
 
   const [editMode, setEditMode] = useState(false);
   const [editNote, setEditNote] = useState({ title: "", content: "" });
@@ -172,6 +180,36 @@ const Note = () => {
       toast.error(msg);
     } finally {
       setUpdateLoading(false);
+    }
+  };
+
+  const handleDownloadNote = async () => {
+    if (!note) return;
+
+    setExportState({ isExporting: true, progress: 0, currentTitle: "Preparing download..." });
+
+    try {
+      // Re-use export utility for single note
+      await exportCategoryAsZip(
+        { name: note.title },
+        [note],
+        ({ progress, title }) => {
+          setExportState(prev => ({
+            ...prev,
+            progress: progress,
+            currentTitle: title
+          }));
+        }
+      );
+
+      // Delay so user actually sees the 100% bar
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      toast.success("Note exported successfully!");
+    } catch (err) {
+      toast.error("Failed to export note.");
+    } finally {
+      setExportState({ isExporting: false, progress: 0, currentTitle: "" });
     }
   };
 
@@ -335,6 +373,13 @@ const Note = () => {
           isAuthenticated={!!loggedInUser}
           onUserClick={handleUserClick}
           navigate={navigate}
+          onDownloadNote={handleDownloadNote}
+        />
+
+        <DownloadProgress
+          isExporting={exportState.isExporting}
+          progress={exportState.progress}
+          currentTitle={exportState.currentTitle}
         />
 
         <NoteContent
