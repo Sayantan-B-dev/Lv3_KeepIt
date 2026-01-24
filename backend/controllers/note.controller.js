@@ -15,7 +15,7 @@ export const getPublicCategoryNotes = async (req, res) => {
     const [notes, total] = await Promise.all([
       Note.find({
         category: id,
-        isPrivate: false,
+        isPrivate: { $ne: true },
       })
         .select("_id title createdAt")
         .sort({ title: 1 })
@@ -25,7 +25,7 @@ export const getPublicCategoryNotes = async (req, res) => {
 
       Note.countDocuments({
         category: id,
-        isPrivate: false,
+        isPrivate: { $ne: true },
       }),
     ]);
 
@@ -51,9 +51,13 @@ export const getNotesById = async (req, res) => {
 
     // Access control: if private, only owner can see it
     if (note.isPrivate) {
-      // If user not logged in or not the owner
-      if (!req.user || req.user._id.toString() !== note.user.toString()) {
-        return res.status(403).json({ error: "This note is private" });
+      const viewerId = req.user?._id?.toString();
+      const ownerId = note.user?.toString();
+
+      if (viewerId !== ownerId) {
+        return res.status(403).json({
+          error: "This note is private and cannot be viewed by others."
+        });
       }
     }
 
@@ -188,7 +192,7 @@ export const getUserNotes = async (req, res) => {
 
 export const getPublicNotesbyUser = async (req, res) => {
   const userId = req.params.userId;
-  const notes = await Note.find({ user: userId, isPrivate: false }).populate({
+  const notes = await Note.find({ user: userId, isPrivate: { $ne: true } }).populate({
     path: "category",
     populate: { path: "categoryType", select: "name" },
   });
@@ -201,7 +205,7 @@ export const getAllPublicNotes = async (req, res) => {
     const pageNum = Math.max(parseInt(page, 10) || 1, 1);
     const pageLimit = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
 
-    const query = { isPrivate: false };
+    const query = { isPrivate: { $ne: true } };
     if (search && typeof search === 'string') {
       query.title = { $regex: search.trim(), $options: 'i' };
     }
@@ -231,7 +235,7 @@ export const getNotesByTag = async (req, res) => {
     try {
       // Case-insensitive, exact match
       const notes = await Note.find({
-        isPrivate: false,
+        isPrivate: { $ne: true },
         tags: { $elemMatch: { $regex: `^${tag}$`, $options: 'i' } }
       })
         .select('title user category createdAt tags')
@@ -250,7 +254,7 @@ export const getNotesByTag = async (req, res) => {
   } else {
     // fallback: return all public notes (for search page)
     try {
-      const notes = await Note.find({ isPrivate: false })
+      const notes = await Note.find({ isPrivate: { $ne: true } })
         .select('title user category createdAt tags')
         .populate('category', 'name')
         .populate('user', 'username profileImage email')
@@ -266,7 +270,7 @@ export const getNotesByTag = async (req, res) => {
 export const getAllTags = async (req, res) => {
   try {
     // Find all public notes
-    const notes = await Note.find({ isPrivate: false }, 'tags');
+    const notes = await Note.find({ isPrivate: { $ne: true } }, 'tags');
     // Flatten all tags into a single array
     const allTags = notes.flatMap(note => Array.isArray(note.tags) ? note.tags : []);
     // Count occurrences
@@ -354,7 +358,7 @@ export const createNote = async (req, res) => {
     }
 
     // ===== input =====
-    const { title, content, category, tags, type } = req.body;
+    const { title, content, category, tags, type, isPrivate } = req.body;
 
     let categoryDoc = null;
 
@@ -401,7 +405,7 @@ export const createNote = async (req, res) => {
       content,
       category: categoryDoc._id,
       user: req.user._id,
-      isPrivate: false,
+      isPrivate: !!isPrivate,
       tags: Array.isArray(tags)
         ? tags.map(t => t.trim()).filter(Boolean)
         : [],
@@ -439,6 +443,9 @@ export const updateNote = async (req, res) => {
       updateData,
       { new: true, runValidators: true }
     )
+    if (!note) {
+      return res.status(404).json({ error: "Note not found or authorized" });
+    }
     res.json(note);
   } catch (error) {
     if (error.code === 11000 && error.keyPattern && error.keyPattern.title && error.keyPattern.user) {

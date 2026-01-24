@@ -20,7 +20,7 @@ export const getPublicCategoryById = async (req, res) => {
     // fetch ONLY public notes
     const notes = await Note.find({
       category: id,
-      isPrivate: false,
+      isPrivate: { $ne: true },
     })
       .select("_id title createdAt tags")
       .sort({ title: 1 })
@@ -49,7 +49,7 @@ export const getCategoryById = async (req, res) => {
       .populate("user", "username profileImage bio website")
       .populate({
         path: "notes",
-        select: "_id title createdAt isPrivate",
+        select: "_id title createdAt isPrivate user",
         options: { sort: { title: 1 } },
       });
 
@@ -58,10 +58,17 @@ export const getCategoryById = async (req, res) => {
       return res.status(404).json({ error: "Category not found" });
     }
 
+    // Security: Filter out private notes unless requester is the owner
+    const requesterId = req.user?._id?.toString();
+    const filteredNotes = (category.notes || []).filter(n => {
+      if (n.isPrivate !== true) return true;
+      return n.user?.toString() === requesterId;
+    });
+
     res.json({
       _id: category._id,
       name: category.name,
-      notes: category.notes || [],
+      notes: filteredNotes,
     });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch category" });

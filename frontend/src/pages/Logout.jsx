@@ -22,6 +22,7 @@ const Logout = () => {
       } finally {
         setUser(null);
         localStorage.removeItem("user");
+        sessionStorage.clear(); // Clear all session data including note cache
 
         // keep page visible for 500ms
         timer = setTimeout(() => {

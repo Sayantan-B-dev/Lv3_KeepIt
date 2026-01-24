@@ -20,4 +20,12 @@ export const noteCache = {
   has(noteId) {
     return sessionStorage.getItem(CACHE_PREFIX + noteId) !== null;
   },
+
+  clear() {
+    Object.keys(sessionStorage).forEach((key) => {
+      if (key.startsWith(CACHE_PREFIX)) {
+        sessionStorage.removeItem(key);
+      }
+    });
+  },
 };

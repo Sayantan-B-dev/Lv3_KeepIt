@@ -59,6 +59,7 @@ const CreateNote = () => {
             category: preselectedCategory ? preselectedCategory : "",
             tags: [],
             categoryType: preselectedCategory && preselectedCategory.type ? preselectedCategory.type : "",
+            isPrivate: false,
         };
     })();
 
@@ -66,6 +67,7 @@ const CreateNote = () => {
     const [content, setContent] = useState(initialDraft.content);
     const [category, setCategory] = useState(initialDraft.category);
     const [tags, setTags] = useState(initialDraft.tags);
+    const [isPrivate, setIsPrivate] = useState(initialDraft.isPrivate || false);
     const [formError, setFormError] = useState(null);
     const [success, setSuccess] = useState(false);
     // If preselectedCategory exists, use its type, otherwise empty string
@@ -121,6 +123,7 @@ const CreateNote = () => {
             category: preselectedCategory ? preselectedCategory : category,
             tags,
             categoryType,
+            isPrivate,
         };
         try {
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(toSave));
@@ -356,6 +359,7 @@ const CreateNote = () => {
                 category: categoryName,
                 tags,
                 type: categoryTypeValue,
+                isPrivate,
             });
 
             setSuccess(true);
@@ -366,6 +370,7 @@ const CreateNote = () => {
             setCategory(preselectedCategory ? preselectedCategory : "");
             setTags([]);
             setCategoryType(preselectedCategory && preselectedCategory.type ? preselectedCategory.type : "");
+            setIsPrivate(false);
             setContentUndoStack([""]);
             setContentRedoStack([]);
 
@@ -643,18 +648,51 @@ const CreateNote = () => {
                     </p>
                 </div>
 
-                {/* Errors */}
-                {formError && (
-                    <div className="text-red-500 font-mono text-center">
-                        {formError}
-                    </div>
-                )}
+                {/* Privacy Toggle */}
+                <div className="flex items-center gap-3">
+                    <label className="flex items-center gap-2 cursor-pointer group">
+                        <div className="relative">
+                            <input
+                                type="checkbox"
+                                checked={isPrivate}
+                                onChange={(e) => setIsPrivate(e.target.checked)}
+                                className="sr-only"
+                            />
+                            <div className={`w-10 h-5 rounded-full transition-colors ${isPrivate ? 'bg-red-500' : 'bg-white/20'}`} />
+                            <div className={`absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-transform ${isPrivate ? 'translate-x-5' : 'translate-x-0'}`} />
+                        </div>
+                        <span className="text-sm text-type-2 group-hover:text-type-1 transition-colors flex items-center gap-1.5">
+                            {isPrivate ? (
+                                <>
+                                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-red-400"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 10.723V20h-2v-2.277a1.993 1.993 0 01.567-3.677 2.001 2.001 0 011.433 3.677z" /></svg>
+                                    Private Note (Hidden from community)
+                                </>
+                            ) : (
+                                <>
+                                    <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-sky-400"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" /></svg>
+                                    Public Note (Visible to everyone)
+                                </>
+                            )}
+                        </span>
+                    </label>
+                </div>
 
-                {success && (
-                    <div className="text-green-600 font-mono text-center">
-                        Note created! Redirecting…
-                    </div>
-                )}
+                {/* Errors */}
+                {
+                    formError && (
+                        <div className="text-red-500 font-mono text-center">
+                            {formError}
+                        </div>
+                    )
+                }
+
+                {
+                    success && (
+                        <div className="text-green-600 font-mono text-center">
+                            Note created! Redirecting…
+                        </div>
+                    )
+                }
 
                 {/* Submit */}
                 <div className="flex justify-center w-full ">
@@ -665,8 +703,8 @@ const CreateNote = () => {
                     />
                 </div>
 
-            </form>
-        </div>
+            </form >
+        </div >
 
     );
 };

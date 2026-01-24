@@ -93,11 +93,36 @@ const NoteHeader = ({
               className="w-full text-center text-xl border border-muted rounded px-3 py-2 bg-transparent"
             />
           ) : (
-            <div className="text-xl text-center border-b border-muted py-2">
+            <div className="text-xl text-center border-b border-muted py-2 flex items-center justify-center gap-2">
+              {note.isPrivate && (
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500" title="Private Note"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 10.723V20h-2v-2.277a1.993 1.993 0 01.567-3.677 2.001 2.001 0 011.433 3.677z" /></svg>
+              )}
               {note.title}
             </div>
           )}
         </div>
+
+        {/* Privacy Toggle (Edit Mode) */}
+        {editMode && (
+          <div className="flex items-center gap-2 mt-2">
+            <label className="flex items-center gap-2 cursor-pointer group">
+              <div className="relative">
+                <input
+                  type="checkbox"
+                  name="isPrivate"
+                  checked={editNote.isPrivate}
+                  onChange={(e) => handleInputChange({ target: { name: 'isPrivate', value: e.target.checked } })}
+                  className="sr-only"
+                />
+                <div className={`w-10 h-5 rounded-full transition-colors ${editNote.isPrivate ? 'bg-white/40' : 'bg-white/20'}`} />
+                <div className={`absolute top-1 left-1 w-3 h-3 bg-white rounded-full transition-transform ${editNote.isPrivate ? 'translate-x-5' : 'translate-x-0'}`} />
+              </div>
+              <span className="text-xs text-type-2 group-hover:text-type-1 transition-colors">
+                {editNote.isPrivate ? "Private (Hidden)" : "Public (Community)"}
+              </span>
+            </label>
+          </div>
+        )}
 
         {/* Meta row: created date + delete */}
         <div className="flex justify-between items-center w-full text-xs text-type-3">
@@ -129,7 +154,7 @@ const NoteHeader = ({
               "
             >
               {deleting ? "…" : (
-                <TrashIcon/>
+                <TrashIcon />
               )}
             </button>
           )}

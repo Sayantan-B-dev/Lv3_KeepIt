@@ -11,6 +11,7 @@ import CategoryHeader from "@/features/category/CategoryHeader";
 import CategoryNotesList from "@/features/category/CategoryNotesList";
 import MarkdownUploadBox from "@/features/category/MarkdownUploadBox";
 import UploadQueueDisplay from "@/features/category/UploadQueueDisplay";
+import DownloadProgress from "@/features/category/DownloadProgress";
 
 import useMarkdownUploadQueue from "@/hooks/useMarkdownUploadQueue";
 import useDragAndDrop from "@/hooks/useDragAndDrop";
@@ -38,6 +39,12 @@ const Category = () => {
   const [editType, setEditType] = useState("");
   const [saving, setSaving] = useState(false);
   const [confirmStep, setConfirmStep] = useState(1); // 👈 step 1 or 2
+
+  const [exportState, setExportState] = useState({
+    isExporting: false,
+    progress: 0,
+    currentTitle: ""
+  });
 
 
 
@@ -142,6 +149,30 @@ const Category = () => {
     }
   };
 
+  const handleDownloadAll = async () => {
+    if (notes.length === 0) {
+      toast.info("No notes to export.");
+      return;
+    }
+
+    setExportState({ isExporting: true, progress: 0, currentTitle: "Starting export..." });
+
+    try {
+      await exportCategoryAsZip(category, notes, ({ current, total, title }) => {
+        setExportState(prev => ({
+          ...prev,
+          progress: current / total,
+          currentTitle: title
+        }));
+      });
+      toast.success("Category exported successfully!");
+    } catch (err) {
+      toast.error("Failed to export category.");
+    } finally {
+      setExportState({ isExporting: false, progress: 0, currentTitle: "" });
+    }
+  };
+
   const handleDeleteCategory = async () => {
     setDeleting(true);
     try {
@@ -213,10 +244,16 @@ const Category = () => {
         onEditCancel={() => setEditMode(false)}
         onEditClick={() => setEditMode(true)}
         onDeleteClick={() => setShowDeletePopup(true)}
-        onDownloadAll={() => exportCategoryAsZip(category, notes)}
+        onDownloadAll={handleDownloadAll}
         onCreateNote={handleCreateNote}
         isAuthenticated={!!loggedInUser}
         onUserClick={handleUserClick}
+      />
+
+      <DownloadProgress
+        isExporting={exportState.isExporting}
+        progress={exportState.progress}
+        currentTitle={exportState.currentTitle}
       />
 
 

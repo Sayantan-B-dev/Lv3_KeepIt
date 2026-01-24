@@ -10,7 +10,8 @@ import {
   NoteHeader,
   NoteContent,
   NoteNavigation,
-  NoteFooter
+  NoteFooter,
+  AccessDenied
 } from "@/features/notes";
 import { noteCache } from "@/utils/noteCache";
 
@@ -106,7 +107,7 @@ const Note = () => {
       return;
     }
     setEditMode(true);
-    setEditNote({ title: note.title, content: note.content });
+    setEditNote({ title: note.title, content: note.content, isPrivate: note.isPrivate });
     setEditTags(note.tags || []);
     setUpdateError(null);
     setUpdateSuccess(null);
@@ -115,7 +116,7 @@ const Note = () => {
   const handleCancel = () => {
     setEditMode(false);
     setContentTooLarge(false);
-    setEditNote({ title: note.title, content: note.content });
+    setEditNote({ title: note.title, content: note.content, isPrivate: note.isPrivate });
   };
 
   const handleInputChange = (e) => {
@@ -154,9 +155,11 @@ const Note = () => {
         content: editNote.content,
         category: note.category?._id || note.category,
         tags: editTags,
+        isPrivate: editNote.isPrivate,
       });
 
       setNote((prev) => ({ ...prev, ...res.data }));
+      noteCache.set(noteId, res.data);
       setEditMode(false);
       setUpdateSuccess("Note updated successfully!");
       toast.success("Note updated successfully!");
@@ -189,7 +192,7 @@ const Note = () => {
 
         noteCache.set(noteId, noteData);
         setNote(noteData);
-        setEditNote({ title: noteData.title, content: noteData.content });
+        setEditNote({ title: noteData.title, content: noteData.content, isPrivate: noteData.isPrivate });
         setEditTags(noteData.tags || []);
 
         const [categoryRes, userRes] = await Promise.all([
@@ -214,7 +217,11 @@ const Note = () => {
         );
       } catch (err) {
         if (!cancelled) {
-          setError(err.response?.data?.message || "Failed to load note.");
+          setError(
+            err.response?.data?.error ||
+            err.response?.data?.message ||
+            "Failed to load note."
+          );
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -262,8 +269,16 @@ const Note = () => {
   /* ---------------- Guards ---------------- */
 
   if (loading) return <Loading />;
-  if (error) return <div className="text-red-500">{error}</div>;
-  if (!note) return <div>Note not found.</div>;
+
+  if (error) {
+    return <AccessDenied error={error} />;
+  }
+
+  if (!note) return (
+    <div className="text-center p-20 font-mono text-type-3">
+      Note not found.
+    </div>
+  );
 
   const isOwner =
     loggedInUser &&
