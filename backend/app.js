@@ -1,8 +1,7 @@
 import express from "express";
 import session from "express-session";
 import MongoStore from "connect-mongo";
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
+import passport from "./config/passport.js";
 import rateLimit from "express-rate-limit";
 import compression from "compression";
 import cors from "cors";
@@ -97,9 +96,7 @@ const sessionConfig = {
   },
 };
 
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+// Passport is configured in config/passport.js
 
 /* ======================================================
    5. AUTH / SESSION ROUTER (ONLY WHERE NEEDED)

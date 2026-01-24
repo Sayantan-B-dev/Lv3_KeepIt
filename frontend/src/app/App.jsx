@@ -28,6 +28,8 @@ const MyNotes = lazy(() => import("@/pages/MyNotes"));
 const MyTags = lazy(() => import("@/pages/MyTags"));
 const CategoryType = lazy(() => import("@/pages/CategoryType"));
 const RotatingKeepIt = lazy(() => import("@/components/common/RotatingKeepIt"));
+const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 
 function App() {
   const { user, loading: authLoading } = useAuth();
@@ -72,6 +74,27 @@ function App() {
               element={
                 !isAuthenticated ? (
                   <Register />
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+
+            <Route
+              path="/forgot-password"
+              element={
+                !isAuthenticated ? (
+                  <ForgotPassword />
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+            <Route
+              path="/reset-password/:resetToken"
+              element={
+                !isAuthenticated ? (
+                  <ResetPassword />
                 ) : (
                   <Navigate to="/" replace />
                 )

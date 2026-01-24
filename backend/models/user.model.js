@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
   registrationIp: { type: String },
+  googleId: { type: String, unique: true, sparse: true },
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
 });
 
 userSchema.plugin(passportLocalMongoose);

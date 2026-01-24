@@ -2,6 +2,8 @@ import User from "../models/user.model.js";
 import passport from "passport";
 import { cloudinary, storage } from '../utils/cloudinary.util.js';
 import multer from 'multer';
+import crypto from 'crypto';
+import sendEmail from '../utils/sendEmail.js';
 
 export const upload = multer({ storage });
 
@@ -149,5 +151,87 @@ export const getAllUsers = async (req, res) => {
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });
+    }
+};
+
+export const forgotPassword = async (req, res, next) => {
+    const { email } = req.body;
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ error: "Email could not be sent" });
+        }
+
+        const resetToken = crypto.randomBytes(20).toString("hex");
+
+        user.resetPasswordToken = crypto
+            .createHash("sha256")
+            .update(resetToken)
+            .digest("hex");
+
+        // Token expires in 10 minutes
+        user.resetPasswordExpire = Date.now() + 10 * (60 * 1000);
+
+        await user.save();
+
+        const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+
+        const message = `
+      <h1>You have requested a password reset</h1>
+      <p>Please go to this link to reset your password:</p>
+      <a href=${resetUrl} clicktracking=off>${resetUrl}</a>
+    `;
+
+        try {
+            await sendEmail({
+                to: user.email,
+                subject: "Password Reset Request",
+                text: message,
+            });
+
+            res.status(200).json({ success: true, data: "Email Sent" });
+        } catch (err) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpire = undefined;
+
+            await user.save();
+
+            return res.status(500).json({ error: "Email could not be sent" });
+        }
+    } catch (err) {
+        next(err);
+    }
+};
+
+export const resetPassword = async (req, res, next) => {
+    const resetPasswordToken = crypto
+        .createHash("sha256")
+        .update(req.params.resetToken)
+        .digest("hex");
+
+    try {
+        const user = await User.findOne({
+            resetPasswordToken,
+            resetPasswordExpire: { $gt: Date.now() },
+        });
+
+        if (!user) {
+            return res.status(400).json({ error: "Invalid Reset Token" });
+        }
+
+        user.setPassword(req.body.password, async (err) => {
+            if (err) return next(err);
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpire = undefined;
+            await user.save();
+            res.status(201).json({
+                success: true,
+                data: "Password Reset Success",
+            });
+        });
+
+    } catch (err) {
+        next(err);
     }
 };

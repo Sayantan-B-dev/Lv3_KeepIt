@@ -222,6 +222,34 @@ const Register = () => {
           />
         </div>
 
+        <div className="flex items-center my-6">
+          <div className="flex-grow border-t border-gray-600"></div>
+          <span className="flex-shrink-0 mx-4 text-gray-400 text-sm">Or</span>
+          <div className="flex-grow border-t border-gray-600"></div>
+        </div>
+
+        <div className="flex justify-center w-full">
+          <button
+            type="button"
+            onClick={() => window.open("http://localhost:5000/api/auth/google", "_self")}
+            className="
+                    flex items-center gap-3
+                    px-6 py-3
+                    bg-type-1 text-type-2
+                    rounded-full
+                    font-medium
+                    hover:bg-white/20
+                    hover:translate-y-[-2px]
+                    active:translate-y-[2px]
+                    transition
+                    border border-muted
+                "
+          >
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="google" />
+            Continue with Google
+          </button>
+        </div>
+
         {/* Footer */}
         <div className="mt-5 text-center text-sm text-type-3">
           Already have an account?{" "}
