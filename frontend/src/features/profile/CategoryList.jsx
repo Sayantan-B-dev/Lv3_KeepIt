@@ -14,6 +14,7 @@ const CategoryList = ({
   handleNoteClick,
   navigate,
   handleCategoryClick,
+  isOwnProfile,
   readOnly = false,
 }) => {
   /* ================= GROUP BY TYPE ================= */
@@ -33,8 +34,9 @@ const CategoryList = ({
 
   return (
     <div className="mb-10">
+      
       <h2 className="text-xl sm:text-2xl font-bold text-type-1 my-6 text-center">
-        Your Docs
+        {isOwnProfile ? "Your Docs" : "Shared Docs"}
       </h2>
 
       <div className="flex flex-col gap-6 sm:gap-8">

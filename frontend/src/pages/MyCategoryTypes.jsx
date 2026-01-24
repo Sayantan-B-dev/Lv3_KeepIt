@@ -49,7 +49,6 @@ const MyCategoryTypes = () => {
   useEffect(() => {
     setPage(1);
     setHasMore(true);
-
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
     searchTimeout.current = setTimeout(() => {
       fetchTypes({ pageNum: 1 });

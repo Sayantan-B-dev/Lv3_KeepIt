@@ -10,20 +10,21 @@ const AuthProvider = ({ children }) => {
   });
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
         setLoading(true);
         const res = await axios.get("/api/auth/check", { withCredentials: true });
-        if (res.data && res.data.user) {
+        // Backend now returns 200 with { authenticated: true/false, user: {...} }
+        if (res.data && res.data.authenticated && res.data.user) {
           setUser(res.data.user);
         } else {
           setUser(null);
         }
       } catch (err) {
-        if (err.response && err.response.status !== 401) {
-          console.error(err);
-        }
+        // Only log actual errors (network issues, etc.), not auth failures
+        console.error("Error checking authentication:", err);
         setUser(null);
       } finally {
         setLoading(false);

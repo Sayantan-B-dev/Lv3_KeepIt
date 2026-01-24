@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { getOptimizedImageUrl } from "../../utils/imageUtils";
 
 const underlineAnimation = `
   relative inline-block text-white no-underline
@@ -37,7 +38,7 @@ const UserBox = ({ users }) => {
               {/* Avatar */}
               {user.profileImage?.url ? (
                 <motion.img
-                  src={user.profileImage.url}
+                  src={getOptimizedImageUrl(user.profileImage.url, 100, 100)}
                   alt={user.username}
                   className="
                     w-12 h-12 rounded-full object-cover

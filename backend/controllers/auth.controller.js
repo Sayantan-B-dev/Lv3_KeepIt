@@ -11,13 +11,14 @@ export const uploadProfileImage = async (req, res) => {
             return res.status(400).json({ error: "No file uploaded" });
         }
         res.json({
-            url: req.file.path, 
+            url: req.file.path,
             public_id: req.file.filename,
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
     }
 };
+
 
 export const registerUser = async (req, res, next) => {
     try {
@@ -27,7 +28,7 @@ export const registerUser = async (req, res, next) => {
         const recentCount = await User.countDocuments({
             registrationIp: ip,
             createdAt: { $gte: since }
-        }); 
+        });
         const userLimit = 5;
         if (recentCount >= userLimit) {
             return res.status(429).json({ error: `Registration limit reached: Only ${userLimit} accounts per day allowed from this IP.` });
@@ -36,21 +37,21 @@ export const registerUser = async (req, res, next) => {
 
         if (req.file) {
             user.profileImage = {
-                url: req.file.path,      
-                filename: req.file.filename 
+                url: req.file.path,
+                filename: req.file.filename
             };
         }
 
         const registeredUser = await User.register(user, password);
 
         // Explicitly log in the user after registration
-        req.logIn(registeredUser, function(err) {
+        req.logIn(registeredUser, function (err) {
             if (err) {
                 req.flash("error", err.message);
                 return res.status(400).json({ error: err.message });
             }
             req.flash("success", 'Welcome to Notes App');
-            return res.status(201).json({ 
+            return res.status(201).json({
                 message: "Registered successfully",
                 user: {
                     _id: registeredUser._id,
@@ -77,9 +78,9 @@ export const loginUser = (req, res, next) => {
             // console.log("✅ req.user after login:", req.user);
             // console.log("✅ req.sessionID after login:", req.sessionID);
             // console.log("✅ Session content:", req.session);
-          
+
             req.flash('success', 'welcome back');
-            return res.status(200).json({ 
+            return res.status(200).json({
                 message: req.flash("success")[0] || "Logged in successfully",
                 user: {
                     _id: user._id,
@@ -94,7 +95,7 @@ export const loginUser = (req, res, next) => {
 
 export const postLogin = (req, res) => {
     req.flash('success', 'welcome back');
-    res.status(200).json({ 
+    res.status(200).json({
         message: 'logged in successfully',
         user: {
             _id: req.user._id,
@@ -122,21 +123,22 @@ export const logoutUser = (req, res, next) => {
 };
 
 export const checkAuth = (req, res) => {
-//     console.log("🔍 checkAuth: req.user =", req.user);
-//   console.log("🔍 checkAuth: session ID =", req.sessionID);
+    //     console.log("🔍 checkAuth: req.user =", req.user);
+    //   console.log("🔍 checkAuth: session ID =", req.sessionID);
     if (req.isAuthenticated()) {
-        res.status(200).json({ 
-            authenticated: true, 
+        res.status(200).json({
+            authenticated: true,
             user: {
                 _id: req.user._id,
                 username: req.user.username,
                 email: req.user.email,
                 profileImage: req.user.profileImage
             }
-            
+
         });
     } else {
-        res.status(401).json({ authenticated: false });
+        // Return 200 instead of 401 to avoid console errors
+        res.status(200).json({ authenticated: false });
     }
 };
 

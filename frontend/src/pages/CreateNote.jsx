@@ -73,6 +73,20 @@ const CreateNote = () => {
         initialDraft.categoryType
     );
 
+    const [availableCategories, setAvailableCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const res = await axiosInstance.get("/api/categories");
+                setAvailableCategories(res.data || []);
+            } catch (error) {
+                console.error("Failed to fetch categories:", error);
+            }
+        };
+        fetchCategories();
+    }, []);
+
     // For drag-and-drop
     const dropRef = useRef(null);
     const [isDragActive, setIsDragActive] = useState(false);
@@ -491,8 +505,8 @@ const CreateNote = () => {
                         transition
                         glass-panel
                         ${isDragActive
-                        ? "border-indigo-500 bg-indigo-500/10"
-                        : "border-muted hover:bg-white/10"}
+                            ? "border-indigo-500 bg-indigo-500/10"
+                            : "border-muted hover:bg-white/10"}
                     `}
                     style={{ minHeight: 90 }}
                 >
@@ -544,7 +558,13 @@ const CreateNote = () => {
                             onChange={
                                 preselectedCategory ? undefined : (e) => setCategory(e.target.value)
                             }
+                            list="category-options"
                         />
+                        <datalist id="category-options">
+                            {availableCategories.map((cat) => (
+                                <option key={cat._id} value={cat.name} />
+                            ))}
+                        </datalist>
                     </div>
 
                     <div className="flex-1">
@@ -601,12 +621,12 @@ const CreateNote = () => {
                 {/* Submit */}
                 <div className="flex justify-center w-full ">
                     <DottedButton
-                    text="Create Note"
-                    className="w-fit text-lg"
-                    onClick={handleSubmit}
-                />
+                        text="Create Note"
+                        className="w-fit text-lg"
+                        onClick={handleSubmit}
+                    />
                 </div>
-                
+
             </form>
         </div>
 

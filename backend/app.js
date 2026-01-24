@@ -10,7 +10,7 @@ import helmet from "helmet";
 import methodOverride from "method-override";
 import sanitize from "mongo-sanitize";
 import dotenv from "dotenv";
-
+import flash from "connect-flash";
 import User from "./models/user.model.js";
 import errorHandler from "./middlewares/errorHandler.middleware.js";
 
@@ -109,6 +109,7 @@ const sessionRouter = express.Router();
 sessionRouter.use(session(sessionConfig));
 sessionRouter.use(passport.initialize());
 sessionRouter.use(passport.session());
+sessionRouter.use(flash());
 
 /* ======================================================
    6. RATE LIMITING (LOGIN ONLY)
@@ -132,10 +133,10 @@ sessionRouter.use("/auth", authRoutes);
 sessionRouter.use("/profile", profileRoutes);
 sessionRouter.use("/notes", noteRoutes);
 sessionRouter.use("/categories", categoryRoutes);
+sessionRouter.use("/category-types", categoryTypeRoutes);
 
 // Public / low-cost routes
 app.use("/api/global", globalRoutes);
-app.use("/api/category-types", categoryTypeRoutes);
 
 // Mount sessioned API
 app.use("/api", sessionRouter);

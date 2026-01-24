@@ -294,6 +294,7 @@ const Profile = () => {
         )}
 
         <CategoryList
+        isOwnProfile={isOwnProfile}
           categories={categories}
           openCategoryId={openCategoryId}
           handleCategoryDropdown={handleCategoryDropdown}

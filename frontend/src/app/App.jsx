@@ -1,8 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useState, useEffect, lazy, Suspense } from "react";
-import axiosInstance from "@/api/axiosInstance";
+import { useState, lazy, Suspense } from "react";
 
-import { Footer, SideNavbar, Waiting } from "@/components/layout";
+import { Footer, SideNavbar } from "@/components/layout";
 import { Loading } from "@/features/home";
 import { useAuth } from "@/context/AuthContext";
 
@@ -36,48 +35,9 @@ function App() {
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // public bootstrap state (kept minimal)
-  const [notes, setNotes] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [bootstrapLoading, setBootstrapLoading] = useState(true);
-  const [bootstrapError, setBootstrapError] = useState(null);
-
-  // ─────────────────────────────────────────────
-  // Public bootstrap (no auth dependency)
-  // ─────────────────────────────────────────────
-  useEffect(() => {
-    let alive = true;
-
-    const fetchPublicData = async () => {
-      try {
-        setBootstrapLoading(true);
-        setBootstrapError(null);
-
-        const [categoriesRes, notesRes] = await Promise.all([
-          axiosInstance.get("/api/categories"),
-          axiosInstance.get("/api/notes/public/all"),
-        ]);
-
-        if (!alive) return;
-
-        setCategories(categoriesRes.data || []);
-        setNotes(notesRes.data || []);
-      } catch {
-        if (!alive) return;
-        setBootstrapError("Something went wrong. Please try again later.");
-      } finally {
-        if (alive) setBootstrapLoading(false);
-      }
-    };
-
-    fetchPublicData();
-    return () => {
-      alive = false;
-    };
-  }, []);
-
-
-  const showGlobalLoader = authLoading || bootstrapLoading;
+  if (authLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -93,95 +53,70 @@ function App() {
           ${sidebarOpen ? "lg:ml-[17rem]" : "lg:ml-0"}
         `}
       >
-        {showGlobalLoader ? (
-          <Loading />
-        ) : bootstrapError ? (
+        <Suspense fallback={<Loading />}>
           <Routes>
+            <Route path="/" element={<Home />} />
+
             <Route
-              path="*"
+              path="/login"
               element={
-                <Waiting
-                  errorText={bootstrapError}
-                  {...{
-                    children: (() => {
-                      if (typeof window !== "undefined") {
-                        setTimeout(() => {
-                          window.location.reload();
-                        }, 10000);
-                      }
-                      return null;
-                    })(),
-                  }}
-                />
+                !isAuthenticated ? (
+                  <Login />
+                ) : (
+                  <Navigate to="/" replace />
+                )
               }
             />
+            <Route
+              path="/register"
+              element={
+                !isAuthenticated ? (
+                  <Register />
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+
+            {/* Own profile */}
+            <Route
+              path="/profile/MyProfile"
+              element={
+                isAuthenticated ? (
+                  <Profile />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              }
+            />
+
+            {/* Public profile */}
+            <Route path="/profile/:userId" element={<Profile />} />
+
+            <Route
+              path="/CreateNote"
+              element={<CreateNote />}
+            />
+
+            <Route path="/all-categories" element={<AllCategories />} />
+            <Route path="/all-notes" element={<AllNotes />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/all-users" element={<AllUsers />} />
+            <Route path="/all-tags" element={<AllTags />} />
+
+            <Route path="/my-category-types" element={<MyCategoryTypes />} />
+            <Route path="/my-categories" element={<MyCategories />} />
+            <Route path="/my-notes" element={<MyNotes />} />
+            <Route path="/my-tags" element={<MyTags />} />
+
+            <Route path="/category-type/:id" element={<CategoryType />} />
+            <Route path="/category/:categoryId" element={<Category />} />
+            <Route path="/note/:noteId" element={<Note />} />
+            <Route path="/tag/:tagname" element={<TagNotes />} />
+
+            <Route path="/logout" element={<Logout />} />
           </Routes>
-        ) : (
-          <Suspense fallback={<Loading />}>
-            <Routes>
-              <Route path="/" element={<Home notes={notes} />} />
-
-              <Route
-                path="/login"
-                element={
-                  !isAuthenticated ? (
-                    <Login />
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                }
-              />
-              <Route
-                path="/register"
-                element={
-                  !isAuthenticated ? (
-                    <Register />
-                  ) : (
-                    <Navigate to="/" replace />
-                  )
-                }
-              />
-
-              {/* Own profile */}
-              <Route
-                path="/profile/MyProfile"
-                element={
-                  isAuthenticated ? (
-                    <Profile />
-                  ) : (
-                    <Navigate to="/login" replace />
-                  )
-                }
-              />
-
-              {/* Public profile */}
-              <Route path="/profile/:userId" element={<Profile />} />
-
-              <Route
-                path="/CreateNote"
-                element={<CreateNote categories={categories} />}
-              />
-
-              <Route path="/all-categories" element={<AllCategories />} />
-              <Route path="/all-notes" element={<AllNotes />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/all-users" element={<AllUsers />} />
-              <Route path="/all-tags" element={<AllTags />} />
-
-              <Route path="/my-category-types" element={<MyCategoryTypes />} />
-              <Route path="/my-categories" element={<MyCategories />} />
-              <Route path="/my-notes" element={<MyNotes />} />
-              <Route path="/my-tags" element={<MyTags />} />
-
-              <Route path="/category-type/:id" element={<CategoryType />} />
-              <Route path="/category/:categoryId" element={<Category />} />
-              <Route path="/note/:noteId" element={<Note />} />
-              <Route path="/tag/:tagname" element={<TagNotes />} />
-
-              <Route path="/logout" element={<Logout />} />
-            </Routes>
-          </Suspense>
-        )}
+        </Suspense>
 
         <RotatingKeepIt />
         <Footer />
