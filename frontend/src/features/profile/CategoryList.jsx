@@ -34,7 +34,7 @@ const CategoryList = ({
 
   return (
     <div className="mb-10">
-      
+
       <h2 className="text-xl sm:text-2xl font-bold text-type-1 my-6 text-center">
         {isOwnProfile ? "Your Docs" : "Shared Docs"}
       </h2>
@@ -68,6 +68,7 @@ const CategoryList = ({
                     underline-animation
                     w-fit
                     cursor-pointer
+                    break-all
                   "
                 >
                   <span className="font-bold">Type :</span> {type}
@@ -99,6 +100,7 @@ const CategoryList = ({
                             cursor-pointer
                             font-semibold
                             flex justify-between items-center
+                            break-all
                           "
                         >
                           <span>{cat.name}</span>
@@ -144,6 +146,7 @@ const CategoryList = ({
                                         px-3 py-1.5
                                         rounded-lg
                                         border border-muted
+                                        break-all
                                       "
                                     >
                                       {note.title}

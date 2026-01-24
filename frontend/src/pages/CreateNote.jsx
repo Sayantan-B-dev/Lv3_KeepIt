@@ -152,30 +152,56 @@ const CreateNote = () => {
 
     // --- Markdown file upload handler (for both input and drag-and-drop) ---
     const handleMdFile = useCallback((file) => {
-        if (!file) return;
+        if (!file) {
+            console.warn("No file provided to handleMdFile");
+            return;
+        }
+
         if (!file.name.toLowerCase().endsWith('.md')) {
             toast.error("Please upload a .md (Markdown) file.");
             return;
         }
+
+        console.log("📄 Reading file:", file.name, "Size:", file.size, "bytes");
         const reader = new FileReader();
-        reader.onload = function (event) {
-            const fileContent = event.target.result;
-            const fileTitle = file.name.replace(/\.md$/i, "");
-            setTitle(fileTitle);
-            setContent(fileContent);
-            setContentUndoStack([fileContent]);
-            setContentRedoStack([]);
-            toast.success("Markdown file loaded! You can review and submit.");
+
+        reader.onload = (event) => {
+            try {
+                const fileContent = event.target.result;
+                const fileTitle = file.name.replace(/\.md$/i, "");
+
+                console.log("✅ File loaded:", {
+                    title: fileTitle,
+                    contentLength: fileContent?.length || 0,
+                    preview: fileContent?.substring(0, 100)
+                });
+
+                // Update all states - React will batch these updates
+                setTitle(fileTitle);
+                setContent(fileContent || "");
+                setContentUndoStack([fileContent || ""]);
+                setContentRedoStack([]);
+
+                // Show success message with file info
+                toast.success(`Loaded "${fileTitle}" (${fileContent?.length || 0} characters)`);
+            } catch (error) {
+                console.error("❌ Error processing file content:", error);
+                toast.error("Failed to process file content");
+            }
         };
-        reader.onerror = function () {
+
+        reader.onerror = (error) => {
+            console.error("❌ FileReader error:", error);
             toast.error(`Failed to read file: ${file.name}`);
         };
+
         reader.readAsText(file);
     }, []);
 
     // For file input
     const handleMdUpload = (e) => {
         const files = Array.from(e.target.files);
+        console.log("📎 File input triggered, files:", files.length);
         if (!files.length) return;
         handleMdFile(files[0]);
         // Clear the input value so the same file can be uploaded again
@@ -207,6 +233,7 @@ const CreateNote = () => {
             e.stopPropagation();
             setIsDragActive(false);
             const files = Array.from(e.dataTransfer.files);
+            console.log("🎯 File dropped, files:", files.length);
             if (!files.length) return;
             const file = files[0];
             handleMdFile(file);
@@ -585,7 +612,18 @@ const CreateNote = () => {
                                     : (e) => setCategoryType(e.target.value)
                             }
                             pattern="^\\w+$"
+                            list="category-type-options"
                         />
+                        <datalist id="category-type-options">
+                            {/* Extract unique category types from available categories */}
+                            {Array.from(new Set(
+                                availableCategories
+                                    .map(cat => cat.type)
+                                    .filter(type => type) // Remove null/undefined
+                            )).map((type) => (
+                                <option key={type} value={type} />
+                            ))}
+                        </datalist>
                     </div>
                 </div>
 

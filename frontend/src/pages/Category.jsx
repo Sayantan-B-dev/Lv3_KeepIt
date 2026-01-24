@@ -10,6 +10,7 @@ import { ConfirmPopUp } from "@/components/ui";
 import CategoryHeader from "@/features/category/CategoryHeader";
 import CategoryNotesList from "@/features/category/CategoryNotesList";
 import MarkdownUploadBox from "@/features/category/MarkdownUploadBox";
+import UploadQueueDisplay from "@/features/category/UploadQueueDisplay";
 
 import useMarkdownUploadQueue from "@/hooks/useMarkdownUploadQueue";
 import useDragAndDrop from "@/hooks/useDragAndDrop";
@@ -50,7 +51,7 @@ const Category = () => {
   };
   /* ---------------- Upload + Drag & Drop ---------------- */
 
-  const { handleUpload } = useMarkdownUploadQueue(categoryId, setNotes);
+  const { handleUpload, getUploadQueue, clearUploadQueue, resumeQueue } = useMarkdownUploadQueue(categoryId, setNotes);
 
   const { dragActive, handlers: dragHandlers } = useDragAndDrop({
     onFilesDrop: (files) =>
@@ -60,56 +61,56 @@ const Category = () => {
 
   /* ---------------- Data Fetch ---------------- */
 
- useEffect(() => {
-  const fetchCategoryAndNotes = async () => {
-    setLoading(true);
-    setError(null);
+  useEffect(() => {
+    const fetchCategoryAndNotes = async () => {
+      setLoading(true);
+      setError(null);
 
-    try {
-      // 1️⃣ Always fetch PUBLIC category
-      const categoryRes = await axiosInstance.get(
-        `/api/categories/${categoryId}/public`
-      );
+      try {
+        // 1️⃣ Always fetch PUBLIC category
+        const categoryRes = await axiosInstance.get(
+          `/api/categories/${categoryId}/public`
+        );
 
-      const categoryData = categoryRes.data;
-      setCategory(categoryData);
-      setUser(categoryData.user);
-      setEditName(categoryData.name);
-      setEditType(categoryData.type || "");
+        const categoryData = categoryRes.data;
+        setCategory(categoryData);
+        setUser(categoryData.user);
+        setEditName(categoryData.name);
+        setEditType(categoryData.type || "");
 
-      // 2️⃣ Detect ownership
-      const isOwner =
-        loggedInUser &&
-        categoryData.user &&
-        (categoryData.user._id === loggedInUser._id ||
-         categoryData.user === loggedInUser._id);
+        // 2️⃣ Detect ownership
+        const isOwner =
+          loggedInUser &&
+          categoryData.user &&
+          (categoryData.user._id === loggedInUser._id ||
+            categoryData.user === loggedInUser._id);
 
-      // 3️⃣ Fetch notes based on ownership
-      const notesRes = isOwner
-        ? await axiosInstance.get(`/api/notes/category/${categoryId}`, {
+        // 3️⃣ Fetch notes based on ownership
+        const notesRes = isOwner
+          ? await axiosInstance.get(`/api/notes/category/${categoryId}`, {
             params: { page: 1, limit: 100 },
           })
-        : await axiosInstance.get(
+          : await axiosInstance.get(
             `/api/notes/category/${categoryId}/public`,
             { params: { page: 1, limit: 100 } }
           );
 
-      const sortedNotes = (notesRes.data.notes || []).sort((a, b) =>
-        a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
-      );
+        const sortedNotes = (notesRes.data.notes || []).sort((a, b) =>
+          a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
+        );
 
-      setNotes(sortedNotes);
-    } catch (err) {
-      setError(
-        err.response?.data?.message || "Failed to load category."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+        setNotes(sortedNotes);
+      } catch (err) {
+        setError(
+          err.response?.data?.message || "Failed to load category."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchCategoryAndNotes();
-}, [categoryId, loggedInUser]);
+    fetchCategoryAndNotes();
+  }, [categoryId, loggedInUser]);
 
 
 
@@ -123,7 +124,7 @@ const Category = () => {
   const handleCreateNote = () => {
     navigate("/CreateNote", { state: { category } });
   };
-  
+
   const handleEditSave = async () => {
     setSaving(true);
     try {
@@ -220,12 +221,19 @@ const Category = () => {
 
 
       <div
-        className="mb-8 mx-auto w-full md:p-10 shadow-xl border border-muted rounded-b-lg"
+        className="mb-8 mx-auto w-full p-10 shadow-xl border border-muted rounded-b-lg"
       >
         <MarkdownUploadBox
           dragActive={dragActive}
           dragHandlers={dragHandlers}
           onFileSelect={handleUpload}
+        />
+
+        <UploadQueueDisplay
+          getUploadQueue={getUploadQueue}
+          clearUploadQueue={clearUploadQueue}
+          resumeQueue={resumeQueue}
+          categoryId={categoryId}
         />
 
         <CategoryNotesList

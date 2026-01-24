@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 import axiosInstance from "@/api/axiosInstance";
 ;
@@ -132,18 +132,46 @@ export default function useMarkdownUploadQueue(categoryId, setNotes) {
         );
       }
     } catch (err) {
+      const isRateLimit = err?.response?.status === 429;
       toast.error(
         err?.response?.data?.error ||
         `Failed to upload "${title}"`
       );
+
+      if (isRateLimit) {
+        console.warn("⚠️ Rate limit reached. Stopping upload queue.");
+        processingRef.current = false;
+        return;
+      }
     }
 
     queue = getUploadQueue();
     queue.shift();
     setUploadQueue(queue);
 
-    setTimeout(processQueue, 400);
+    if (processingRef.current) {
+      setTimeout(processQueue, 400);
+    }
   };
 
-  return { handleUpload };
+  const resumeQueue = () => {
+    if (!processingRef.current) {
+      processQueue();
+    }
+  }
+
+  // Clear queue on mount (page refresh) - user must manually re-upload
+  useEffect(() => {
+    clearUploadQueue();
+    processingRef.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only on mount
+
+  return {
+    handleUpload,
+    getUploadQueue,
+    clearUploadQueue,
+    processingRef,
+    resumeQueue
+  };
 }

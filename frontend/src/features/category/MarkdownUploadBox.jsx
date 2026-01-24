@@ -61,6 +61,8 @@ const MarkdownUploadBox = ({
 
       <div className="text-xs text-gray-500 mt-1 text-center w-full">
         Upload or drag and drop a Markdown (.md) file to add as a note.
+        <br />
+        <span className="text-red-400">If a file fails to upload, Please wait some minutes, refresh the page and try again.</span>
         <div className="mt-2 text-xs text-blue-500 font-semibold">
           Note: There will be a 5 second gap between each note.<br />
           Please keep your PC on and{" "}

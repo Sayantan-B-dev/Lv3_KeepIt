@@ -60,7 +60,7 @@ const TagInput = ({ value = [], onChange, placeholder = 'Add tags...', disabled 
       {value.map((tag, idx) => (
         <span
           key={tag + idx}
-          className="backdrop-blur-md bg-black/70 border border-black px-3 py-1 rounded-full text-xs font-semibold flex items-center text-white shadow-sm animate-fadeIn w-fit max-w-full mb-2"
+          className="backdrop-blur-md bg-black/70  border border-muted px-3 py-1 rounded-full text-xs font-semibold flex items-center text-white shadow-sm animate-fadeIn w-fit max-w-full mb-2"
         >
           {tag}
           {!disabled && (
