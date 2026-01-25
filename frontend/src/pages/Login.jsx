@@ -185,7 +185,7 @@ const Login = () => {
         <div className="flex justify-center w-full ">
           <button
             type="button"
-            onClick={() => window.open("http://localhost:5000/api/auth/google", "_self")}
+            onClick={() => window.open(`${import.meta.env.VITE_API_BASE_URL}/api/auth/google`, "_self")}
             className="
                     flex items-center gap-3
                     px-6 py-3
