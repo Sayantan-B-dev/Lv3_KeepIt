@@ -35,7 +35,8 @@ router.get(
     (req, res) => {
         // Successful authentication
         req.flash('success', 'Logged in via Google');
-        res.redirect("http://localhost:5173/");
+        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173/";
+        res.redirect(frontendUrl);
     }
 );
 
