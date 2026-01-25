@@ -58,7 +58,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <ScrollToTop />
-      {/* <div className="absolute inset-0 z-0 ">
+      <div className="absolute inset-0 z-[-500] ">
           <LiquidEther
             colors={['#dad4ee', '#dac2d9', '#ffffff']}
             mouseForce={10}
@@ -76,7 +76,7 @@ function App() {
             autoResumeDelay={300}
             autoRampDuration={0.6}
           />
-      </div> */}
+      </div>
       {/* Sidebar */}
       <SideNavbar open={sidebarOpen} setOpen={setSidebarOpen} />
 

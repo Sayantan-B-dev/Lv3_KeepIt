@@ -14,7 +14,7 @@ import {
   AccessDenied
 } from "@/features/notes";
 import { noteCache } from "@/utils/noteCache";
-import { exportCategoryAsZip } from "@/utils/exportCategoryAsZip";
+import { exportNoteAsMd } from "@/utils/exportNoteAsMd";
 import DownloadProgress from "@/features/category/DownloadProgress";
 
 const CONTENT_MAX_LENGTH = 100000;
@@ -186,30 +186,11 @@ const Note = () => {
   const handleDownloadNote = async () => {
     if (!note) return;
 
-    setExportState({ isExporting: true, progress: 0, currentTitle: "Preparing download..." });
-
     try {
-      // Re-use export utility for single note
-      await exportCategoryAsZip(
-        { name: note.title },
-        [note],
-        ({ progress, title }) => {
-          setExportState(prev => ({
-            ...prev,
-            progress: progress,
-            currentTitle: title
-          }));
-        }
-      );
-
-      // Delay so user actually sees the 100% bar
-      await new Promise(resolve => setTimeout(resolve, 800));
-
+      exportNoteAsMd(note);
       toast.success("Note exported successfully!");
     } catch (err) {
       toast.error("Failed to export note.");
-    } finally {
-      setExportState({ isExporting: false, progress: 0, currentTitle: "" });
     }
   };
 

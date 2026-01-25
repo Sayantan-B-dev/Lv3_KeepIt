@@ -44,7 +44,6 @@ app.use(
       if (!origin) return callback(null, true);
       const allowedOrigins = [
         process.env.FRONTEND_URL?.trim().replace(/\/$/, ""),
-        process.env.FRONTEND_URL_MOBILE?.trim().replace(/\/$/, ""),
       ].filter(Boolean);
 
       const incoming = origin.replace(/\/$/, "");
