@@ -11,6 +11,9 @@ import DeleteAccountSection from "@/features/profile/DeleteAccountSection";
 import DeleteAccountModal from "@/features/profile/DeleteAccountModal";
 
 import { handleProfileImage } from "@/utils/handleProfileImage";
+import UserListModal from "@/features/profile/UserListModal";
+import CategoryStatsModal from "@/features/profile/CategoryStatsModal";
+import { toast } from "react-toastify";
 
 const PAGE_LIMIT = 10;
 
@@ -55,6 +58,11 @@ const Profile = () => {
   const [notesError, setNotesError] = useState({});
   const [categoryPage, setCategoryPage] = useState({});
   const [categoryHasMore, setCategoryHasMore] = useState({});
+
+  /* ================= SOCIAL ================= */
+
+  const [activeModal, setActiveModal] = useState(null); // 'followers', 'following', 'categories'
+  const [socialLoading, setSocialLoading] = useState(false);
 
   /* ================= FETCH PROFILE ================= */
 
@@ -191,6 +199,35 @@ const Profile = () => {
     }
   };
 
+  /* ================= SOCIAL ACTIONS ================= */
+
+  const handleFollowToggle = async () => {
+    if (!user) {
+      toast.error("Please log in to follow users");
+      return;
+    }
+
+    setSocialLoading(true);
+    try {
+      const isFollowing = profile.isFollowing;
+      const endpoint = `/api/profile/${profile._id}/${isFollowing ? "unfollow" : "follow"}`;
+      const res = await axiosInstance.post(endpoint);
+
+      // Update local profile state
+      setProfile(prev => ({
+        ...prev,
+        isFollowing: !isFollowing,
+        followers: res.data.followers || prev.followers
+      }));
+
+      toast.success(isFollowing ? "Unfollowed" : "Followed");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to update follow status");
+    } finally {
+      setSocialLoading(false);
+    }
+  };
+
   /* ================= DELETE ================= */
 
 
@@ -230,6 +267,14 @@ const Profile = () => {
           fileInputRef={fileInputRef}
           handleProfileImageChange={handleProfileImageChange}
           handleCreateNote={() => navigate("/CreateNote")}
+          onEdit={() => {
+            setUpdateError(null);
+            setUpdateSuccess(null);
+            setEditMode(true);
+          }}
+          isFollowing={profile.isFollowing}
+          onFollowToggle={handleFollowToggle}
+          onStatClick={(type) => setActiveModal(type)}
         />
 
         {isOwnProfile && (
@@ -283,6 +328,27 @@ const Profile = () => {
           />
         )}
       </div>
+
+      {/* Social & Stats Modals */}
+      <UserListModal
+        open={activeModal === 'followers'}
+        onClose={() => setActiveModal(null)}
+        title="Followers"
+        userId={profile._id}
+        type="followers"
+      />
+      <UserListModal
+        open={activeModal === 'following'}
+        onClose={() => setActiveModal(null)}
+        title="Following"
+        userId={profile._id}
+        type="following"
+      />
+      <CategoryStatsModal
+        open={activeModal === 'categories'}
+        onClose={() => setActiveModal(null)}
+        categories={categories}
+      />
     </>
   );
 };

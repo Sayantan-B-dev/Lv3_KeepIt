@@ -12,18 +12,29 @@ import generateOTP from '../utils/generateOTP.js';
 export const getUserProfile = async (req, res) => {
   try {
     const { userId } = req.params;
-    // Only select public fields
-    const user = await User.findById(userId).populate({
-      path: "categories",
-      populate: {
-        path: "categoryType",
-        select: "name",
-      },
-    });
+    const currentUserId = req.user?._id;
+
+    const user = await User.findById(userId)
+      .populate({
+        path: "categories",
+        populate: {
+          path: "categoryType",
+          select: "name",
+        },
+      })
+      .lean();
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json(user);
+
+    // Add isFollowing flag if requester is logged in
+    let isFollowing = false;
+    if (currentUserId) {
+      isFollowing = user.followers.some(id => String(id) === String(currentUserId));
+    }
+
+    res.json({ ...user, isFollowing });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -265,5 +276,35 @@ export const deleteUser = async (req, res) => {
     res.json({ message: "User and all related data deleted." });
   } catch (err) {
     res.status(500).json({ error: "Failed to delete user", details: err.message });
+  }
+};
+
+// Get followers of a user
+export const getFollowers = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId)
+      .populate("followers", "username profileImage bio isVerified")
+      .select("followers");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user.followers);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+// Get users followed by a user
+export const getFollowing = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId)
+      .populate("following", "username profileImage bio isVerified")
+      .select("following");
+
+    if (!user) return res.status(404).json({ message: "User not found" });
+    res.json(user.following);
+  } catch (err) {
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
