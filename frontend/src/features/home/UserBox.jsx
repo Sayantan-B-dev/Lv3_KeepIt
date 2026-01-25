@@ -12,7 +12,9 @@ const underlineAnimation = `
   hover:after:origin-left hover:after:scale-x-100
 `;
 
-const UserBox = ({ users }) => {
+const UserBox = ({ users = [] }) => {
+  if (!Array.isArray(users)) return null;
+
   return (
     <>
       {users.map((user) => (

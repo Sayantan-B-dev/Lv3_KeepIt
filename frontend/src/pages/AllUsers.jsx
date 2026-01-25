@@ -30,10 +30,11 @@ const AllUsers = () => {
         },
       });
 
-      const data = res.data || [];
+      const data = res.data;
+      const newUsers = Array.isArray(data) ? data : (data.notes || data.users || []);
 
       setUsers(prev =>
-        append ? [...prev, ...data] : data
+        append ? [...prev, ...newUsers] : newUsers
       );
 
       setHasMore(data.length === PAGE_SIZE);
@@ -77,7 +78,7 @@ const AllUsers = () => {
 
       {/* Initial loading */}
       {loading && (
-        <Loader  variant="dots" text="Loading…" />
+        <Loader variant="dots" text="Loading…" />
       )}
 
       {!loading && users.length === 0 && (
@@ -94,12 +95,10 @@ const AllUsers = () => {
         border border border-muted
         bg-type-1 backdrop-blur-md
       " >
-          {users.map(user => (
-            <UserBox key={user._id} users={[user]} />
-          ))}
+          <UserBox users={users} />
         </div>
       )}
-      {loadingMore &&<Loader  variant="dots" text="Loading…" />}
+      {loadingMore && <Loader variant="dots" text="Loading…" />}
       {hasMore && !loading && !loadingMore && (
         <div className="flex justify-center mt-6">
           <DottedButton

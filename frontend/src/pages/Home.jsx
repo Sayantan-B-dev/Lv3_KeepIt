@@ -22,7 +22,8 @@ const Home = () => {
         const response = await axiosInstance.get('/api/profile/users', {
           params: { page: 1, limit: 24 }
         });
-        setUsers(response.data);
+        const data = response.data;
+        setUsers(Array.isArray(data) ? data : (data.notes || data.users || []));
       } catch (err) {
         console.error('Error details:', err.response || err);
         setError('Failed to load users');
