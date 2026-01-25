@@ -60,7 +60,7 @@ const Hero = ({ user, loading, error, isAuthenticated }) => {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-none">
+            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-none w-full m-auto">
               <DottedButton
                 text="Create Note"
                 onClick={() => {

@@ -10,7 +10,7 @@ mongoose
   .connect(process.env.DATABASE_URL)
   .then(() => {
     console.log("DB Connected!!");
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server running on http://localhost:${PORT} in ${process.env.NODE_ENV} mode`);
     });
   })

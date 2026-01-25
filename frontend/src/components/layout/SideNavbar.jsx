@@ -21,7 +21,7 @@ const SIDEBAR_WIDTH = "w-64";
 
 const sidebarBaseClass = `
   fixed top-3 left-3
-  h-[calc(100vh-1.5rem)] ${SIDEBAR_WIDTH}
+  h-[calc(100svh-1.5rem)] ${SIDEBAR_WIDTH}
   rounded-xl
   px-4 py-3
   z-50
@@ -139,12 +139,12 @@ export function SideNavbar({ open, setOpen }) {
     () =>
       isAuthenticated
         ? [
-            { label: "My Profile", href: "/profile/MyProfile", icon: Icons.user },
-            { label: "My Category Types", href: "/my-category-types", icon: Icons.tag },
-            { label: "My Categories", href: "/my-categories", icon: Icons.grid },
-            { label: "My Notes", href: "/my-notes", icon: Icons.list },
-            { label: "My Tags", href: "/my-tags", icon: Icons.tag },
-          ]
+          { label: "My Profile", href: "/profile/MyProfile", icon: Icons.user },
+          { label: "My Category Types", href: "/my-category-types", icon: Icons.tag },
+          { label: "My Categories", href: "/my-categories", icon: Icons.grid },
+          { label: "My Notes", href: "/my-notes", icon: Icons.list },
+          { label: "My Tags", href: "/my-tags", icon: Icons.tag },
+        ]
         : [],
     [isAuthenticated]
   );
@@ -195,7 +195,7 @@ export function SideNavbar({ open, setOpen }) {
 
       <aside className={`${sidebarBaseClass} ${open ? "translate-x-0" : sidebarHiddenClass}`}>
         <div className={sidebarHeaderClass} onClick={() => navigate("/")}>
-            Re-Docs
+          Re-Docs
         </div>
 
         {isAuthenticated && user && (

@@ -31,6 +31,7 @@ const RotatingKeepIt = lazy(() => import("@/components/common/RotatingKeepIt"));
 const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
 import LiquidEther from "@/components/advanced/LiquidEther";
+import ScrollToTop from "@/components/common/ScrollToTop";
 
 function App() {
   const { user, loading: authLoading } = useAuth();
@@ -56,6 +57,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ScrollToTop />
       {/* <div className="absolute inset-0 z-0 ">
           <LiquidEther
             colors={['#dad4ee', '#dac2d9', '#ffffff']}

@@ -42,10 +42,17 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin) return callback(null, true);
-      const allowed = process.env.FRONTEND_URL?.replace(/\/$/, "");
+      const allowedOrigins = [
+        process.env.FRONTEND_URL?.trim().replace(/\/$/, ""),
+        process.env.FRONTEND_URL_MOBILE?.trim().replace(/\/$/, ""),
+      ].filter(Boolean);
+
       const incoming = origin.replace(/\/$/, "");
-      if (incoming === allowed) callback(null, true);
-      else callback(new Error("Not allowed by CORS"));
+      if (allowedOrigins.includes(incoming)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
     },
     credentials: true,
   })

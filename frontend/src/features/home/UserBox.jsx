@@ -20,11 +20,12 @@ const UserBox = ({ users }) => {
           key={user._id}
           whileHover={{ scale: 1.03 }}
           transition={{ type: "spring", stiffness: 280, damping: 18 }}
+          className=""
         >
           <Link
             to={`/profile/${user._id}`}
             className="
-              inline-flex
+              flex
               rounded-xl
               border border border-muted
               bg-type-1 backdrop-blur-md
@@ -32,9 +33,10 @@ const UserBox = ({ users }) => {
               shadow-lg hover:shadow-2xl
               transition-all duration-300
               p-4
+              min-w-[140px]
             "
           >
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full text-center sm:text-left">
               {/* Avatar */}
               {user.profileImage?.url ? (
                 <motion.img
@@ -75,7 +77,7 @@ const UserBox = ({ users }) => {
 
               {/* User Info */}
               <motion.div
-                className="flex flex-col"
+                className="flex flex-col items-center sm:items-start"
                 whileHover={{ x: 4 }}
                 transition={{ type: "spring", stiffness: 280, damping: 18 }}
               >

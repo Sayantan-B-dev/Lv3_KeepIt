@@ -49,7 +49,7 @@ const Home = () => {
 
       <div className="
         w-full mb-5 p-5
-        flex flex-wrap gap-4
+        flex flex-wrap justify-center sm:justify-start gap-4
         rounded-xl
         border border border-muted
         bg-type-1 backdrop-blur-md
