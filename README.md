@@ -33,6 +33,7 @@ Note: this is deployed on free tair so the backend needs a little bit of time to
 
 A full-stack MERN (MongoDB, Express, React, Node) knowledge and note management platform. Key features:
 
+* .md supported text format
 * Session-based authentication (local + Google OAuth).
 * User-owned CategoryTypes → Categories → Notes hierarchy with public/private visibility.
 * Notes with Markdown support, tags, likes, and export (MD / ZIP).
