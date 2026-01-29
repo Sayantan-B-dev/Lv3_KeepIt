@@ -343,13 +343,13 @@ erDiagram
 
 ```mermaid
 flowchart LR
-  A[Client (Browser)] -->|XHR/Fetch| B[Frontend Axios Instance]
-  B -->|POST /api/auth/login| C[Express Route: auth.routes]
-  C --> D[auth.controller.login]
-  D --> E[User Model / Passport Local Strategy]
-  E --> F[MongoDB]
-  F -->|session created| G[connect-mongo persisted session]
-  G --> H[Client receives cookie]
+  A["Client - Browser"] -->|XHR/Fetch| B["Frontend Axios Instance"]
+  B -->|POST /api/auth/login| C["Express Route - auth.routes"]
+  C --> D["auth.controller.login"]
+  D --> E["User Model / Passport Local Strategy"]
+  E --> F[(MongoDB)]
+  F -->|session created| G["connect-mongo persisted session"]
+  G --> H["Client receives cookie"]
 
   subgraph Backend
     C
@@ -357,6 +357,7 @@ flowchart LR
     E
     F
   end
+
 ```
 
 ## Note create flow (sequence)

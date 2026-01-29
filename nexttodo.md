@@ -1,5 +1,5 @@
 # TODO
 
 ## High Priority
-- [ ] Ftoast message styling
-- [ ] session check
+- [ ] toast message styling
+- [ ] background hover animation height fix
