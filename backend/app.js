@@ -39,20 +39,21 @@ app.get("/api/health", (req, res) => {
 app.use(compression());
 
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) return callback(null, true);
-      const allowedOrigins = [
-        process.env.FRONTEND_URL?.trim().replace(/\/$/, ""),
-      ].filter(Boolean);
+   cors({
+  //   origin: (origin, callback) => {
+  //     if (!origin) return callback(null, true);
+  //     const allowedOrigins = [
+  //       process.env.FRONTEND_URL?.trim().replace(/\/$/, ""),
+  //     ].filter(Boolean);
 
-      const incoming = origin.replace(/\/$/, "");
-      if (allowedOrigins.includes(incoming)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
+  //     const incoming = origin.replace(/\/$/, "");
+  //     if (allowedOrigins.includes(incoming)) {
+  //       callback(null, true);
+  //     } else {
+  //       callback(new Error("Not allowed by CORS"));
+  //     }
+  //   },
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   })
 );
@@ -94,6 +95,7 @@ const sessionConfig = {
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  proxy: true,
   cookie: {
     httpOnly: true,
     sameSite: isProduction ? "none" : "lax",
@@ -129,7 +131,7 @@ const loginLimiter = rateLimit({
 ====================================================== */
 
 // Auth (session-based)
-sessionRouter.use("/auth/login", loginLimiter, authRoutes);
+// sessionRouter.use("/auth/login", loginLimiter, authRoutes);
 sessionRouter.use("/auth", authRoutes);
 
 // Protected session routes

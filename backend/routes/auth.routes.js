@@ -30,14 +30,19 @@ router.route('/reset-password/:resetToken').post(resetPassword);
 router.get("/google", passport.authenticate("google", { scope: ["email", "profile"], prompt: "select_account" }));
 
 router.get(
-    "/google/callback",
-    passport.authenticate("google", { failureRedirect: "/login", failureFlash: true }),
-    (req, res) => {
-        // Successful authentication
-        req.flash('success', 'Logged in via Google');
-        const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173/";
-        res.redirect(frontendUrl);
-    }
+  "/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  }),
+  (req, res) => {
+    req.flash("success", "Logged in via Google");
+
+    req.session.save(() => {
+      res.redirect(process.env.FRONTEND_URL);
+    });
+  }
 );
+
 
 export default router

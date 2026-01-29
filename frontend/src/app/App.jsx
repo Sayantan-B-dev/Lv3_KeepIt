@@ -58,7 +58,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col">
       <ScrollToTop />
-      <div className="absolute inset-0 z-[-500] ">
+      <div className="absolute inset-0 z-[-500] fixed">
           <LiquidEther
             colors={['#dad4ee', '#dac2d9', '#ffffff']}
             mouseForce={10}
