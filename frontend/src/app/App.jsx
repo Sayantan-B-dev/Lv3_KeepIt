@@ -95,9 +95,9 @@ function App() {
         <Suspense fallback={<Loading />}>
           {!isAuthenticated && <Notice
             variant="warning"
-            message="Issues may occur during loggin with Google on Brave due to strict privacy settings. 
-            Please turn off the brave shield by clicking on the icon next to the URL in the address bar.
-            You can also login with credentials or use another browser."
+            message="Issues may occur when signing in with Google on Brave due to its strict privacy settings.
+If you face login problems, click the Brave icon next to the address bar, open Advanced controls, and allow all cookies (or temporarily turn Shields off) for this site.
+Alternatively, you can sign in using email and password or use a different browser."
           />}
           <Routes>
             <Route path="/" element={<Home />} />
