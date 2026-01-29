@@ -30,8 +30,9 @@ const CategoryType = lazy(() => import("@/pages/CategoryType"));
 const RotatingKeepIt = lazy(() => import("@/components/common/RotatingKeepIt"));
 const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
-import LiquidEther from "@/components/advanced/LiquidEther";
-import ScrollToTop from "@/components/common/ScrollToTop";
+const LiquidEther = lazy(() => import("@/components/advanced/LiquidEther"));
+const ScrollToTop = lazy(() => import("@/components/common/ScrollToTop"));
+const Notice = lazy(() => import("@/components/common/Notice"));
 
 function App() {
   const { user, loading: authLoading } = useAuth();
@@ -59,24 +60,26 @@ function App() {
     <div className="min-h-screen flex flex-col">
       <ScrollToTop />
       <div className="absolute inset-0 z-[-500] fixed">
-          <LiquidEther
-            colors={['#dad4ee', '#dac2d9', '#ffffff']}
-            mouseForce={10}
-            cursorSize={40}
-            isViscous
-            viscous={30}
-            iterationsViscous={4}
-            iterationsPoisson={4}
-            resolution={0.25}
-            isBounce={false}
-            autoDemo
-            autoSpeed={0.5}
-            autoIntensity={2.2}
-            takeoverDuration={0.25}
-            autoResumeDelay={300}
-            autoRampDuration={0.6}
-          />
+        <LiquidEther
+          colors={['#dad4ee', '#dac2d9', '#ffffff']}
+          mouseForce={10}
+          cursorSize={40}
+          isViscous
+          viscous={30}
+          iterationsViscous={4}
+          iterationsPoisson={4}
+          resolution={0.25}
+          isBounce={false}
+          autoDemo
+          autoSpeed={0.5}
+          autoIntensity={2.2}
+          takeoverDuration={0.25}
+          autoResumeDelay={300}
+          autoRampDuration={0.6}
+        />
       </div>
+
+
       {/* Sidebar */}
       <SideNavbar open={sidebarOpen} setOpen={setSidebarOpen} />
 
@@ -90,6 +93,12 @@ function App() {
         `}
       >
         <Suspense fallback={<Loading />}>
+          {!isAuthenticated && <Notice
+            variant="warning"
+            message="Issues may occur during loggin with Google on Brave due to strict privacy settings. 
+            Please turn off the brave shield by clicking on the icon next to the URL in the address bar.
+            You can also login with credentials or use another browser."
+          />}
           <Routes>
             <Route path="/" element={<Home />} />
 
