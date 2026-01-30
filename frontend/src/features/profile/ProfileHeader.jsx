@@ -21,6 +21,7 @@ const ProfileHeader = ({
   isFollowing,
   onFollowToggle,
   onStatClick,
+  handleProfileImageChange,
 }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
