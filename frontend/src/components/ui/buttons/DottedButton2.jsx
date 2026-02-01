@@ -11,7 +11,7 @@ const DottedButton2 = ({
       onClick={onClick}
       style={style}
       className={`
-        w-full
+        w-fit
         h-full
         flex
         flex-col

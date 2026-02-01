@@ -94,11 +94,19 @@ const NoteHeader = ({
               className="w-full text-center text-xl border border-muted rounded px-3 py-2 bg-transparent"
             />
           ) : (
-            <div className="text-xl text-center border-b border-muted py-2 flex items-center justify-center gap-2">
+            <div className="text-xl text-center border-b border-muted py-2 flex items-center justify-center gap-2 ">
               {note.isPrivate && (
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500" title="Private Note"><path d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm4 10.723V20h-2v-2.277a1.993 1.993 0 01.567-3.677 2.001 2.001 0 011.433 3.677z" /></svg>
               )}
-              {note.title}
+              <span
+                className="
+      break-all
+      max-w-full
+      leading-snug
+    "
+              >
+                {note.title}
+              </span>
             </div>
           )}
         </div>
@@ -163,64 +171,74 @@ const NoteHeader = ({
         </div>
 
         {/* Category & Tags */}
-        <div className="flex flex-row items-start w-full gap-2">
-          <div className="flex flex-col items-start w-full gap-2 text-sm mt-2">
+        <div className="flex flex-col lg:flex-row w-full gap-4">
+          {/* Left: meta info */}
+          <div className="flex flex-col w-full gap-3 text-sm">
+            <hr className="border border-muted h-[1px] w-full" />
 
-            <div className="flex flex-wrap gap-2 items-center">
-              <span className="font-mono">Category:</span>
+            {/* Category */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+              <span className="font-mono shrink-0">Category:</span>
               <DottedButton2
                 text={category?.name || note.category}
                 onClick={() => handleCategoryClick(category._id)}
               />
             </div>
 
-            <div className="flex flex-wrap gap-2 items-center">
-              <span className="font-mono">Tags:</span>
+            {/* Tags */}
+            {note.tags?.length > 0 &&
+              <div className="flex flex-col gap-2">
+                <span className="font-mono">Tags:</span>
 
-              {(editMode ? editTags : note.tags || []).map((tag, i) => (
-                <span
-                  key={tag + i}
-                  className="px-3 py-1 rounded-full text-xs border border-muted bg-type-2 shadow flex items-center gap-1"
-                  onClick={
-                    !editMode
-                      ? () => navigate(`/tag/${encodeURIComponent(tag)}`)
-                      : undefined
-                  }
-                >
-                  #{tag}
-
-                  {editMode && (
-                    <button
-                      type="button"
-                      disabled={updateLoading}
-                      title="Remove tag"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setTagToDelete(tag);
-                      }}
-                      className="ml-1 text-red-500 hover:text-red-700 disabled:opacity-40"
+                <div className="flex flex-wrap gap-2">
+                  {(editMode ? editTags : note.tags || []).map((tag, i) => (
+                    <span
+                      key={tag + i}
+                      className="px-3 py-1 rounded-full text-xs border border-muted bg-type-2 shadow flex items-center gap-1 max-w-full"
+                      onClick={
+                        !editMode
+                          ? () => navigate(`/tag/${encodeURIComponent(tag)}`)
+                          : undefined
+                      }
                     >
-                      ×
-                    </button>
-                  )}
-                </span>
-              ))}
-            </div>
+                      <span className="truncate">#{tag}</span>
 
+                      {editMode && (
+                        <button
+                          type="button"
+                          disabled={updateLoading}
+                          title="Remove tag"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTagToDelete(tag);
+                          }}
+                          className="ml-1 text-red-500 hover:text-red-700 disabled:opacity-40"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            }             
+            
+            <hr className="border border-muted h-[1px] w-full" />
+            {/* Add tag */}
             {editMode && (
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
                 <input
                   name="newTag"
                   value={newTag}
                   onChange={handleInputChange}
-                  className="px-3 py-1 text-xs rounded-full border border-muted bg-transparent"
+                  className="px-3 py-1 text-xs rounded-full border border-muted bg-transparent w-full sm:w-auto"
                   placeholder="Add tag"
                 />
                 <button
                   type="button"
                   onClick={handleAddTag}
                   disabled={!newTag.trim()}
-                  className="px-2 rounded-full border border-muted"
+                  className="px-3 py-1 rounded-full border border-muted"
                 >
                   +
                 </button>
@@ -228,38 +246,30 @@ const NoteHeader = ({
             )}
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3 mt-3 flex-wrap justify-end">
+          {/* Right: actions */}
+          <div className="flex flex-row lg:flex-col gap-2 lg:gap-3 w-full lg:w-auto justify-start lg:justify-end">
             {isAuthenticated && !editMode && (
               <ButtonType3
-                text="Download(.md)"
+                text="Download (.md)"
                 onClick={onDownloadNote}
               />
             )}
 
             {isOwner && (
-              <div className="flex gap-3">
+              <>
                 {!editMode ? (
-                  <ButtonType3
-                    text="Edit"
-                    onClick={handleEdit}
-                  />
+                  <ButtonType3 text="Edit" onClick={handleEdit} />
                 ) : (
                   <>
-                    <ButtonType3
-                      text="Save"
-                      onClick={handleSave}
-                    />
-                    <ButtonType3
-                      text="Cancel"
-                      onClick={handleCancel}
-                    />
+                    <ButtonType3 text="Save" onClick={handleSave} />
+                    <ButtonType3 text="Cancel" onClick={handleCancel} />
                   </>
                 )}
-              </div>
+              </>
             )}
           </div>
         </div>
+
       </div>
     </div>
   );

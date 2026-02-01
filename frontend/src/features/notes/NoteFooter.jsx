@@ -21,23 +21,25 @@ const NoteFooter = ({ note, updateError, updateSuccess }) => {
       });
       const filename = `${sanitizeFilename(note?.title)}.md`;
       saveAs(blob, filename);
-    } catch (_) {}
+    } catch (_) { }
   };
 
   return (
     <>
       <div className="text-center font-mono mb-5">
-        <p className="text-type-3 text-sm italic">
+        <p className="text-type-3 text-sm italic ">
           Viewing note{" "}
-          <span className="font-semibold text-type-1">
+          <span className="font-semibold text-type-1 break-all
+      max-w-full
+      leading-snug">
             {note.title}
           </span>
           .
         </p>
 
         <div className="mt-4 flex justify-center">
-          <DottedButton onClick={handleDownloadMarkdown} text="Download .md"/>
-            
+          <DottedButton onClick={handleDownloadMarkdown} text="Download .md" />
+
         </div>
       </div>
 

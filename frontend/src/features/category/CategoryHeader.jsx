@@ -170,6 +170,7 @@ const CategoryHeader = ({
                       </div>
                     </div>
                   )}
+
                 </div>
               </>
             )}
