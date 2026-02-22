@@ -32,7 +32,7 @@ router.get("/google", passport.authenticate("google", { scope: ["email", "profil
 router.get(
   "/google/callback",
   passport.authenticate("google", {
-    failureRedirect: "/login",
+    failureRedirect: `${process.env.FRONTEND_URL}/login`,
     failureFlash: true,
   }),
   (req, res) => {
