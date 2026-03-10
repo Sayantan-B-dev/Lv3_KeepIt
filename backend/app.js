@@ -84,9 +84,22 @@ if (isProduction) {
   app.set("trust proxy", 1);
 }
 
+if (!process.env.DATABASE_URL) {
+  console.warn("[warning] DATABASE_URL is not defined – session persistence will fail if no store is available.");
+}
+
+if (!process.env.SESSION_SECRET) {
+  console.warn("[warning] SESSION_SECRET is not defined – sessions may be insecure or will break on every restart.");
+}
+
 const sessionStore = MongoStore.create({
   mongoUrl: process.env.DATABASE_URL,
   touchAfter: 24 * 60 * 60,
+});
+
+// Log any store errors so the problem is visible in the logs
+sessionStore.on("error", (err) => {
+  console.error("[session store error]", err);
 });
 
 const sessionConfig = {

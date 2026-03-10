@@ -27,6 +27,11 @@ npm run dev
 
 Note: this is deployed on free tair so the backend needs a little bit of time to wake up after being idle for a while. 
 
+> **Session persistence warning:** The free-tier service will restart or hibernate the backend frequently. If your
+> `DATABASE_URL` targets an ephemeral/local Mongo instance or any data store that is wiped on restart, all
+> login sessions stored via `connect-mongo` will vanish and users will have to sign in again. Always use a
+> hosted/persistent database (Atlas, mLab, etc.) or switch to a stateless token scheme to avoid this.
+
 ---
 
 # Overview
@@ -67,12 +72,15 @@ CLOUDINARY_CLOUD_NAME=demo-cloud
 CLOUDINARY_URL=cloudinary://123456789012345:cloudinary_dummy_secret_key_123@demo-cloud
 
 DATABASE_URL=mongodb+srv://demoUser:demoPassword@cluster0.mongodb.net/demoDB?retryWrites=true&w=majority
+# ⚠️ When deploying (Render free tier, Heroku, etc.) this must point to a **persistent** database.
+# Ephemeral or in‑container MongoDB instances are cleared on restart and will invalidate all sessions,
+# forcing users to re‑login every time the server process is recycled.
 
 FRONTEND_URL=http://localhost:5173
 
 NODE_ENV=development
 OPENAI_API_KEY=sk-demo_openai_key_1234567890
-SESSION_SECRET=your_long_secret_here
+SESSION_SECRET=your_long_secret_here  # must be fixed across restarts; changing it invalidates existing sessions
 
 EMAIL_USER=demo_user@example.com
 EMAIL_FROM=demo_user@example.com
