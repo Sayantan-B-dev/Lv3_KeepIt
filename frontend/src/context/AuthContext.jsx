@@ -8,24 +8,31 @@ const AuthProvider = ({ children }) => {
     const savedUser = localStorage.getItem("user");
     return savedUser ? JSON.parse(savedUser) : null;
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !localStorage.getItem("user"));
 
 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        setLoading(true);
-        const res = await axios.get("/api/auth/check", { withCredentials: true });
-        // Backend now returns 200 with { authenticated: true/false, user: {...} }
+        // Strict timeout for auth check to handle dead backend
+        const res = await axios.get("/api/auth/check", {
+          withCredentials: true,
+          timeout: 5000
+        });
+        
         if (res.data && res.data.authenticated && res.data.user) {
           setUser(res.data.user);
         } else {
           setUser(null);
         }
       } catch (err) {
-        // Only log actual errors (network issues, etc.), not auth failures
-        console.error("Error checking authentication:", err);
-        setUser(null);
+        // If server is down (ECONNREFUSED) or timeout, we keep the cached user
+        // but set loading to false to unblock UI
+        console.warn("Auth check failed (backend may be down):", err.message);
+        // We don't nullify user on network error to allow offline viewing of cached state
+        if (err.code !== 'ECONNABORTED' && err.message !== 'Network Error') {
+           setUser(null);
+        }
       } finally {
         setLoading(false);
       }

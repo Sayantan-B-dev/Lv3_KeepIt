@@ -233,11 +233,49 @@ const Profile = () => {
 
 
   /* ================= GUARDS ================= */
+  if (authLoading || loading) {
+    return (
+      <div className="flex flex-1 items-center justify-center p-12">
+        <Loading />
+      </div>
+    );
+  }
 
-  if (authLoading || loading) return <Loading />;
-  if (authError) return <div className="text-red-500">{authError}</div>;
-  if (error) return <div className="text-red-500">{error}</div>;
-  if (!profile) return <div>User not found.</div>;
+  if (authError || error) {
+    return (
+      <div className="flex flex-1 items-center justify-center p-8">
+        <div className="glass-panel border-muted p-8 rounded-2xl text-center max-w-md shadow-2xl">
+          <div className="text-red-400 text-5xl mb-4 font-serif">!</div>
+          <h2 className="text-white text-xl font-semibold mb-2">Error Occurred</h2>
+          <p className="text-red-200/80 mb-6">{authError || error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-6 py-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-all text-white"
+          >
+            Retry Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="flex flex-1 items-center justify-center p-8">
+        <div className="glass-panel border-muted p-12 rounded-2xl text-center shadow-xl">
+          <div className="text-white/40 text-6xl mb-4">?</div>
+          <h2 className="text-white text-xl font-medium">User not found.</h2>
+          <p className="text-white/60 mt-2">The profile you are looking for might have been moved or deleted.</p>
+          <button
+            onClick={() => navigate("/")}
+            className="mt-6 px-4 py-2 text-white/80 hover:text-white underline underline-offset-4"
+          >
+            Return Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const profileImageSrc =
     editMode && profileImagePreview

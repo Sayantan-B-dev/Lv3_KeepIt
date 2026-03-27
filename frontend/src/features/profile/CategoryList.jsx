@@ -101,6 +101,7 @@ const CategoryList = ({
                             font-semibold
                             flex justify-between items-center
                             break-all
+                            cursor-pointer
                           "
                         >
                           <span>{cat.name}</span>
@@ -114,7 +115,7 @@ const CategoryList = ({
                             onClick={() =>
                               handleCategoryClick(cat._id)
                             }
-                            className="px-3 py-2 border border-dashed rounded-lg"
+                            className="px-3 py-2 border border-dashed rounded-lg cursor-pointer"
                           >
                             ✎
                           </button>
@@ -147,6 +148,7 @@ const CategoryList = ({
                                         rounded-lg
                                         border border-muted
                                         break-all
+                                        cursor-pointer
                                       "
                                     >
                                       {note.title}

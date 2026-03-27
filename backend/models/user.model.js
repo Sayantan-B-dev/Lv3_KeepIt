@@ -33,8 +33,12 @@ const userSchema = new mongoose.Schema({
 
 userSchema.plugin(passportLocalMongoose);
 
-// Keep only non-duplicate indexes
-userSchema.index({ createdAt: -1 });
+// Optimized Indexes
+userSchema.index({ registrationIp: 1, createdAt: -1 }); // Registration rate limit
+userSchema.index({ username: 1 });                       // User lookups by name
+userSchema.index({ createdAt: -1 });                    // Global user sorting
+userSchema.index({ followers: 1 });                     // Fast cleanup during deletions
+userSchema.index({ following: 1 });                     // Link lookups & deletions
 
 const User = mongoose.model("User", userSchema);
 export default User;

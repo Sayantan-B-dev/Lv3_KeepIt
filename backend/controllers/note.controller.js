@@ -4,40 +4,69 @@ import Category from "../models/category.model.js"
 import User from "../models/user.model.js"
 import CategoryType from "../models/categoryType.model.js";
 
-export const getPublicCategoryNotes = async (req, res) => {
-  const { id } = req.params;
 
-  const page = Math.max(parseInt(req.query.page) || 1, 1);
-  const limit = Math.min(parseInt(req.query.limit) || 10, 50);
-  const skip = (page - 1) * limit;
+export const getPublicCategoryNotes = async (req, res) => {
+  // Extract category ID from route parameters
+  const { id: categoryId } = req.params;
+
+  // Parse pagination parameters safely with bounds
+  const currentPage = Math.max(parseInt(req.query.page) || 1, 1);
+  const pageLimit = Math.min(parseInt(req.query.limit) || 10, 50);
+
+  // Calculate skip value for pagination offset
+  const documentsToSkip = (currentPage - 1) * pageLimit;
 
   try {
-    const [notes, total] = await Promise.all([
-      Note.find({
-        category: id,
-        isPrivate: { $ne: true },
-      })
-        .select("_id title createdAt")
+    // Define optimized query using index-friendly equality
+    const queryFilter = {
+      category: categoryId,
+      isPrivate: false // IMPORTANT: avoids $ne, enables index usage
+    };
+
+    // Execute both data fetch and total count in parallel
+    const [notes, totalDocuments] = await Promise.all([
+      Note.find(queryFilter)
+
+        // Projection: fetch only required fields to reduce payload
+        .select({
+          _id: 1,
+          title: 1,
+          createdAt: 1
+        })
+
+        // Sort aligned with compound index for efficient execution
         .sort({ title: 1 })
-        .skip(skip)
-        .limit(limit)
+
+        // Pagination controls
+        .skip(documentsToSkip)
+        .limit(pageLimit)
+
+        // Return plain objects for performance (no Mongoose overhead)
         .lean(),
 
-      Note.countDocuments({
-        category: id,
-        isPrivate: { $ne: true },
-      }),
+      // Count total matching documents for pagination metadata
+      Note.countDocuments(queryFilter)
     ]);
 
-    res.json({
+    // Send structured response with pagination metadata
+    return res.status(200).json({
       notes,
-      page,
-      limit,
-      total,
-      hasMore: skip + notes.length < total,
+      page: currentPage,
+      limit: pageLimit,
+      total: totalDocuments,
+
+      // Indicates if more pages are available
+      hasMore: documentsToSkip + notes.length < totalDocuments
     });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch public notes" });
+
+  } catch (error) {
+    // Log error internally for debugging
+    console.error("Error in getPublicCategoryNotes:", error);
+
+    // Return generic error response to client
+    return res.status(500).json({
+      error: "Failed to fetch public notes"
+    });
   }
 };
 
@@ -192,7 +221,7 @@ export const getUserNotes = async (req, res) => {
 
 export const getPublicNotesbyUser = async (req, res) => {
   const userId = req.params.userId;
-  const notes = await Note.find({ user: userId, isPrivate: { $ne: true } }).populate({
+  const notes = await Note.find({ user: userId, isPrivate: false }).populate({
     path: "category",
     populate: { path: "categoryType", select: "name" },
   });
@@ -205,7 +234,7 @@ export const getAllPublicNotes = async (req, res) => {
     const pageNum = Math.max(parseInt(page, 10) || 1, 1);
     const pageLimit = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
 
-    const query = { isPrivate: { $ne: true } };
+    const query = { isPrivate: false };
     if (search && typeof search === 'string') {
       query.title = { $regex: search.trim(), $options: 'i' };
     }
@@ -235,7 +264,7 @@ export const getNotesByTag = async (req, res) => {
     try {
       // Case-insensitive, exact match
       const notes = await Note.find({
-        isPrivate: { $ne: true },
+        isPrivate: false,
         tags: { $elemMatch: { $regex: `^${tag}$`, $options: 'i' } }
       })
         .select('title user category createdAt tags')
@@ -254,7 +283,7 @@ export const getNotesByTag = async (req, res) => {
   } else {
     // fallback: return all public notes (for search page)
     try {
-      const notes = await Note.find({ isPrivate: { $ne: true } })
+      const notes = await Note.find({ isPrivate: false })
         .select('title user category createdAt tags')
         .populate('category', 'name')
         .populate('user', 'username profileImage email')
@@ -270,7 +299,7 @@ export const getNotesByTag = async (req, res) => {
 export const getAllTags = async (req, res) => {
   try {
     // Find all public notes
-    const notes = await Note.find({ isPrivate: { $ne: true } }, 'tags');
+    const notes = await Note.find({ isPrivate: false }, 'tags');
     // Flatten all tags into a single array
     const allTags = notes.flatMap(note => Array.isArray(note.tags) ? note.tags : []);
     // Count occurrences
@@ -336,25 +365,15 @@ export const getMyTags = async (req, res) => {
  */
 export const createNote = async (req, res) => {
   try {
-    // ===== rate limiting (unchanged) =====
-    const lastNote = await Note.findOne({ user: req.user._id }).sort({ createdAt: -1 });
-    if (lastNote) {
-      const now = Date.now();
-      const lastCreated = new Date(lastNote.createdAt).getTime();
-      if (now - lastCreated < 5 * 1000) {
-        const wait = Math.ceil((5 * 1000 - (now - lastCreated)) / 1000);
-        return res.status(429).json({ error: `Please wait ${wait} second(s)` });
-      }
-    }
-
+    // ===== rate limiting (optimized for bulk uploads) =====
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
     const notesLastHour = await Note.countDocuments({
       user: req.user._id,
       createdAt: { $gte: oneHourAgo },
     });
 
-    if (notesLastHour >= 500000) {
-      return res.status(429).json({ error: "Hourly upload limit reached (max 50 notes/hour)." });
+    if (notesLastHour >= 2000) {
+      return res.status(429).json({ error: "Hourly upload limit reached (max 2000 notes/hour)." });
     }
 
     // ===== input =====

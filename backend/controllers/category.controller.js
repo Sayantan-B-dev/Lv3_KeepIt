@@ -20,7 +20,7 @@ export const getPublicCategoryById = async (req, res) => {
     // fetch ONLY public notes
     const notes = await Note.find({
       category: id,
-      isPrivate: { $ne: true },
+      isPrivate: false,
     })
       .select("_id title createdAt tags")
       .sort({ title: 1 })

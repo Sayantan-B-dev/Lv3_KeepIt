@@ -21,8 +21,11 @@ const categorySchema = new mongoose.Schema({
 }, { timestamps: true })
 
 // Indexes for faster lookups
-categorySchema.index({ user: 1, createdAt: -1 })
-categorySchema.index({ name: 1 })
+categorySchema.index({ user: 1, name: 1 });             // Lookup user's category by name
+categorySchema.index({ user: 1, createdAt: -1 });       // Recent categories for user
+categorySchema.index({ isPrivate: 1, name: 1 });        // Global public categories sorted by name
+categorySchema.index({ categoryType: 1, isPrivate: 1, name: 1 }); // Public categories of a type
+categorySchema.index({ categoryType: 1, user: 1, name: 1 });    // User's categories of a type
 
 const Category = mongoose.model('Category', categorySchema)
 

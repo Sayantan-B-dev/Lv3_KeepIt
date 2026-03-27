@@ -187,7 +187,7 @@
   --font-weight-regular: 400;
 
   /* Color scheme */
-  color-scheme: light dark;
+  color-scheme: dark;
 
   /* Core colors */
   --color-bg-main: #10110f;
@@ -238,6 +238,7 @@ body {
   display: flex;
   place-items: center;
    font-family: monospace, serif;
+  background-color: #10110f !important;
 }
 
 

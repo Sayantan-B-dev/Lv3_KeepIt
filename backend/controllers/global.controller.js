@@ -8,7 +8,7 @@ export const getAllCategories = async (req, res) => {
     const pageNum = Math.max(parseInt(page, 10) || 1, 1);
     const pageLimit = Math.min(Math.max(parseInt(limit, 10) || 15, 1), 100);
 
-    const query = { isPrivate: { $ne: true } };
+    const query = { isPrivate: false };
     if (search && typeof search === "string") {
       query.name = { $regex: search.trim(), $options: "i" };
     }
@@ -35,7 +35,7 @@ export const getAllNotes = async (req, res) => {
     const pageNum = Math.max(parseInt(page, 10) || 1, 1);
     const pageLimit = Math.min(Math.max(parseInt(limit, 10) || 15, 1), 100);
 
-    const query = { isPrivate: { $ne: true } };
+    const query = { isPrivate: false };
     if (search && typeof search === 'string') {
       query.title = { $regex: search.trim(), $options: 'i' };
     }

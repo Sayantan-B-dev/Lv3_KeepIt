@@ -25,7 +25,7 @@ const router = express.Router();
 
 const noteLimiter = rateLimit({
   windowMs: 5 * 60 * 1000,
-  max: 20,
+  max: 1000, // Increased to support bulk uploads (over 500 files)
 });
 
 /* ================= Public ================= */
