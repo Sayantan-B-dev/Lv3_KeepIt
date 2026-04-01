@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axiosInstance from "@/api/axiosInstance";
 ;
@@ -8,6 +8,7 @@ const UPLOAD_QUEUE_KEY = "mdUploadQueue";
 export default function useMarkdownUploadQueue(categoryId, setNotes, user, onRateLimit) {
   const processingRef = useRef(false);
   const isPro = user?.isPro || user?.isPremium;
+  const [uploadReport, setUploadReport] = useState([]);
 
   const getUploadQueue = () => {
     try {
@@ -46,6 +47,7 @@ export default function useMarkdownUploadQueue(categoryId, setNotes, user, onRat
     if (!files.length) return;
 
     try {
+      setUploadReport([]); // Clear previous report when starting a new batch
       const filesData = await readFilesAsText(files);
       let queue = getUploadQueue();
 
@@ -134,9 +136,11 @@ export default function useMarkdownUploadQueue(categoryId, setNotes, user, onRat
         if (result.success) {
           toast.success(`"${result.name}" uploaded`);
           if (result.data) newNotes.push(result.data);
+          setUploadReport(prev => [...prev, { name: result.name, status: "success", timestamp: new Date().toISOString() }]);
         } else {
           toast.error(result.error);
           if (result.isRateLimit) rateLimited = true;
+          setUploadReport(prev => [...prev, { name: result.name, status: "error", error: result.error, timestamp: new Date().toISOString() }]);
         }
       });
 
@@ -187,6 +191,8 @@ export default function useMarkdownUploadQueue(categoryId, setNotes, user, onRat
     getUploadQueue,
     clearUploadQueue,
     processingRef,
-    resumeQueue
+    resumeQueue,
+    uploadReport,
+    clearReport: () => setUploadReport([])
   };
 }

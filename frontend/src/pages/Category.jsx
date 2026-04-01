@@ -74,7 +74,14 @@ const Category = () => {
   };
   /* ---------------- Upload + Drag & Drop ---------------- */
 
-  const { handleUpload, getUploadQueue, clearUploadQueue, resumeQueue } = useMarkdownUploadQueue(
+  const { 
+    handleUpload, 
+    getUploadQueue, 
+    clearUploadQueue, 
+    resumeQueue, 
+    uploadReport, 
+    clearReport 
+  } = useMarkdownUploadQueue(
     categoryId, 
     setNotes, 
     loggedInUser,
@@ -384,6 +391,9 @@ const Category = () => {
           clearUploadQueue={clearUploadQueue}
           resumeQueue={resumeQueue}
           categoryId={categoryId}
+          uploadReport={uploadReport}
+          clearReport={clearReport}
+          categoryName={category?.name}
         />
 
         <CategoryNotesList

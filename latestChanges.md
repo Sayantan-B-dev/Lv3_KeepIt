@@ -179,3 +179,20 @@ Enhanced the application's aesthetic to clearly distinguish premium accounts and
 ### Remote Approval URL Mapping
 - **Fix**: Updated the backend approval link generation to use a `BACKEND_URL` fallback. This allows administrators to grant access from their mobile devices even if the dev server is running on `localhost`.
 
+---
+
+## 6. Post-Upload Reporting System (Bulk Uploads)
+Implemented a comprehensive logging and reporting system for the bulk Markdown upload process.
+
+### Real-time Result Tracking (`useMarkdownUploadQueue.js`)
+- **What Changed**: The upload engine now collects the outcome of every individual file attempt within a session.
+- **Data Collected**: Filename, status (success/error), error message, and timestamp.
+
+### Upload Summary UI (`UploadQueueDisplay.jsx`)
+- **New Feature**: Added a results summary dashboard that appears automatically when a queue completes.
+- **Insights**: Displays total count of successful vs. failed uploads at a glance.
+
+### Detailed Log Generation (`generateUploadLog.js`)
+- **New Utility**: Created a professional log generator that compiles session data into a human-readable format.
+- **Downloadable Reports**: Users can now download a `.txt` log file of their bulk session, allowing them to troubleshoot specific failures (e.g., "Duplicate Title") offline.
+

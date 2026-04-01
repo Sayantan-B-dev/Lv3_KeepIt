@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MdClose, MdUploadFile, MdCheckCircle, MdPlayArrow } from "react-icons/md";
+import { MdClose, MdUploadFile, MdCheckCircle, MdPlayArrow, MdDownload, MdClearAll, MdErrorOutline } from "react-icons/md";
+import { generateUploadLog, downloadTextFile } from "@/utils/generateUploadLog";
 
-const UploadQueueDisplay = ({ getUploadQueue, clearUploadQueue, resumeQueue, categoryId }) => {
+const UploadQueueDisplay = ({ getUploadQueue, clearUploadQueue, resumeQueue, categoryId, uploadReport, clearReport, categoryName }) => {
     const [queue, setQueue] = useState([]);
     const [isExpanded, setIsExpanded] = useState(true);
 
@@ -41,7 +42,16 @@ const UploadQueueDisplay = ({ getUploadQueue, clearUploadQueue, resumeQueue, cat
         setQueue([]);
     };
 
-    if (queue.length === 0) return null;
+    const handleDownloadReport = () => {
+        const log = generateUploadLog(uploadReport, categoryName || "Unknown");
+        const filename = `upload-report-${new Date().getTime()}.txt`;
+        downloadTextFile(log, filename);
+    };
+
+    const successCount = uploadReport.filter(r => r.status === "success").length;
+    const errorCount = uploadReport.filter(r => r.status === "error").length;
+
+    if (queue.length === 0 && uploadReport.length === 0) return null;
 
     return (
         <motion.div
@@ -141,6 +151,41 @@ const UploadQueueDisplay = ({ getUploadQueue, clearUploadQueue, resumeQueue, cat
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Results Summary Section */}
+            {queue.length === 0 && uploadReport.length > 0 && (
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="p-4 bg-type-b2/50 border-t border-muted flex flex-col sm:flex-row items-center justify-between gap-4"
+                >
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1.5 text-green-400 font-mono text-sm">
+                            <MdCheckCircle size={18} />
+                            <span>{successCount} Success</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-red-400 font-mono text-sm">
+                            <MdErrorOutline size={18} />
+                            <span>{errorCount} Failed</span>
+                        </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleDownloadReport}
+                            className="flex items-center gap-2 px-3 py-1.5 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded-lg text-sm font-mono transition border border-blue-500/30"
+                        >
+                            <MdDownload size={18} /> Download Results (.txt)
+                        </button>
+                        <button
+                            onClick={clearReport}
+                            className="flex items-center gap-2 px-3 py-1.5 bg-white/5 text-type-3 hover:text-white hover:bg-white/10 rounded-lg text-sm font-mono transition border border-muted"
+                        >
+                            <MdClearAll size={18} /> Dismiss
+                        </button>
+                    </div>
+                </motion.div>
+            )}
         </motion.div>
     );
 };
