@@ -7,10 +7,13 @@ import {
     uploadProfileImage,
     getAllUsers,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    requestProUpgrade,
+    confirmProUpgrade
 } from "../controllers/auth.controller.js"
 import upload from "../utils/multer.util.js"
 import passport from "passport";
+import { isLoggedIn } from "../middlewares/isAuthenticated.middleware.js";
 import { validateBody } from "../middlewares/validate.middleware.js";
 import { registerSchema, profileImageSchema } from "../validators/auth.validator.js";
 
@@ -25,6 +28,8 @@ router.route('/users').get(getAllUsers)
 router.route('/upload-profile-image').post(upload.single('image'), validateBody(profileImageSchema), uploadProfileImage)
 router.route('/forgot-password').post(forgotPassword);
 router.route('/reset-password/:resetToken').post(resetPassword);
+router.route('/pro-upgrade-request').post(isLoggedIn, requestProUpgrade);
+router.route('/pro-upgrade-confirm/:token').get(confirmProUpgrade);
 
 // Google OAuth Routes
 router.get("/google", passport.authenticate("google", { scope: ["email", "profile"], prompt: "select_account" }));

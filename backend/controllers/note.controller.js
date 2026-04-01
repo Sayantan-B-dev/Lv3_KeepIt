@@ -31,7 +31,8 @@ export const getPublicCategoryNotes = async (req, res) => {
         .select({
           _id: 1,
           title: 1,
-          createdAt: 1
+          createdAt: 1,
+          tags: 1
         })
 
         // Sort aligned with compound index for efficient execution
@@ -105,7 +106,7 @@ export const getCategoryNotes = async (req, res) => {
   try {
     const [notes, total] = await Promise.all([
       Note.find({ category: id, user: req.user._id })
-        .select("_id title updatedAt")
+        .select("_id title updatedAt tags")
         .sort({ title: 1 })
         .skip(skip)
         .limit(limit)
@@ -365,15 +366,20 @@ export const getMyTags = async (req, res) => {
  */
 export const createNote = async (req, res) => {
   try {
-    // ===== rate limiting (optimized for bulk uploads) =====
+    // ===== tiered rate limiting (optimized for bulk uploads) =====
     const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
     const notesLastHour = await Note.countDocuments({
       user: req.user._id,
       createdAt: { $gte: oneHourAgo },
     });
 
-    if (notesLastHour >= 2000) {
-      return res.status(429).json({ error: "Hourly upload limit reached (max 2000 notes/hour)." });
+    const isPro = req.user.isPro || req.user.isPremium; // Handle both for now
+    const limit = isPro ? 2000 : 50;
+
+    if (notesLastHour >= limit) {
+      return res.status(429).json({ 
+        error: `Hourly upload limit reached (max ${limit} notes/hour for ${isPro ? "Pro" : "Normal"} users).` 
+      });
     }
 
     // ===== input =====
@@ -449,6 +455,42 @@ export const createNote = async (req, res) => {
 // For backward compatibility, alias createNoteFromMD to createNote
 export const createNoteFromMD = createNote;
 
+export const bulkAddTags = async (req, res) => {
+  try {
+    const { noteIds, tags } = req.body;
+    
+    if (!noteIds || !Array.isArray(noteIds) || noteIds.length === 0) {
+      return res.status(400).json({ error: "No notes provided for tagging" });
+    }
+    if (!tags || !Array.isArray(tags) || tags.length === 0) {
+      return res.status(400).json({ error: "No tags provided" });
+    }
+
+    const cleanTags = tags.map(tag => typeof tag === "string" ? tag.trim().toLowerCase() : "").filter(Boolean);
+
+    if (cleanTags.length === 0) {
+      return res.status(400).json({ error: "Invalid tags provided" });
+    }
+
+    const updateResult = await Note.updateMany(
+      { _id: { $in: noteIds }, user: req.user._id },
+      { $addToSet: { tags: { $each: cleanTags } } }
+    );
+
+    res.json({
+      message: "Tags added successfully",
+      modifiedCount: updateResult.modifiedCount
+    });
+
+  } catch (error) {
+    console.error("Error bulk adding tags:", error);
+    res.status(500).json({
+      error: "Failed to bulk add tags",
+      details: error.message,
+    });
+  }
+};
+
 export const updateNote = async (req, res) => {
   const { id } = req.params
   try {
@@ -499,6 +541,41 @@ export const deleteNote = async (req, res) => {
   }
 };
 
+export const bulkDeleteNotes = async (req, res) => {
+  try {
+    const { noteIds } = req.body;
+    const userId = req.user._id;
+
+    if (!noteIds || !Array.isArray(noteIds) || noteIds.length === 0) {
+      return res.status(400).json({ error: "No notes provided for deletion" });
+    }
+
+    // 1. Delete the notes
+    const deleteResult = await Note.deleteMany({
+      _id: { $in: noteIds },
+      user: userId
+    });
+
+    // 2. Remove from categories
+    await Category.updateMany(
+      { notes: { $in: noteIds } },
+      { $pull: { notes: { $in: noteIds } } }
+    );
+
+    res.json({
+      message: `${deleteResult.deletedCount} notes deleted successfully`,
+      deletedCount: deleteResult.deletedCount
+    });
+
+  } catch (error) {
+    console.error("Error bulk deleting notes:", error);
+    res.status(500).json({
+      error: "Failed to bulk delete notes",
+      details: error.message,
+    });
+  }
+};
+
 
 
 export const sanitizeNoteInput = (req, res, next) => {
@@ -513,5 +590,52 @@ export const sanitizeNoteInput = (req, res, next) => {
   if (req.body.tags && Array.isArray(req.body.tags)) req.body.tags = req.body.tags.map(tag => sanitize(tag));
 
   next();
+};
+
+import archiver from "archiver";
+
+export const downloadCategoryZip = async (req, res) => {
+  try {
+    const { id: categoryId } = req.params;
+    const userId = req.user._id;
+    const isPro = req.user.isPro || req.user.isPremium;
+
+    if (!isPro) {
+      return res.status(403).json({ error: "ZIP download is a Pro feature. Please upgrade to Pro." });
+    }
+
+    const category = await Category.findOne({ _id: categoryId, user: userId }).populate("name");
+    if (!category) {
+      return res.status(404).json({ error: "Category not found" });
+    }
+
+    const notes = await Note.find({ category: categoryId, user: userId });
+
+    res.setHeader("Content-Type", "application/zip");
+    res.setHeader("Content-Disposition", `attachment; filename="${category.name.replace(/\s+/g, "_")}_notes.zip"`);
+
+    const archive = archiver("zip", { zlib: { level: 9 } });
+
+    archive.on("error", (err) => {
+      console.error("Archive error:", err);
+      res.status(500).send({ error: "Failed to generate ZIP" });
+    });
+
+    archive.pipe(res);
+
+    notes.forEach((note) => {
+      const fileName = `${note.title.replace(/[<>:"/\\|?*]/g, "_")}.md`;
+      const content = `---\ntitle: ${note.title}\ntags: ${note.tags.join(", ")}\n---\n\n${note.content}`;
+      archive.append(content, { name: fileName });
+    });
+
+    await archive.finalize();
+
+  } catch (error) {
+    console.error("Error in downloadCategoryZip:", error);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Failed to download ZIP" });
+    }
+  }
 };
 

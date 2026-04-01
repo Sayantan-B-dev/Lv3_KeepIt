@@ -12,6 +12,9 @@ import CategoryNotesList from "@/features/category/CategoryNotesList";
 import MarkdownUploadBox from "@/features/category/MarkdownUploadBox";
 import UploadQueueDisplay from "@/features/category/UploadQueueDisplay";
 import DownloadProgress from "@/features/category/DownloadProgress";
+import BulkTagModal from "@/features/category/BulkTagModal";
+import ProUpgradeModal from "@/components/ui/ProUpgradeModal";
+import { noteCache } from "@/utils/noteCache";
 
 import useMarkdownUploadQueue from "@/hooks/useMarkdownUploadQueue";
 import useDragAndDrop from "@/hooks/useDragAndDrop";
@@ -26,6 +29,7 @@ const Category = () => {
 
   const [category, setCategory] = useState(null);
   const [notes, setNotes] = useState([]);
+  const [totalNotesCount, setTotalNotesCount] = useState(0);
   const [user, setUser] = useState(null);
 
   const [loading, setLoading] = useState(true);
@@ -40,9 +44,16 @@ const Category = () => {
   const [saving, setSaving] = useState(false);
   const [confirmStep, setConfirmStep] = useState(1); // 👈 step 1 or 2
 
+  const [selectedNoteIds, setSelectedNoteIds] = useState([]);
+  const [showBulkTagModal, setShowBulkTagModal] = useState(false);
+  const [showProUpgradeModal, setShowProUpgradeModal] = useState(false);
+
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
+  const [showBulkDeletePopup, setShowBulkDeletePopup] = useState(false);
+  const [bulkConfirmStep, setBulkConfirmStep] = useState(1);
+  const [bulkDeleting, setBulkDeleting] = useState(false);
   const PAGE_SIZE = 50;
 
   const [exportState, setExportState] = useState({
@@ -63,7 +74,12 @@ const Category = () => {
   };
   /* ---------------- Upload + Drag & Drop ---------------- */
 
-  const { handleUpload, getUploadQueue, clearUploadQueue, resumeQueue } = useMarkdownUploadQueue(categoryId, setNotes);
+  const { handleUpload, getUploadQueue, clearUploadQueue, resumeQueue } = useMarkdownUploadQueue(
+    categoryId, 
+    setNotes, 
+    loggedInUser,
+    () => setShowProUpgradeModal(true)
+  );
 
   const { dragActive, handlers: dragHandlers } = useDragAndDrop({
     onFilesDrop: (files) =>
@@ -111,6 +127,7 @@ const Category = () => {
 
       const newNotes = notesRes.data.notes || [];
       const totalNotes = notesRes.data.total || 0;
+      setTotalNotesCount(totalNotes);
 
       setNotes(prev => {
         const combined = append ? [...prev, ...newNotes] : newNotes;
@@ -226,6 +243,42 @@ const Category = () => {
     }
     handleDeleteCategory();
   };
+
+  const handleBulkDelete = async () => {
+    setBulkDeleting(true);
+    try {
+      const response = await axiosInstance.post("/api/notes/bulk-delete", {
+        noteIds: selectedNoteIds,
+      });
+      toast.success(response.data.message || "Notes deleted");
+      setSelectedNoteIds([]);
+      // Reload current view
+      fetchCategoryAndNotes({ pageNum: 1, append: false });
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.error || "Failed to delete notes");
+    } finally {
+      setBulkDeleting(false);
+      setShowBulkDeletePopup(false);
+      setBulkConfirmStep(1);
+    }
+  };
+
+  const onBulkDeleteClick = () => {
+    if (selectedNoteIds.length === 0) {
+      toast.info("Please select some notes first.");
+      return;
+    }
+    setShowBulkDeletePopup(true);
+  };
+
+  const handleConfirmBulkDelete = () => {
+    if (bulkConfirmStep === 1) {
+      setBulkConfirmStep(2);
+      return;
+    }
+    handleBulkDelete();
+  };
   /* ---------------- Guards ---------------- */
 
   if (loading) return <Loading />;
@@ -256,10 +309,26 @@ const Category = () => {
         }
       />
 
+      <ConfirmPopUp
+        open={showBulkDeletePopup}
+        onClose={() => {
+          setShowBulkDeletePopup(false);
+          setBulkConfirmStep(1);
+        }}
+        onConfirm={handleConfirmBulkDelete}
+        loading={bulkDeleting}
+        message={
+          bulkConfirmStep === 1
+            ? `Are you sure you want to delete ${selectedNoteIds.length} selected notes?`
+            : "FINAL WARNING: This will permanently delete the selected notes. This action CANNOT be undone."
+        }
+      />
+
       <CategoryHeader
         category={category}
         user={user}
         isOwner={isOwner}
+        totalNotesCount={totalNotesCount}
         editMode={editMode}
         editName={editName}
         editType={editType}
@@ -274,8 +343,24 @@ const Category = () => {
         onDeleteClick={() => setShowDeletePopup(true)}
         onDownloadAll={handleDownloadAll}
         onCreateNote={handleCreateNote}
+        onBulkTagClick={() => {
+          if (selectedNoteIds.length === 0) {
+            toast.info("Please select some notes first.");
+            return;
+          }
+          setShowBulkTagModal(true);
+        }}
+        onBulkDeleteClick={onBulkDeleteClick}
+        selectedNotesCount={selectedNoteIds.length}
         isAuthenticated={!!loggedInUser}
         onUserClick={handleUserClick}
+        loggedInUser={loggedInUser}
+        onOpenProModal={() => setShowProUpgradeModal(true)}
+      />
+
+      <ProUpgradeModal 
+        open={showProUpgradeModal} 
+        onClose={() => setShowProUpgradeModal(false)} 
       />
 
       <DownloadProgress
@@ -307,6 +392,22 @@ const Category = () => {
           hasMore={hasMore}
           loadingMore={loadingMore}
           onLoadMore={handleLoadMore}
+          isOwner={isOwner}
+          selectedNoteIds={selectedNoteIds}
+          onSelectionChange={setSelectedNoteIds}
+        />
+
+        <BulkTagModal
+          open={showBulkTagModal}
+          onClose={() => setShowBulkTagModal(false)}
+          selectedNotes={notes.filter(n => selectedNoteIds.includes(n._id))}
+          category={category}
+          clearSelection={() => {
+            setSelectedNoteIds([]);
+            noteCache.clear();
+            fetchCategoryAndNotes({ pageNum: 1, append: false });
+          }}
+          loggedInUser={loggedInUser}
         />
       </div>
     </div>

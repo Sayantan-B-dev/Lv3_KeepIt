@@ -16,9 +16,12 @@ import {
   createNote,
   updateNote,
   deleteNote,
-  getPublicCategoryNotes
+  getPublicCategoryNotes,
+  bulkAddTags,
+  bulkDeleteNotes,
+  downloadCategoryZip
 } from "../controllers/note.controller.js";
-
+ 
 const router = express.Router();
 
 /* ================= Rate limit ================= */
@@ -55,7 +58,25 @@ router.get(
   "/category/:id/public",
   getPublicCategoryNotes
 );
+
+router.get(
+  "/category/:id/download",
+  isLoggedIn,
+  downloadCategoryZip
+);
 /* ================= Create / Update ================= */
+
+router.post(
+  "/bulk-tag",
+  isLoggedIn,
+  bulkAddTags
+);
+
+router.post(
+  "/bulk-delete",
+  isLoggedIn,
+  bulkDeleteNotes
+);
 
 router.post(
   "/",

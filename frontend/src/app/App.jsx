@@ -30,6 +30,7 @@ const CategoryType = lazy(() => import("@/pages/CategoryType"));
 const RotatingKeepIt = lazy(() => import("@/components/common/RotatingKeepIt"));
 const ForgotPassword = lazy(() => import("@/pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("@/pages/ResetPassword"));
+const Upgrade = lazy(() => import("@/pages/Upgrade"));
 const LiquidEther = lazy(() => import("@/components/advanced/LiquidEther"));
 const ScrollToTop = lazy(() => import("@/components/common/ScrollToTop"));
 const Notice = lazy(() => import("@/components/common/Notice"));
@@ -181,6 +182,7 @@ Alternatively, you can sign in using email and password or use a different brows
             <Route path="/category/:categoryId" element={<Category />} />
             <Route path="/note/:noteId" element={<Note />} />
             <Route path="/tag/:tagname" element={<TagNotes />} />
+            <Route path="/upgrade" element={<Upgrade />} />
 
             <Route path="/logout" element={<Logout />} />
           </Routes>

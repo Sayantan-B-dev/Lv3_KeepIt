@@ -53,3 +53,4 @@ This document outlines the planned features and the technical approach for imple
 - [ ] **Mermaid.js:** Diagram rendering in markdown.
 - [ ] **Local Vault Page:** Specialized offline-only view.
 - [ ] **Premium Toasts:** Glassmorphic notification system.
+- [ ] **FIX EMAIL BUG**

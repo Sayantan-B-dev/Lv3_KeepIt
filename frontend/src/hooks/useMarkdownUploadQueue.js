@@ -5,8 +5,9 @@ import axiosInstance from "@/api/axiosInstance";
 
 const UPLOAD_QUEUE_KEY = "mdUploadQueue";
 
-export default function useMarkdownUploadQueue(categoryId, setNotes) {
+export default function useMarkdownUploadQueue(categoryId, setNotes, user, onRateLimit) {
   const processingRef = useRef(false);
+  const isPro = user?.isPro || user?.isPremium;
 
   const getUploadQueue = () => {
     try {
@@ -81,77 +82,91 @@ export default function useMarkdownUploadQueue(categoryId, setNotes) {
   };
 
   const processQueue = async () => {
+    if (processingRef.current) return;
     processingRef.current = true;
 
-    let queue = getUploadQueue();
-    if (!queue.length) {
-      processingRef.current = false;
-      clearUploadQueue();
-      return;
-    }
+    const concurrencyLimit = isPro ? 5 : 1;
+    const gapDelay = isPro ? 3000 : 5000;
 
-    const { name, content, categoryId: catId } = queue[0];
-    const title = name.replace(/\.md$/i, "");
-
-    let countdown = 5;
-    const toastId = toast.info(
-      `Uploading "${title}" in ${countdown}s...`,
-      { autoClose: false, closeButton: false }
-    );
-
-    const interval = setInterval(() => {
-      countdown -= 1;
-      if (countdown > 0) {
-        toast.update(toastId, {
-          render: `Uploading "${title}" in ${countdown}s...`
-        });
+    while (true) {
+      let queue = getUploadQueue();
+      if (!queue.length) {
+        break;
       }
-    }, 1000);
 
-    await new Promise(res => setTimeout(res, 5000));
-    clearInterval(interval);
-    toast.dismiss(toastId);
-
-    try {
-      const res = await axiosInstance.post("/api/notes", {
-        title,
-        content,
-        category: catId
+      const batch = queue.slice(0, concurrencyLimit);
+      
+      const promises = batch.map(async (item) => {
+        const { name, content, categoryId: catId } = item;
+        const title = name.replace(/\.md$/i, "");
+        
+        try {
+          const res = await axiosInstance.post("/api/notes", {
+            title,
+            content,
+            category: catId
+          });
+          
+          if (res.data.category === catId || res.data.category?._id === catId) {
+            return { success: true, data: res.data, name };
+          }
+          return { success: true, data: null, name };
+        } catch (err) {
+          const isRateLimit = err?.response?.status === 429;
+          if (isRateLimit && !isPro && onRateLimit) {
+            onRateLimit();
+          }
+          return { 
+            success: false, 
+            error: err?.response?.data?.error || `Failed to upload "${title}"`, 
+            isRateLimit,
+            name
+          };
+        }
       });
 
-      toast.success(`"${title}" uploaded`);
+      const results = await Promise.all(promises);
+      
+      let rateLimited = false;
+      const newNotes = [];
 
-      if (
-        res.data.category === catId ||
-        res.data.category?._id === catId
-      ) {
-        setNotes(prev =>
-          [...prev, res.data].sort((a, b) =>
+      results.forEach(result => {
+        if (result.success) {
+          toast.success(`"${result.name}" uploaded`);
+          if (result.data) newNotes.push(result.data);
+        } else {
+          toast.error(result.error);
+          if (result.isRateLimit) rateLimited = true;
+        }
+      });
+
+      if (newNotes.length > 0) {
+        setNotes(prev => {
+          const combined = [...prev, ...newNotes];
+          const unique = Array.from(new Map(combined.map(item => [item._id, item])).values());
+          return unique.sort((a, b) =>
             a.title.localeCompare(b.title, undefined, { sensitivity: "base" })
-          )
-        );
+          );
+        });
       }
-    } catch (err) {
-      const isRateLimit = err?.response?.status === 429;
-      toast.error(
-        err?.response?.data?.error ||
-        `Failed to upload "${title}"`
-      );
 
-      if (isRateLimit) {
+      // Remove processed items from queue
+      let currentQueue = getUploadQueue();
+      const processedNames = new Set(batch.map(item => item.name));
+      const remainingQueue = currentQueue.filter(item => !processedNames.has(item.name));
+      setUploadQueue(remainingQueue);
+
+      if (rateLimited) {
         console.warn("⚠️ Rate limit reached. Stopping upload queue.");
-        processingRef.current = false;
-        return;
+        break;
+      }
+
+      if (remainingQueue.length > 0) {
+        await new Promise(resolve => setTimeout(resolve, gapDelay));
       }
     }
-
-    queue = getUploadQueue();
-    queue.shift();
-    setUploadQueue(queue);
-
-    if (processingRef.current) {
-      setTimeout(processQueue, 400);
-    }
+    
+    processingRef.current = false;
   };
 
   const resumeQueue = () => {

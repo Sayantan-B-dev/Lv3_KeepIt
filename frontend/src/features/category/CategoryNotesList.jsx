@@ -5,7 +5,16 @@ import { Loader } from "@/components/ui";
 
 const PAGE_SIZE = 12;
 
-const CategoryNotesList = ({ notes = [], onNoteClick, hasMore, loadingMore, onLoadMore }) => {
+const CategoryNotesList = ({ 
+  notes = [], 
+  onNoteClick, 
+  hasMore, 
+  loadingMore, 
+  onLoadMore,
+  isOwner,
+  selectedNoteIds = [],
+  onSelectionChange = () => {}
+}) => {
   return (
     <div className="mb-8">
       <h2 className="font-mono text-type-1 mb-4 mt-4 text-2xl text-center uppercase tracking-widest">
@@ -19,20 +28,73 @@ const CategoryNotesList = ({ notes = [], onNoteClick, hasMore, loadingMore, onLo
         </p>
       )}
 
+      {/* Selection controls (only show if there are notes and we are owner) */}
+      {notes.length > 0 && isOwner && (
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <input 
+              type="checkbox" 
+              className="w-4 h-4 cursor-pointer accent-blue-500"
+              checked={selectedNoteIds.length === notes.length && notes.length > 0}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  onSelectionChange(notes.map(n => n._id));
+                } else {
+                  onSelectionChange([]);
+                }
+              }}
+              id="selectAll"
+            />
+            <label htmlFor="selectAll" className="text-type-2 font-mono text-sm cursor-pointer select-none">
+              Select All Loaded Notes
+            </label>
+          </div>
+          <div className="text-type-3 font-mono text-xs">
+            {selectedNoteIds.length} selected
+          </div>
+        </div>
+      )}
+
       {/* Notes Grid */}
       {notes.length > 0 && (
         <ul className="gridy">
-          {notes.map((note) => (
-            <li key={note._id} className="w-full h-full">
+          {notes.map((note) => {
+            const isSelected = selectedNoteIds.includes(note._id);
+            return (
+            <li key={note._id} className={`w-full h-full rounded-xl transition-all duration-200 ${isSelected ? 'ring-2 ring-blue-500 bg-blue-500/10' : ''}`}>
               <DottedButton2
-                className="w-full h-full text-left"
+                className={`w-full h-full text-left ${isSelected ? 'border-blue-500/50' : ''}`}
                 style={{ fontSize: "12px" }}
                 text={note.title}
                 tags={note.tags}
-                onClick={() => onNoteClick(note._id)}
+                onClick={(e) => {
+                  // If we click the checkbox area, we shouldn't navigate
+                  // But DottedButton2 doesn't perfectly isolate it.
+                  // We'll rely on onNoteClick navigating. But wait, if we are in bulk mode?
+                  // Just always let clicking the button navigate, picking checkbox checks.
+                  onNoteClick(note._id);
+                }}
+                innerComponent={
+                  isOwner ? (
+                    <input 
+                      type="checkbox" 
+                      className="w-5 h-5 cursor-pointer accent-blue-500"
+                      checked={isSelected}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          onSelectionChange([...selectedNoteIds, note._id]);
+                        } else {
+                          onSelectionChange(selectedNoteIds.filter(id => id !== note._id));
+                        }
+                      }}
+                    />
+                  ) : null
+                }
               />
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
 

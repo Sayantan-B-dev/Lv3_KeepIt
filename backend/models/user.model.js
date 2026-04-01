@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema({
   following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   createdAt: { type: Date, default: Date.now },
   isPremium: { type: Boolean, default: false },
+  isPro: { type: Boolean, default: false },
   isVerified: { type: Boolean, default: false },
   categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
   registrationIp: { type: String },

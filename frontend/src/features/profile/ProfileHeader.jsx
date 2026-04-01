@@ -69,6 +69,16 @@ const ProfileHeader = ({
               </span>
             </div>
           )}
+ 
+          {(profile?.isPro || profile?.isPremium) && (
+            <motion.div
+              initial={{ scale: 0, x: 20, y: 20 }}
+              animate={{ scale: 1, x: 0, y: 0 }}
+              className="absolute -bottom-2 -right-2 px-3 py-1 bg-gradient-to-tr from-yellow-600 to-amber-400 text-[10px] font-black text-black rounded-lg border-2 border-yellow-300 shadow-[0_0_20px_rgba(245,158,11,0.6)] z-10 select-none"
+            >
+              PRO
+            </motion.div>
+          )}
         </div>
 
         {isOwnProfile && editMode && (
@@ -137,6 +147,22 @@ const ProfileHeader = ({
             </div>
             <span className="text-[10px] uppercase tracking-tighter text-type-3 font-bold">Categories</span>
           </button>
+          
+          <div className="h-10 w-px bg-white/10 hidden sm:block" />
+          <div className="flex flex-col items-center sm:items-start group hover:scale-105 transition-transform">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-2xl font-black">{profile.totalNotes || 0}</span>
+            </div>
+            <span className="text-[10px] uppercase tracking-tighter text-type-3 font-bold">Notes</span>
+          </div>
+          
+          <div className="h-10 w-px bg-white/10 hidden sm:block" />
+          <div className="flex flex-col items-center sm:items-start group hover:scale-105 transition-transform">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-2xl font-black">{profile.totalTags || 0}</span>
+            </div>
+            <span className="text-[10px] uppercase tracking-tighter text-type-3 font-bold">Tags</span>
+          </div>
         </div>
 
         {/* Metadata */}

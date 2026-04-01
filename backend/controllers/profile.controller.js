@@ -34,7 +34,24 @@ export const getUserProfile = async (req, res) => {
       isFollowing = user.followers.some(id => String(id) === String(currentUserId));
     }
 
-    res.json({ ...user, isFollowing });
+    // Calculate total notes and unique tags
+    const notesResult = await Note.find({ user: userId }).select('tags isPrivate').lean();
+    
+    // For a public profile, only count public notes unless requester is the owner
+    const isOwner = currentUserId && String(currentUserId) === String(userId);
+    const visibleNotes = isOwner ? notesResult : notesResult.filter(n => !n.isPrivate);
+
+    const totalNotes = visibleNotes.length;
+    
+    const uniqueTags = new Set();
+    visibleNotes.forEach(note => {
+      if (Array.isArray(note.tags)) {
+        note.tags.forEach(tag => uniqueTags.add(tag.toLowerCase()));
+      }
+    });
+    const totalTags = uniqueTags.size;
+
+    res.json({ ...user, isFollowing, totalNotes, totalTags });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
@@ -75,7 +92,20 @@ export const myProfile = async (req, res) => {
           { path: "categoryType", select: "name" }
         ],
       })
-    res.json(user)
+      .lean();
+
+    const notesResult = await Note.find({ user: req.user._id }).select('tags').lean();
+    const totalNotes = notesResult.length;
+    
+    const uniqueTags = new Set();
+    notesResult.forEach(note => {
+      if (Array.isArray(note.tags)) {
+        note.tags.forEach(tag => uniqueTags.add(tag.toLowerCase()));
+      }
+    });
+    const totalTags = uniqueTags.size;
+
+    res.json({ ...user, totalNotes, totalTags });
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });
   }

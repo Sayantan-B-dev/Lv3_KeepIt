@@ -109,3 +109,73 @@ Edit `backend/models/user.model.js`:
 ```javascript
 userSchema.index({ bio: 1 });
 ```
+
+---
+
+# Pro Membership & Premium Infrastructure Log - 2026-04-01
+
+## 1. Multi-Tiered "Pro Account" System
+Implemented a scalable, two-tier user system (Normal vs. Pro) to provide tiered performance and advanced features.
+
+### Tiered Rate Limiting (`note.controller.js`)
+- **Normal Users**: 50 notes per hour.
+- **Pro Users**: 2,000 notes per hour.
+- **Rationale**: Ensures platform stability for millions of concurrent users while rewarding premium contributors with high-burst capacity.
+
+### High-Speed Upload Queue (`useMarkdownUploadQueue.js`)
+The bulk upload engine now identifies user status and adjusts performance dynamically:
+- **Normal Users**: 1 concurrent upload | 5s delay between batches.
+- **Pro Users**: 5 concurrent uploads | 3s delay between batches.
+
+---
+
+## 2. Advanced Premium Features
+
+### Full Category ZIP Export
+**Files Modified:** `note.controller.js`, `note.routes.js`, `CategoryHeader.jsx`
+- **Backend**: Integrated the `archiver` library to stream high-compression ZIP archives directly from the database to the user.
+- **Frontend**: Added a "ZIP Archive" action button to the category header.
+- **Restriction**: Restricted to Pro accounts with a dedicated upgrade prompt for normal users.
+
+### Managed Bulk Tagging
+- **BulkTagModal.jsx**: Updated the bulk tagging interface to enforce Pro restrictions, ensuring heavy metadata operations are reserved for premium tiers.
+
+---
+
+## 3. Automated Pro Request & Admin Approval Flow
+Replaced manual database updates with a robust, automated request and secure approval system.
+
+### The Request Flow (`Upgrade.jsx`)
+- Created a dedicated **Pro Access Request** page where users can submit their intent for an upgrade.
+- Implemented a "Transmit Request" logic that beams user data directly to the administrator.
+
+### Secure Email Approval Loop (`auth.controller.js`)
+- **Admin Notification**: Sends a high-aesthetic email to `ADMIN_EMAIL` containing the user's reason and a secure **"GRANT ACCESS"** link.
+- **Security**: Approval links are protected by a **24-hour signed JWT token** to prevent unauthorized access.
+- **Confirmation**: Upon approval, the user automatically receives a "Welcome to Pro" email, and their privileges are granted instantly.
+
+---
+
+## 4. Visual Branding & Pro UI
+Enhanced the application's aesthetic to clearly distinguish premium accounts and features.
+
+### Global "PRO" Badge
+**Files Modified:** `Author.jsx`, `ProfileHeader.jsx`, `SideNavbar.jsx`
+- Designed a premium gold/amber gradient badge with a subtle inner glow.
+- Integrated the badge across all profile picture components, ensuring it is visible in Sidebar, Profile views, and Note authors.
+
+### Premium Upgrade Modal
+**File Modified:** `ProUpgradeModal.jsx`
+- Developed a high-conversion "Unlock Pro" modal featuring glassmorphic effects, animated icons (lucide-react), and clear value propositions.
+
+---
+
+## 5. Infrastructure Resilience
+
+### Gmail App Password Support (`sendEmail.js`)
+- **Why**: Standard OAuth2 "Testing" tokens expire every 7 days, causing email failures.
+- **Fix**: Added support for `EMAIL_APP_PASS` in the transport layer, allowing for a permanent, secure connection to Gmail SMTP.
+
+### Remote Approval URL Mapping
+- **Fix**: Updated the backend approval link generation to use a `BACKEND_URL` fallback. This allows administrators to grant access from their mobile devices even if the dev server is running on `localhost`.
+
