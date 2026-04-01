@@ -1,6 +1,7 @@
 import React from "react";
 import { DottedButton } from "@/components/ui/buttons";
 import { Loader } from "@/components/ui";
+import { Plus } from "lucide-react";
 
 const CategoryList = ({
   categories = [],
@@ -16,6 +17,7 @@ const CategoryList = ({
   handleCategoryClick,
   isOwnProfile,
   readOnly = false,
+  onAddClick,
 }) => {
   /* ================= GROUP BY TYPE ================= */
   const typeGroups = {};
@@ -35,9 +37,20 @@ const CategoryList = ({
   return (
     <div className="mb-10">
 
-      <h2 className="text-xl sm:text-2xl font-bold text-type-1 my-6 text-center">
-        {isOwnProfile ? "Your Docs" : "Shared Docs"}
-      </h2>
+      <div className="flex items-center justify-center gap-3 my-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-type-1">
+          {isOwnProfile ? "Your Docs" : "Shared Docs"}
+        </h2>
+        {isOwnProfile && (
+          <button
+            onClick={onAddClick}
+            className="p-1.5 rounded-full bg-white/5 border border-white/10 text-type-3 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+            title="Create Empty Category or Type"
+          >
+            <Plus size={18} />
+          </button>
+        )}
+      </div>
 
       <div className="flex flex-col gap-6 sm:gap-8">
         {sortedTypes.map((type) => {
@@ -188,5 +201,5 @@ const CategoryList = ({
     </div>
   );
 };
-
+ 
 export default React.memo(CategoryList);

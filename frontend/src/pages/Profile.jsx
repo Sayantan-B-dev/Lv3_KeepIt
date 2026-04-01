@@ -13,6 +13,7 @@ import DeleteAccountModal from "@/features/profile/DeleteAccountModal";
 import { handleProfileImage } from "@/utils/handleProfileImage";
 import UserListModal from "@/features/profile/UserListModal";
 import CategoryStatsModal from "@/features/profile/CategoryStatsModal";
+import CreateCategoryModal from "@/features/profile/CreateCategoryModal";
 import { toast } from "react-toastify";
 
 const PAGE_LIMIT = 10;
@@ -63,6 +64,7 @@ const Profile = () => {
 
   const [activeModal, setActiveModal] = useState(null); // 'followers', 'following', 'categories'
   const [socialLoading, setSocialLoading] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   /* ================= FETCH PROFILE ================= */
 
@@ -358,6 +360,7 @@ const Profile = () => {
           handleNoteClick={(note) => navigate(`/note/${note._id}`)}
           handleCategoryClick={(catId) => navigate(`/category/${catId}`)}
           readOnly={!isOwnProfile}
+          onAddClick={() => setShowCreateModal(true)}
         />
 
         {isOwnProfile && (
@@ -387,6 +390,23 @@ const Profile = () => {
         onClose={() => setActiveModal(null)}
         categories={categories}
       />
+ 
+      {isOwnProfile && (
+        <CreateCategoryModal
+          open={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          onCreated={(newItem) => {
+            // New category created/synced
+            setCategories(prev => {
+              const exists = prev.find(c => c._id === newItem._id);
+              if (exists) return prev;
+              return [...prev, newItem];
+            });
+            toast.success("Navigating to category...");
+            navigate(`/category/${newItem._id}`);
+          }}
+        />
+      )}
     </>
   );
 };

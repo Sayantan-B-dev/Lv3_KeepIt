@@ -8,7 +8,8 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
-  getPublicCategoryById
+  getPublicCategoryById,
+  createCategoryType
 } from "../controllers/category.controller.js";
 
 const router = express.Router();
@@ -23,6 +24,7 @@ router.get("/:id/public", getPublicCategoryById);
 /* ================= Mutations ================= */
 
 router.post("/", isLoggedIn, createCategory);
+router.post("/types", isLoggedIn, createCategoryType);
 router.put("/:id", isLoggedIn, updateCategory);
 router.delete("/:id", isLoggedIn, deleteCategory);
 

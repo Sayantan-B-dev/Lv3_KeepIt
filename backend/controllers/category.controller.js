@@ -100,6 +100,13 @@ export const createCategory = async (req, res) => {
   try {
     const { name, type, isPrivate } = req.body;
 
+    // --- SYNC UP LOGIC ---
+    // If a category with the same name exists for this user, return it
+    const existingCategory = await Category.findOne({ name, user: req.user._id });
+    if (existingCategory) {
+      return res.status(200).json(existingCategory);
+    }
+
     let categoryTypeDoc = null;
 
     if (type && typeof type === "string") {
@@ -120,10 +127,31 @@ export const createCategory = async (req, res) => {
 
     await category.save();
 
+    // Update user's category list
+    await User.findByIdAndUpdate(req.user._id, { $push: { categories: category._id } });
+
     res.status(201).json(category);
   } catch (error) {
     console.error("Error creating category:", error);
     res.status(500).json({ error: "Failed to create category" });
+  }
+};
+
+export const createCategoryType = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) return res.status(400).json({ error: "Name is required" });
+
+    const categoryType = await CategoryType.findOneAndUpdate(
+      { name, user: req.user._id },
+      { name, user: req.user._id },
+      { upsert: true, new: true }
+    );
+
+    res.status(200).json(categoryType);
+  } catch (err) {
+    console.error("Error creating category type:", err);
+    res.status(500).json({ error: "Failed to create category type" });
   }
 };
 
