@@ -6,3 +6,4 @@ export { default as Marquee } from './Marquee';
 export { default as ProcessGuide } from './ProcessGuide';
 export { default as TechStackThread } from './TechStackThread';
 export { default as FeaturesCarousel } from './FeaturesCarousel';
+export { default as Loading } from './Loading';
