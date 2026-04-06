@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const FeaturesCarousel = () => {
     const [activeIndex, setActiveIndex] = useState(0);
@@ -27,27 +28,51 @@ const FeaturesCarousel = () => {
         }
     ];
 
+    const nextSlide = () => {
+        setActiveIndex((prev) => (prev + 1) % features.length);
+    };
+
+    const prevSlide = () => {
+        setActiveIndex((prev) => (prev - 1 + features.length) % features.length);
+    };
+
     return (
-        <div className="py-24 bg-[#10110f] border-y border-white/5 relative overflow-hidden">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/5 blur-[150px] -z-10 rounded-full"></div>
+        <div className="py-24 my-5 border-y border-white/5 relative overflow-hidden border-1 border-white/20 rounded-2xl">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full pointer-events-none opacity-20 bg-white/5 blur-[100px]"></div>
             
             <div className="max-w-6xl mx-auto px-6">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl lg:text-5xl font-black text-white mb-6 uppercase italic font-mono tracking-tighter">
-                        Why Choose re-Docs?
+                        Why Choose Re-Docs?
                     </h2>
                     <div className="flex justify-center gap-4">
                         {features.map((_, i) => (
                             <button
                                 key={i}
                                 onClick={() => setActiveIndex(i)}
-                                className={`w-3 h-3 rounded-full transition-all duration-300 ${i === activeIndex ? 'bg-white w-12' : 'bg-white/10 hover:bg-white/30'}`}
+                                className={`w-2 h-2 rounded-full transition-all duration-300 ${i === activeIndex ? 'bg-white w-8' : 'bg-white/10 hover:bg-white/30'}`}
                             />
                         ))}
                     </div>
                 </div>
 
-                <div className="relative h-[450px] md:h-[400px] lg:h-[350px] transition-all duration-500">
+                <div className="relative h-[500px] md:h-[400px] lg:h-[350px] transition-all duration-500 flex items-center group/carousel">
+                    {/* Navigation Arrows */}
+                    <button 
+                        onClick={prevSlide}
+                        className="absolute -left-4 lg:-left-12 z-30 p-4 rounded-full border border-white/20 bg-black/60 hover:bg-white/10 hover:border-white/40 transition-all text-white/50 hover:text-white opacity-0 group-hover/carousel:opacity-100 backdrop-blur-xl translate-x-4 group-hover/carousel:translate-x-0"
+                        aria-label="Previous slide"
+                    >
+                        <ChevronLeft className="w-6 h-6" />
+                    </button>
+
+                    <button 
+                        onClick={nextSlide}
+                        className="absolute -right-4 lg:-right-12 z-30 p-4 rounded-full border border-white/20 bg-black/60 hover:bg-white/10 hover:border-white/40 transition-all text-white/50 hover:text-white opacity-0 group-hover/carousel:opacity-100 backdrop-blur-xl -translate-x-4 group-hover/carousel:translate-x-0"
+                        aria-label="Next slide"
+                    >
+                        <ChevronRight className="w-6 h-6" />
+                    </button>
                     {features.map((feature, index) => (
                         <div
                             key={index}
