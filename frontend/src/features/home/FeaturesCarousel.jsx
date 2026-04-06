@@ -29,19 +29,19 @@ const FeaturesCarousel = () => {
 
     return (
         <div className="py-24 bg-[#10110f] border-y border-white/5 relative overflow-hidden">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-red-500/10 blur-[150px] -z-10 rounded-full"></div>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-white/5 blur-[150px] -z-10 rounded-full"></div>
             
             <div className="max-w-6xl mx-auto px-6">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl lg:text-5xl font-black text-white mb-6 uppercase italic font-mono tracking-tighter">
-                        Why Choose KeepIt?
+                        Why Choose re-Docs?
                     </h2>
                     <div className="flex justify-center gap-4">
                         {features.map((_, i) => (
                             <button
                                 key={i}
                                 onClick={() => setActiveIndex(i)}
-                                className={`w-3 h-3 rounded-full transition-all duration-300 ${i === activeIndex ? 'bg-red-500 w-12' : 'bg-white/10 hover:bg-white/30'}`}
+                                className={`w-3 h-3 rounded-full transition-all duration-300 ${i === activeIndex ? 'bg-white w-12' : 'bg-white/10 hover:bg-white/30'}`}
                             />
                         ))}
                     </div>
@@ -56,7 +56,7 @@ const FeaturesCarousel = () => {
                                 ${index === activeIndex ? 'opacity-100 translate-x-0 scale-100 z-10' : 'opacity-0 translate-x-10 scale-95 pointer-events-none' }
                             `}
                         >
-                            <div className="w-full lg:w-1/2 group relative overflow-hidden rounded-3xl border border-white/10">
+                            <div className="w-full lg:w-1/2 group relative overflow-hidden rounded-[3rem] border border-white/20">
                                 <img 
                                     src={feature.image} 
                                     alt={feature.title} 
@@ -70,15 +70,15 @@ const FeaturesCarousel = () => {
 
                             <div className="w-full lg:w-1/2 space-y-6">
                                 <h3 className="text-3xl font-black text-white italic uppercase font-mono tracking-tight flex items-center gap-3">
-                                   <span className="text-red-500">_</span> {feature.title}
+                                   <span className="text-white/40">_</span> {feature.title}
                                 </h3>
                                 <p className="text-lg text-type-3 font-mono leading-relaxed opacity-80 italic">
                                     "{feature.content}"
                                 </p>
                                 <ul className="grid grid-cols-2 gap-3">
                                     {feature.list.map((item, i) => (
-                                        <li key={i} className="flex items-center gap-2 text-[10px] font-bold font-mono text-white/50 uppercase tracking-widest border border-white/5 bg-white/5 p-3 rounded-xl hover:bg-red-500/10 hover:text-red-200 transition-colors duration-300">
-                                            <span className="w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                                        <li key={i} className="flex items-center gap-2 text-[10px] font-bold font-mono text-white/50 uppercase tracking-widest border border-white/20 bg-black/40 p-3 rounded-full hover:bg-white/10 hover:text-white transition-colors duration-300">
+                                            <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
                                             {item}
                                         </li>
                                     ))}
