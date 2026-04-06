@@ -196,3 +196,44 @@ Implemented a comprehensive logging and reporting system for the bulk Markdown u
 - **New Utility**: Created a professional log generator that compiles session data into a human-readable format.
 - **Downloadable Reports**: Users can now download a `.txt` log file of their bulk session, allowing them to troubleshoot specific failures (e.g., "Duplicate Title") offline.
 
+---
+
+# Community Discovery & Live Data Infrastructure Log - 2026-04-07
+
+## 1. Live Backend-to-Frontend Data Bridge
+Successfully integrated the live note data from the MongoDB Atlas database (1,679 public notes) directly into the Home page marquee.
+
+### API Routing Recovery
+- **Fix**: Corrected a singular/plural routing mismatch that was causing 404 errors on the home page.
+- **Old Route**: `/api/note/public/all`
+- **New Route**: `/api/notes/public/all` (aligned with `note.routes.js` mount point in `app.js`).
+
+---
+
+## 2. Optimized "Random Discovery" Algorithm
+Implemented a high-performance randomized fetching strategy to ensure the home page marquee stays fresh and represents the entire community.
+
+### New Randomized Controller (`getRandomPublicNotes`)
+- **Backend**: Added a specialized controller function that uses MongoDB Aggregation.
+- **Logic**:
+    1. `$match`: Filters for public notes only.
+    2. `$group`: Collects one note per unique category (ensures content variety).
+    3. `$sample`: Picks 10 truly random notes from the grouped result.
+    4. `$populate`: Resolves full `user` and `category` details.
+- **Frontend**: Updated `Home.jsx` to consume this new `/api/notes/public/random` endpoint instead of a static chronological list.
+
+---
+
+## 3. Marquee Visual & Data Polish
+Refined the Marquee component to meet premium design standards and correctly handle real-world data structures.
+
+### Design Enhancements
+- **Velocity Normalization**: Increased animation duration in `index.css` (from 30s to 60s) to create a relaxed, readable pace for heavy content.
+- **Field Mapping Fix**: Updated `Marquee.jsx` to correctly map the `user` object returned by the backend (replacing the legacy `author` key).
+- **Graceful Handling**: Implemented robust type-checking for `category` objects to ensure titles display correctly even when categories are populated objects vs. plain strings.
+
+---
+
+## 4. Stability & Quality Audit
+- **Database Verification**: Confirmed active connection to MongoDB Atlas and verified public note visibility.
+- **Style Cleanup**: Monitored and addressed Tailwind CSS linting warnings in `index.css` to maintain code health.
