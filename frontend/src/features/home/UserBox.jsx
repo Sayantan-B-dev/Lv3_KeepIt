@@ -28,10 +28,10 @@ const UserBox = ({ users = [] }) => {
             to={`/profile/${user._id}`}
             className="
               flex
-              rounded-xl
-              border border border-muted
-              bg-type-1 backdrop-blur-md
-              hover:bg-type-2 hover:border border-muted
+              rounded-2xl
+              border border-white/20
+              bg-black/40 backdrop-blur-md
+              hover:bg-black/60 hover:border-white/40
               shadow-lg hover:shadow-2xl
               transition-all duration-300
               p-4
@@ -46,7 +46,7 @@ const UserBox = ({ users = [] }) => {
                   alt={user.username}
                   className="
                     w-12 h-12 rounded-full object-cover
-                    border border border-muted
+                    border border-white/20
                   "
                   whileHover={{
                     scale: 1.15,
@@ -62,8 +62,8 @@ const UserBox = ({ users = [] }) => {
                     flex items-center justify-center
                     text-lg font-bold
                     text-white
-                    bg-type-2
-                    border border border-muted
+                    bg-white/10
+                    border border-white/20
                     shadow-md
                   "
                   whileHover={{
@@ -92,10 +92,10 @@ const UserBox = ({ users = [] }) => {
                   {user.username}
                 </h2>
 
-                <p className="text-sm text-gray-200 whitespace-nowrap">
+                <p className="text-xs text-white/50 font-mono italic whitespace-nowrap">
                   {user.categories && user.categories.length > 0
-                    ? `${user.categories.length} categories`
-                    : "No categories yet"}
+                    ? `${user.categories.length} segments`
+                    : "Empty space"}
                 </p>
               </motion.div>
             </div>
