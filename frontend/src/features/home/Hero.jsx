@@ -4,135 +4,120 @@ import { useNavigate } from "react-router-dom";
 
 const boxes = [
   {
-    title: "Create Notes",
-    description: "Write and store your thoughts in one place",
-    icon: "📝",
+    title: "Craft Notes",
+    description: "Write and store your thoughts with rich text and custom exports.",
+    icon: "🖋️",
+    glow: "group-hover:shadow-blue-500/20"
   },
   {
-    title: "Organize Content",
-    description: "Group notes by tags and categories",
-    icon: "🗂️",
+    title: "Stay Organized",
+    description: "Group notes by tags and multi-level categories with ease.",
+    icon: "📂",
+    glow: "group-hover:shadow-red-500/20"
   },
   {
-    title: "Discover Notes",
-    description: "Explore notes shared by other users",
-    icon: "🔍",
+    title: "Community Feed",
+    description: "Follow creators and discover shared knowledge globally.",
+    icon: "🌐",
+    glow: "group-hover:shadow-green-500/20"
   }
 ];
 
-const Hero = ({ user, loading, error, isAuthenticated }) => {
+const Hero = ({ user, isAuthenticated }) => {
   const navigate = useNavigate();
 
   return (
-    <div
-      className="
-        border border-muted
-        relative overflow-hidden
-        mb-5 rounded-xl flex items-center
-        p-4 sm:p-6 md:p-10
-        bg-cover bg-center bg-no-repeat
-        min-h-[500px] md:min-h-[800px] h-auto
-      "
-    >
+    <div className="relative min-h-[700px] md:min-h-[900px] flex items-center overflow-hidden border-b border-white/5 bg-[#10110f]">
+      {/* Dynamic Background Elements */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-red-600/5 blur-[120px] rounded-full animate-pulse"></div>
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-indigo-600/5 blur-[100px] rounded-full animate-bounce-slow"></div>
+      
+      {/* Grid Pattern Overlay */}
+      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
-      {/* bg-[url('https://images.pexels.com/photos/317356/pexels-photo-317356.jpeg')] */}
-
-      {/* Background overlay (controls opacity) */}
-      <div className="absolute inset-0 bg-type-b3" />
-
-      {/* Content */}
-      <div className="relative z-10 container mx-auto px-2 sm:px-4 py-8 md:py-16 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
-          {/* Left side */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-type-1 leading-tight">
-                Keep your notes and ideas
-                <span className="block text-indigo-300">
-                  organized in one place
-                </span>
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
+          {/* Left Side: Text & Actions */}
+          <div className="space-y-10 text-center lg:text-left">
+            <div className="inline-block px-4 py-1 rounded-full border border-red-500/20 bg-red-500/5 text-red-200 text-[10px] font-mono font-black uppercase tracking-[0.3em] animate-pulse">
+              Version 3.0 • Now Live
+            </div>
+            
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-[0.9] tracking-tighter uppercase italic font-mono">
+                Capture <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-white to-red-200">Everything.</span>
               </h1>
 
-              <p className="text-base sm:text-lg md:text-xl text-type-1 leading-relaxed">
-                <b>Re-Docs</b> is a simple platform to write, organize, and share
-                notes. Save useful content from the web, structure your thoughts,
-                and revisit them whenever you need.
+              <p className="text-lg md:text-xl text-type-3 font-mono leading-relaxed max-w-xl mx-auto lg:mx-0 opacity-80">
+                <span className="text-white font-bold">KeepIt</span> is the ultimate workspace for your second brain. From quick thoughts to complex research, organize your life in one powerful, minimalist interface.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xs sm:max-w-none w-full m-auto">
+            <div className="flex flex-col sm:flex-row gap-6 justify-center lg:justify-start">
               <DottedButton
-                text="Create Note"
-                onClick={() => {
-                  if (isAuthenticated) {
-                    navigate("/CreateNote");
-                  } else {
-                    navigate("/login");
-                  }
-                }}
+                text="Get Started Free"
+                className="!px-10 !py-4 scale-110"
+                onClick={() => navigate(isAuthenticated ? "/CreateNote" : "/register")}
               />
-              <DottedButton
-                text="Learn More"
+              <button 
                 onClick={() => navigate("/about")}
-              />
+                className="group flex items-center gap-3 text-sm font-mono font-bold text-white/50 hover:text-white transition-all underline-animation"
+              >
+                Explore Features 
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </button>
             </div>
 
-            <div className="text-sm sm:text-base text-type-2 pt-4 max-w-xl">
-              Built for individuals who want a clean space to store ideas,
-              learning notes, and useful links - without unnecessary complexity.
-            </div>
-          </div>
-
-          {/* Right side feature grid */}
-          <div className="relative flex justify-center items-center p-2 sm:p-6 md:p-10 w-full">
-            <div
-              className="
-                  flex flex-col flex-wrap justify-center
-                  gap-3 sm:gap-4
-                  w-full
-                "
-            >
-              {boxes.map((box, index) => (
-                <div
-                  key={index}
-                  className="
-                    flex flex-col items-center
-                    backdrop-blur-sm bg-type-1
-                    p-4 sm:p-6
-                    rounded-xl shadow-xl
-                    transition-all duration-300
-                    hover:-translate-y-2 hover:shadow-2xl
-                    border border-muted hover:border-muted2 hover:bg-type-2
-                    box-border cursor-pointer
-                  "
-                >
-                  <div
-                    className="
-                      w-8 h-8
-                      rounded-lg
-                      mb-2 sm:mb-3
-                      flex items-center justify-center
-                      backdrop-blur-sm
-                      shrink-0  
-                    "
-                  >
-                    <span className="text-lg">
-                      {box.icon}
-                    </span>
+            <div className="flex items-center gap-4 justify-center lg:justify-start text-xs font-mono text-type-3">
+              <div className="flex -space-x-3">
+                {[1,2,3,4].map(i => (
+                  <div key={i} className="w-8 h-8 rounded-full border-2 border-black bg-type-2 flex items-center justify-center overflow-hidden">
+                    <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
                   </div>
-
-                  <h3 className="text-base sm:text-lg font-semibold text-type-4 text-center break-words">
-                    {box.title}
-                  </h3>
-
-                  <p className="text-type-3 text-xs sm:text-sm text-center break-words">
-                    {box.description}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
+              <span>Trusted by <span className="text-white font-black">500+</span> note takers</span>
             </div>
-
           </div>
+
+          {/* Right Side: Visual Boxes */}
+          <div className="relative group">
+            <div className="absolute inset-0 bg-red-500/10 blur-[100px] rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
+               {boxes.map((box, index) => (
+                 <div
+                   key={index}
+                   className={`
+                     group/card relative p-8 rounded-[2rem] border border-white/5 bg-white/[0.03] backdrop-blur-3xl
+                     transition-all duration-500 hover:-translate-y-3 hover:bg-white/[0.05] hover:border-white/20
+                     ${index === 2 ? 'md:col-span-2' : ''}
+                     flex flex-col items-center text-center
+                     shadow-2xl ${box.glow}
+                   `}
+                 >
+                   <div className="text-5xl mb-6 bg-black/40 w-20 h-20 flex items-center justify-center rounded-3xl border border-white/5 transition-transform duration-500 group-hover/card:scale-110 group-hover/card:rotate-6">
+                     {box.icon}
+                   </div>
+                   <h3 className="text-xl font-black text-white italic uppercase font-mono tracking-tighter mb-2 italic">
+                     {box.title}
+                   </h3>
+                   <p className="text-sm text-type-3 font-mono opacity-70 group-hover/card:opacity-100 transition-opacity">
+                     {box.description}
+                   </p>
+                 </div>
+               ))}
+               
+               {/* Decorative Element */}
+               <div className="absolute -z-10 -bottom-10 -right-10 text-[10rem] font-black text-white/[0.02] font-mono pointer-events-none select-none uppercase italic">
+                  KEEP
+               </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
