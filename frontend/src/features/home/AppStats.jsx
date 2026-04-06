@@ -31,7 +31,7 @@ const stats = [
 
 const AppStats = () => {
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5 w-full">
             {stats.map((item, idx) => (
                 <motion.div
                     key={idx}

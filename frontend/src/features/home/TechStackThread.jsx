@@ -12,7 +12,7 @@ const TechStackThread = () => {
   return (
     <div className="relative py-16  border-1 border-white/20 rounded-2xl overflow-hidden group">
       <div className="text-center mb-10">
-         <h3 className="text-xl font-black text-white/40 tracking-widest uppercase font-mono italic inline-block relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white/10 after:scale-x-0 group-hover:after:scale-x-100 transition-all duration-500">
+         <h3 className="text-xl text-white tracking-widest uppercase font-mono italic inline-block relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white/10 after:scale-x-0 group-hover:after:scale-x-100 transition-all duration-500">
            Engineered With
          </h3>
       </div>
@@ -26,7 +26,7 @@ const TechStackThread = () => {
                  className="flex items-center gap-3 text-3xl md:text-5xl font-black text-white hover:opacity-100 opacity-60 transition-all duration-500 cursor-default font-mono italic uppercase tracking-tighter"
                >
                  <span className="drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{tech}</span>
-                 <span className="text-white/20 mx-10 text-2xl">•</span>
+                 <span className="text-white mx-10 text-2xl">•</span>
                </div>
              ))}
            </div>

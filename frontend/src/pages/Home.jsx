@@ -17,7 +17,9 @@ const Home = () => {
   const { user } = useAuth();
   const isAuthenticated = !!user;
   const [users, setUsers] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [notesLoading, setNotesLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showColdStartMessage, setShowColdStartMessage] = useState(false);
   const [isBackendOffline, setIsBackendOffline] = useState(false);
@@ -25,30 +27,45 @@ const Home = () => {
   useEffect(() => {
     // Show cold start message if backend doesn't respond in 2.5 seconds
     const timer = setTimeout(() => {
-      if (loading) setShowColdStartMessage(true);
+      if (loading || notesLoading) setShowColdStartMessage(true);
     }, 2500);
 
-    const fetchUsers = async () => {
+    const fetchData = async () => {
+      setLoading(true);
+      setNotesLoading(true);
+      setIsBackendOffline(false);
+
+      // Fetch Users
       try {
-        setLoading(true);
-        setIsBackendOffline(false);
-        const response = await axiosInstance.get('/api/profile/users', {
+        const userResponse = await axiosInstance.get('/api/profile/users', {
           params: { page: 1, limit: 24 }
         });
-        const data = response.data;
-        setUsers(Array.isArray(data) ? data : (data.notes || data.users || []));
+        const userData = userResponse.data;
+        setUsers(Array.isArray(userData) ? userData : (userData.notes || userData.users || []));
       } catch (err) {
-        console.error('Error details:', err.response || err);
-        setError('Failed to connect to backend');
+        console.error('Error fetching users:', err);
         setIsBackendOffline(true);
       } finally {
         setLoading(false);
+      }
+
+      // Fetch Public Notes
+      try {
+        const noteResponse = await axiosInstance.get('/api/notes/public/random');
+        const noteData = noteResponse.data;
+        // The API might return { notes: [...] } or just [...]
+        const extractedNotes = Array.isArray(noteData) ? noteData : (noteData.notes || []);
+        setNotes(extractedNotes);
+      } catch (err) {
+        console.error('Error fetching notes:', err);
+      } finally {
+        setNotesLoading(false);
         setShowColdStartMessage(false);
         clearTimeout(timer);
       }
     };
 
-    fetchUsers();
+    fetchData();
     return () => clearTimeout(timer);
   }, []);
 
@@ -58,16 +75,20 @@ const Home = () => {
       <Hero user={user} isAuthenticated={isAuthenticated} />
 
       {/* Stats Section */}
-      <div className="container">
-        <AppStats />
-      </div>
+
+      <AppStats />
+
 
       {/* Demo Notes Marquee */}
-      <div className="mt-20 pt-5 border-1 border-white/20 rounded-2xl">
-            <h2 className="text-sm font-mono text-type-3 uppercase tracking-[0.3em] font-bold text-center">
-              Live Feed {isBackendOffline ? '(Demo Archive)' : '(From Community)'}
-            </h2>
-         <Marquee isLoading={loading} isOffline={isBackendOffline} />
+      <div className=" pt-5 border-1 border-white/20 rounded-2xl">
+        <h2 className="text-sm font-mono text-type-3 uppercase tracking-[0.3em] font-bold text-center">
+          {isBackendOffline ? 'Feed Offline' : 'Live Community Feed'}
+        </h2>
+        <Marquee
+          items={notes}
+          isLoading={notesLoading}
+          isOffline={isBackendOffline}
+        />
       </div>
 
       {/* Step by Step Guide */}
@@ -101,8 +122,8 @@ const Home = () => {
           shadow-2xl relative overflow-hidden
         ">
           {/* Decorative background element */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 =rounded-full pointer-events-none"></div>
-          
+          <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full pointer-events-none"></div>
+
           {loading ? (
             <UserBoxSkeleton count={12} />
           ) : isBackendOffline ? (
@@ -110,7 +131,7 @@ const Home = () => {
               <div className="text-5xl mb-6">📡</div>
               <p className="font-black text-xl mb-2 uppercase italic tracking-tighter">Backend is currently offline</p>
               <p className="text-xs text-type-3 font-mono max-w-md mx-auto leading-relaxed">
-                We're currently using a demo state. The server might be waking up from its nap (common on free-tier hosting). 
+                We're currently using a demo state. The server might be waking up from its nap (common on free-tier hosting).
                 Once it's up, you'll see live user profiles here.
               </p>
 

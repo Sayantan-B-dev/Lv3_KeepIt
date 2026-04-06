@@ -8,6 +8,7 @@ import {
   getNotesById,
   getCategoryNotes,
   getPublicNotesbyUser,
+  getRandomPublicNotes,
   getAllPublicNotes,
   getNotesByTag,
   getAllTags,
@@ -34,6 +35,7 @@ const noteLimiter = rateLimit({
 /* ================= Public ================= */
 
 router.get("/public/all", getAllPublicNotes);
+router.get("/public/random", getRandomPublicNotes);
 router.get("/public/:userId", isLoggedIn, getPublicNotesbyUser);
 router.get("/tags", getAllTags);
 router.get("/", getNotesByTag);

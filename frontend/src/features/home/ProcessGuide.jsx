@@ -33,7 +33,7 @@ const ProcessGuide = () => {
   ];
 
   return (
-    <div className="py-24 bg-[#10110f] border-y border-white/5 overflow-hidden">
+    <div className="py-24 border-1 border-white/20 rounded-2xl my-5 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-black text-white mb-4 tracking-tighter uppercase font-mono italic">

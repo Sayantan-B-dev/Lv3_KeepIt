@@ -27,16 +27,9 @@ const Hero = ({ user, isAuthenticated }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-[700px] md:min-h-[900px] flex items-center overflow-hidden border-b border-white/5 bg-[#10110f]">
-      {/* Dynamic Background Elements */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-white/5 blur-[120px] rounded-full animate-pulse"></div>
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-white/5 blur-[100px] rounded-full animate-bounce-slow"></div>
-      
-      {/* Grid Pattern Overlay */}
-      <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
 
-      <div className="container mx-auto px-6 relative z-10">
+
+      <div className="w-full relative z-10 border-1 rounded-2xl p-10 mb-5 border-white/20">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           
           {/* Left Side: Text & Actions */}
@@ -52,7 +45,7 @@ const Hero = ({ user, isAuthenticated }) => {
               </h1>
 
               <p className="text-lg md:text-xl text-type-3 font-mono leading-relaxed max-w-xl mx-auto lg:mx-0 opacity-80">
-                <span className="text-white font-bold italic tracking-tighter">re-Docs</span> is the ultimate workspace for your second brain. From quick thoughts to complex research, organize your life in one powerful, minimalist interface.
+                <span className="text-white font-bold italic tracking-tighter">Re-Docs</span> is the ultimate workspace for your second brain. From quick thoughts to complex research, organize your life in one powerful, minimalist interface.
               </p>
             </div>
 
@@ -79,27 +72,27 @@ const Hero = ({ user, isAuthenticated }) => {
                   </div>
                 ))}
               </div>
-              <span>Trusted by <span className="text-white font-black">500+</span> note takers</span>
+              <span>Trusted by <span className="text-white font-black">***+</span> note takers</span>
             </div>
           </div>
 
           {/* Right Side: Visual Boxes */}
           <div className="relative group">
-            <div className="absolute inset-0 bg-white/5 blur-[100px] rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+            <div className="absolute inset-0 blur-[100px] rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 relative">
                {boxes.map((box, index) => (
                  <div
                    key={index}
                    className={`
-                     group/card relative p-8 rounded-2xl border border-white/20 bg-black/40 backdrop-blur-3xl
-                     transition-all duration-500 hover:-translate-y-3 hover:bg-black/60 hover:border-white/40
+                     group/card relative p-8 rounded-2xl border border-white/20  backdrop-blur-3xl
+                     transition-all duration-500 hover:-translate-y-3 hover:border-white/40
                      ${index === 2 ? 'md:col-span-2' : ''}
                      flex flex-col items-center text-center
                      shadow-2xl ${box.glow}
                    `}
                  >
-                   <div className="text-5xl mb-6 bg-black/40 w-20 h-20 flex items-center justify-center rounded-3xl border border-white/5 transition-transform duration-500 group-hover/card:scale-110 group-hover/card:rotate-6">
+                   <div className="text-5xl mb-6 w-20 h-20 flex items-center justify-center rounded-3xl border border-white/5 transition-transform duration-500 group-hover/card:scale-110 group-hover/card:rotate-6">
                      {box.icon}
                    </div>
                    <h3 className="text-xl font-black text-white italic uppercase font-mono tracking-tighter mb-2 italic">
@@ -113,14 +106,13 @@ const Hero = ({ user, isAuthenticated }) => {
                
                {/* Decorative Element */}
                <div className="absolute -z-10 -bottom-10 -right-10 text-[10rem] font-black text-white/[0.02] font-mono pointer-events-none select-none uppercase italic">
-                  re-Docs
+                  Re-Docs
                </div>
             </div>
           </div>
 
         </div>
       </div>
-    </div>
   );
 };
 

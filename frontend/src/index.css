@@ -238,7 +238,7 @@ body {
   display: flex;
   place-items: center;
    font-family: monospace, serif;
-  background-color: #10110f !important;
+  background-color: #10110f00 !important;
 }
 
 
@@ -307,11 +307,11 @@ button:focus-visible {
 }
 
 .animate-marquee {
-  animation: marquee 30s linear infinite;
+  animation: marquee 60s linear infinite;
 }
 
 .animate-marquee-reverse {
-  animation: marquee-reverse 45s linear infinite;
+  animation: marquee-reverse 80s linear infinite;
 }
 
 .animate-tech-scroll {

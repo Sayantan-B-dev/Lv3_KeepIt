@@ -241,7 +241,7 @@ export const getAllPublicNotes = async (req, res) => {
     }
 
     const notes = await Note.find(query)
-      .select('title user category createdAt')
+      .select('title content user category createdAt')
       .populate({
         path: "category",
         select: "name categoryType",
@@ -256,6 +256,34 @@ export const getAllPublicNotes = async (req, res) => {
   } catch (error) {
     console.error('Error fetching public notes:', error);
     res.status(500).json({ error: 'Failed to fetch public notes' });
+  }
+}
+
+export const getRandomPublicNotes = async (req, res) => {
+  try {
+    const notes = await Note.aggregate([
+      { $match: { isPrivate: false } },
+      { $group: { 
+          _id: "$category", 
+          note: { $first: "$$ROOT" } 
+      } },
+      { $sample: { size: 10 } },
+      { $replaceRoot: { newRoot: "$note" } }
+    ]);
+
+    const populatedNotes = await Note.populate(notes, [
+      { path: 'user', select: 'username' },
+      { 
+        path: 'category', 
+        select: 'name categoryType',
+        populate: { path: 'categoryType', select: 'name' }
+      }
+    ]);
+
+    res.json(populatedNotes);
+  } catch (error) {
+    console.error('Error fetching random public notes:', error);
+    res.status(500).json({ error: 'Failed to fetch random public notes' });
   }
 }
 

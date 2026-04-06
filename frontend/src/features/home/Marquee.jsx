@@ -1,19 +1,13 @@
 import React from 'react';
 
 const Marquee = ({ items, isLoading, isOffline }) => {
-  const demoNotes = [
-    { title: "Quantum Physics Notes", content: "Understanding entanglement and superposition in multi-dimensional spaces.", category: "Science", author: "Dr. Smith" },
-    { title: "Perfect Pasta Sauce", content: "Slow-cooked tomatoes with fresh basil and a hint of red wine.", category: "Cooking", author: "Chef Mario" },
-    { title: "React Best Practices", content: "Use composition, keep state local, and optimize with useMemo.", category: "Tech", author: "DevGuru" },
-    { title: "Morning Routine", content: "Meditation, 20 mins of reading, and high-protein breakfast.", category: "Lifestyle", author: "LifeCoach" },
-    { title: "Project Alpha Plan", content: "Milestones for Q3 including the new API integration and UI overhaul.", category: "Work", author: "ManagerX" },
-    { title: "Book Recommendations", content: "The Overstory, Dune, and Thinking Fast and Slow.", category: "Reading", author: "Bibliophile" },
-  ];
 
-  const displayItems = isOffline || isLoading ? Array(10).fill({}) : (items && items.length > 0 ? items : demoNotes);
+  const displayItems = (isLoading || isOffline) 
+    ? Array(10).fill({}) 
+    : (items && items.length > 0 ? items : []);
 
   return (
-    <div className="relative flex overflow-x-hidden py-10 bg-black/20 border-y border-white/5 my-12 group">
+    <div className="relative flex overflow-x-hidden  my-5 group">
       <div className="animate-marquee flex whitespace-nowrap gap-6 py-4">
         {displayItems.concat(displayItems).map((note, idx) => (
           <div
@@ -39,8 +33,8 @@ const Marquee = ({ items, isLoading, isOffline }) => {
             ) : (
               <>
                 <div className="flex justify-between items-start mb-3">
-                  <span className="px-2 py-0.5 rounded-full bg-white/10 text-[10px] text-white/70 font-mono border border-white/20 uppercase tracking-widest">
-                    {note.category || 'Note'}
+                  <span className="px-2 py-0.5 rounded-full bg-white/10 text-[10px] text-white/70 font-mono border border-white/20 uppercase">
+                    {typeof note.category === 'object' ? note.category?.name : (note.category || note.theme || 'Note')}
                   </span>
                   {isOffline && (
                     <span className="text-[10px] text-type-3 font-mono opacity-50 uppercase tracking-tighter italic">
@@ -55,9 +49,9 @@ const Marquee = ({ items, isLoading, isOffline }) => {
                 <div className="flex justify-between items-center pt-4 border-t border-white/5 text-[10px] font-mono text-type-3">
                   <span className="flex items-center gap-1">
                     <span className="w-1 h-1 rounded-full bg-white/40"></span>
-                    {note.author || 'Anonymous'}
+                    {typeof note.user === 'object' ? note.user?.username : (note.user || 'Anonymous')}
                   </span>
-                  <span>{new Date().toLocaleDateString()}</span>
+                  <span>{note.createdAt ? new Date(note.createdAt).toLocaleDateString() : new Date().toLocaleDateString()}</span>
                 </div>
               </>
             )}
