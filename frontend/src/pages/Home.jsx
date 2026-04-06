@@ -58,17 +58,15 @@ const Home = () => {
       <Hero user={user} isAuthenticated={isAuthenticated} />
 
       {/* Stats Section */}
-      <div className="container mx-auto px-4">
+      <div className="container">
         <AppStats />
       </div>
 
       {/* Demo Notes Marquee */}
-      <div className="mt-20">
-         <div className="container mx-auto px-4 mb-4">
+      <div className="mt-20 pt-5 border-1 border-white/20 rounded-2xl">
             <h2 className="text-sm font-mono text-type-3 uppercase tracking-[0.3em] font-bold text-center">
               Live Feed {isBackendOffline ? '(Demo Archive)' : '(From Community)'}
             </h2>
-         </div>
          <Marquee isLoading={loading} isOffline={isBackendOffline} />
       </div>
 
@@ -82,7 +80,7 @@ const Home = () => {
       <TechStackThread />
 
       {/* Discover Users (Only show if backend is potentially up or after initial load) */}
-      <div className="container mx-auto px-4 py-24">
+      <div className="w-full px-4 py-10 border-1 border-white/20 rounded-2xl my-5">
         {showColdStartMessage && <ColdStartBanner />}
 
         <div className="mb-8 flex flex-col items-center">
@@ -99,13 +97,11 @@ const Home = () => {
 
         <div className="
           w-full p-8
-          rounded-[3rem]
-          border border-white/20
-          bg-black/40 backdrop-blur-3xl
+           border-1 border-white/20 rounded-2xl  backdrop-blur-3xl
           shadow-2xl relative overflow-hidden
         ">
           {/* Decorative background element */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/5 blur-[100px] rounded-full pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-64 h-64 =rounded-full pointer-events-none"></div>
           
           {loading ? (
             <UserBoxSkeleton count={12} />
@@ -126,7 +122,7 @@ const Home = () => {
               </button>
             </div>
           ) : (
-            <div className="flex flex-wrap justify-center gap-6">
+            <div className="flex flex-wrap justify-center gap-6 ">
               <UserBox users={users} />
             </div>
           )}
