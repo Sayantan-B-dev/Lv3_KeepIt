@@ -53,7 +53,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="w-full overflow-x-hidden selection:bg-red-500/30">
+    <div className="w-full overflow-x-hidden selection:bg-white/30">
       {/* Hero Section */}
       <Hero user={user} isAuthenticated={isAuthenticated} />
 
@@ -89,7 +89,7 @@ const Home = () => {
           <h2 className="text-3xl font-black text-white font-mono tracking-tighter uppercase italic mb-2">
             The Community
           </h2>
-          <div className="h-1 w-20 bg-red-500/50 rounded-full"></div>
+          <div className="h-1 w-20 bg-white/20 rounded-full"></div>
           {loading && (
             <span className="mt-4 text-[10px] text-type-3 font-mono animate-pulse uppercase tracking-widest font-bold">
               Connecting to database...
@@ -99,13 +99,13 @@ const Home = () => {
 
         <div className="
           w-full p-8
-          rounded-[2rem]
-          border border-white/5
-          bg-white/[0.02] backdrop-blur-3xl
+          rounded-[3rem]
+          border border-white/20
+          bg-black/40 backdrop-blur-3xl
           shadow-2xl relative overflow-hidden
         ">
           {/* Decorative background element */}
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-red-500/5 blur-[100px] rounded-full pointer-events-none"></div>
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/5 blur-[100px] rounded-full pointer-events-none"></div>
           
           {loading ? (
             <UserBoxSkeleton count={12} />
@@ -132,17 +132,6 @@ const Home = () => {
           )}
         </div>
       </div>
-
-      <footer className="py-20 border-t border-white/5 bg-[#0a0b09]">
-         <div className="container mx-auto px-4 text-center">
-            <h2 className="text-5xl font-black text-white/5 font-mono uppercase italic select-none">KEEP IT. SHARE IT.</h2>
-            <div className="mt-10 flex justify-center gap-8 text-[10px] font-mono text-type-3 uppercase tracking-widest">
-               <a href="#" className="hover:text-red-300 transition-colors">Privacy</a>
-               <a href="#" className="hover:text-red-300 transition-colors">Terms</a>
-               <a href="#" className="hover:text-red-300 transition-colors">GitHub</a>
-            </div>
-         </div>
-      </footer>
     </div>
   );
 };

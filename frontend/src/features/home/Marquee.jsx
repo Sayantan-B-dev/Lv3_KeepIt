@@ -21,8 +21,8 @@ const Marquee = ({ items, isLoading, isOffline }) => {
             className={`
               inline-block w-72 p-6 rounded-2xl border transition-all duration-500
               ${isLoading || isOffline 
-                ? 'bg-white/5 border-white/10 animate-pulse' 
-                : 'bg-white/5 border-white/10 hover:border-white/30 hover:bg-white/10 hover:-translate-y-1'
+                ? 'bg-black/40 border-white/10 animate-pulse' 
+                : 'bg-black/40 border-white/20 hover:border-white/40 hover:bg-black/60 hover:-translate-y-1 shadow-2xl'
               }
             `}
           >
@@ -39,7 +39,7 @@ const Marquee = ({ items, isLoading, isOffline }) => {
             ) : (
               <>
                 <div className="flex justify-between items-start mb-3">
-                  <span className="px-2 py-0.5 rounded-full bg-red-500/20 text-[10px] text-red-200 font-mono border border-red-500/30 uppercase tracking-widest">
+                  <span className="px-2 py-0.5 rounded-full bg-white/10 text-[10px] text-white/70 font-mono border border-white/20 uppercase tracking-widest">
                     {note.category || 'Note'}
                   </span>
                   {isOffline && (
@@ -54,7 +54,7 @@ const Marquee = ({ items, isLoading, isOffline }) => {
                 </p>
                 <div className="flex justify-between items-center pt-4 border-t border-white/5 text-[10px] font-mono text-type-3">
                   <span className="flex items-center gap-1">
-                    <span className="w-1 h-1 rounded-full bg-green-500 animate-pulse"></span>
+                    <span className="w-1 h-1 rounded-full bg-white/40"></span>
                     {note.author || 'Anonymous'}
                   </span>
                   <span>{new Date().toLocaleDateString()}</span>
