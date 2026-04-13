@@ -1,249 +1,65 @@
-# Quick Updates Log - 2026-04-13 (15:05)
+# 🛠️ Re-Docs Latest Changes Log
 
-## 2. Guest Preview Mode & Auth Redirection
-- **What Changed**: Added a 20-second countdown for unauthenticated viewers on `Note.jsx`. After the preview ends, or if they hit an authentication error, they are presented with an `AccessDenied` page that features a "Go to Login" button redirecting to `/login` instead of just returning back.
-- **Why**: Allows guests a glimpse of content while strongly funneling them toward creating an account.
-
-## 1. Code Block Language Detection
-- **What Changed**: Updated `MathContent.jsx` to parse the `language-` class and display the code block's language on the top right.
-- **Why**: To let users know which language context a code block is in and keep the language label visible regardless of horizontal scrolling.
-
-# Project Optimization & Infrastructure Log - 2026-03-27
-
-## 1. High-Performance MongoDB Indexing Strategy
-To ensure the application remains lightning-fast as the note collection grows into the thousands, a complete audit and overhaul of the MongoDB indexing strategy was performed.
-
-### Note Model Optimizations (`note.model.js`)
-**Why:** Queries like "Find all my notes in Category X" or "Search public notes by Tag Y" were performing full collection scans or in-memory sorts, both of which are high-cost operations.
-
-**New Indexes Added:**
-```javascript
-{ user: 1, createdAt: -1 }      // Recent Notes feed
-{ user: 1, updatedAt: -1 }      // Recently edited content
-{ user: 1, category: 1, title: 1 } // Category browsing + Alphabetical sort
-{ isPrivate: 1, createdAt: -1 } // Global public feed
-{ category: 1, isPrivate: 1, title: 1 } // Public category detail
-{ tags: 1, isPrivate: 1, createdAt: -1 } // Tag Search page
-{ user: 1, isPrivate: 1, createdAt: -1 } // Personal privacy views
-```
-
-### User Model & Social Relationships (`user.model.js`)
-**Why:** Relationship cleanup and registration security were creating "expensive" queries during write operations.
-
-**New Indexes Added:**
-```javascript
-{ registrationIp: 1, createdAt: -1 } // IP rate limiter
-{ followers: 1 }                     // Relationship cleanup
-{ following: 1 }                     // Relationship cleanup
-{ username: 1 }                      // Auth & profile lookups
-```
-
-### Category Model & Organization (`category.model.js`)
-**New Indexes Added:**
-```javascript
-{ user: 1, name: 1 }                          // Uniqueness/lookup check
-{ isPrivate: 1, name: 1 }                     // Global category list
-{ categoryType: 1, isPrivate: 1, name: 1 }    // Public type-based list
-{ categoryType: 1, user: 1, name: 1 }         // Private type-based list
-```
+This log tracks the evolution of the Re-Docs MERN stack application, covering high-performance infrastructure, premium features, and UI/UX refinements.
 
 ---
 
-## 2. Index-Friendly Query Refactoring (Controllers)
-Creating indexes is only half the battle; the application code must use patterns that the database can actually leverage.
+## 📅 April 13, 2026
 
-**The "Equality, Sort, Range" (ESR) Pattern Implementation:**
-- **What Changed:** Replaced all occurrences of `isPrivate: { $ne: true }` with `isPrivate: false`.
-- **Involved Files:** `note.controller.js`, `global.controller.js`, `category.controller.js`.
-- **Result:** Sub-millisecond execution for most common queries.
+### 🚀 UI & Analytics Infrastructure
+- **Hero Evolution & Analytics**: Integrated live metrics (Notes, Tags, Topics, Users) directly into the Hero section as a minimalist inline row.
+- **Cyber/Matrix Cipher Effect**: Implemented an "active encryption" visual for numeric metrics that triggers during backend cold starts or downtime.
+- **Persistent Stats Snapshot**: Created a `Stats` model and `/api/global/initial-data` route to provide "last-known" application states for instant UI rendering.
+- **Pro Comparison Engine**: Developed a side-by-side comparison feature to clearly illustrate Free vs. Pro account capabilities.
+- **Backend Health Monitor**: Launched a real-time `BackendStatus` glassmorphic tracker with "Connecting", "Live", and "Offline" states.
 
----
+### 🔒 Access Control & Security
+- **Guest Preview Mode**: Implemented a 20-second "timed preview" for unauthenticated users on private/public notes with automatic redirection to `/login`.
+- **UI Guard Rails**: Hidden sensitive features (Markdown upload, ZIP export, bulk actions) from non-owners and guests to prevent unauthorized data interaction.
 
-## 3. Bulk Upload & Infrastructure Expansion
-The application has been prepared to handle bulk uploads of over 500 individual Markdown (.md) files in a single session.
-
-### IP/Route Level Rate Limiting (`note.routes.js`)
-- **Limiter:** `noteLimiter`
-- **Previous Limit:** `max: 20` (per 5 mins)
-- **New Limit:** `max: 1000` (per 5 mins)
-- **Rationale:** Prevents legitimate bulk sync from triggering a security block.
-
-### Application Logic Rate Limiting (`note.controller.js`)
-- **Previous Block:** Mandatory 5-second wait per note.
-- **Current Strategy:** Removed per-note cooldown.
-- **New Barrier:** Hourly limit of **2,000 notes per user**.
-- **Rationale:** Allows for high-burst activity while maintaining a long-term safety net.
-
-### Payload & Memory Handling (`app.js`)
-- **JSON & URL-Encoded Limit:** Increased to `10mb`.
-- **Rationale:** Accommodates complex Markdown content and bulk metadata.
+### 🎨 Visual & Quality Cleanup
+- **Code Block Intelligence**: Added automatic language detection and sticky labels for Markdown code blocks.
+- **Style Optimization**: Resized the "Engineered With" tech marquee and refined the Hero's glassmorphic visual boxes for a static, cleaner aesthetic.
+- **API Reliability**: Relocated the `/api/health` route after CORS middleware to fix cross-origin connectivity monitoring.
 
 ---
 
-## 4. Frontend UX & Theme Resilience
+## 📅 April 7, 2026
 
-### Flash-Free Dark Theme
-**Files Modified:** `frontend/index.html`, `frontend/src/index.css`
-- **Inline CSS Injection**: Added `background-color: #10110f;` directly to the `html` and `body` tags in the root HTML.
-- **Native Dark Mode**: Forced `color-scheme: dark` in the root CSS to ensure browser scrollbars and native inputs match the dark theme immediately.
-
-### Instant UI & Auth Resiliency
-**Files Modified:** `frontend/src/context/AuthContext.jsx`
-- **Stale-While-Revalidate**: The application now prioritizes the cached user in `localStorage` for the initial render. 
-- **Dead Backend Handling**: Added a strict 5-second timeout to the authentication check to prevent "infinite loading" on server failure.
-
-### Styled Component Guards
-**Files Modified:** `frontend/src/pages/Profile.jsx`
-- **Enhanced UI Guards**: Replaced plain text loading/error strings with centered, glassmorphic UI components.
-- **Retry Mechanism**: Integrated a reload button into the error state for easier recovery from intermittent connection failures.
+### 🌐 Community Discovery
+- **Live Data Bridge**: Integrated 1,600+ public notes directly into the home page marquee.
+- **"Random Discovery" Algorithm**: Developed a high-performance randomized fetching strategy using MongoDB Aggregation to ensure diverse content visibility.
+- **Marquee Refinement**: Normalized animation velocity and fixed data mapping for user/category relationships.
 
 ---
 
-## 5. Maintenance: How to Adjust Performance Settings
+## 📅 April 1, 2026
 
-### Changing Upload Limits
-1.  **Burst Limit (IP-based)**: 
-    Edit `backend/routes/note.routes.js`:
-    ```javascript
-    max: 1000 // Change this number
-    ```
-2.  **Hourly User Cap**:
-    Edit `backend/controllers/note.controller.js`:
-    ```javascript
-    if (notesLastHour >= 2000) // Change this number
-    ```
+### 💎 Pro Membership System
+- **Tiered Rate Limiting**: Implemented differentiated upload capacity for Normal (50/hr) vs. Pro (2,000/hr) accounts.
+- **High-Speed Syncing**: Pro users now receive 5x concurrent upload capacity and reduced batch delays.
+- **Category ZIP Export**: Integrated the `archiver` library to allow Pro users to download entire categories as compressed archives.
 
-### Scaling the Database
-To index a new field (e.g., searching by Bio):
-Edit `backend/models/user.model.js`:
-```javascript
-userSchema.index({ bio: 1 });
-```
+### 📧 Automated Approval Flow
+- **Signed Grant Links**: Created a secure, signed JWT approval loop via email (`ADMIN_EMAIL`) for instant membership upgrades.
+- **Permanent SMTP Support**: Migrated to App Password-based email transport for 100% notification reliability.
+
+### 📦 Bulk Management
+- **Post-Upload Reporting**: Implemented a comprehensive logging system for bulk Markdown uploads.
+- **Downloadable Session Logs**: Users can now export `.txt` reports of their bulk sync sessions to troubleshoot individual file failures.
 
 ---
 
-# Pro Membership & Premium Infrastructure Log - 2026-04-01
+## 📅 March 27, 2026
 
-## 1. Multi-Tiered "Pro Account" System
-Implemented a scalable, two-tier user system (Normal vs. Pro) to provide tiered performance and advanced features.
+### ⚡ Database Performance Audit
+- **High-Performance Indexing**: Optimized `Note`, `User`, and `Category` models with strategic compound indexes for sub-millisecond query execution.
+- **ESR Pattern (Equality, Sort, Range)**: Refactored controller logic to utilize index-friendly query patterns.
+- **Scale Protection**: Increased JSON payload limits to `10mb` and set IP-based burst rate limiting to 1,000 requests per 5 minutes.
 
-### Tiered Rate Limiting (`note.controller.js`)
-- **Normal Users**: 50 notes per hour.
-- **Pro Users**: 2,000 notes per hour.
-- **Rationale**: Ensures platform stability for millions of concurrent users while rewarding premium contributors with high-burst capacity.
-
-### High-Speed Upload Queue (`useMarkdownUploadQueue.js`)
-The bulk upload engine now identifies user status and adjusts performance dynamically:
-- **Normal Users**: 1 concurrent upload | 5s delay between batches.
-- **Pro Users**: 5 concurrent uploads | 3s delay between batches.
+### 🌑 Theme Resilience
+- **Flash-Free Dark Mode**: Injected background colors directly into the root HTML and forced native `color-scheme: dark` to prevent white-flash on page load.
+- **Stale-While-Revalidate Auth**: Priority-loading for cached users in `localStorage` with a 5-second failure timeout to prevent infinite spinners.
 
 ---
-
-## 2. Advanced Premium Features
-
-### Full Category ZIP Export
-**Files Modified:** `note.controller.js`, `note.routes.js`, `CategoryHeader.jsx`
-- **Backend**: Integrated the `archiver` library to stream high-compression ZIP archives directly from the database to the user.
-- **Frontend**: Added a "ZIP Archive" action button to the category header.
-- **Restriction**: Restricted to Pro accounts with a dedicated upgrade prompt for normal users.
-
-### Managed Bulk Tagging
-- **BulkTagModal.jsx**: Updated the bulk tagging interface to enforce Pro restrictions, ensuring heavy metadata operations are reserved for premium tiers.
-
----
-
-## 3. Automated Pro Request & Admin Approval Flow
-Replaced manual database updates with a robust, automated request and secure approval system.
-
-### The Request Flow (`Upgrade.jsx`)
-- Created a dedicated **Pro Access Request** page where users can submit their intent for an upgrade.
-- Implemented a "Transmit Request" logic that beams user data directly to the administrator.
-
-### Secure Email Approval Loop (`auth.controller.js`)
-- **Admin Notification**: Sends a high-aesthetic email to `ADMIN_EMAIL` containing the user's reason and a secure **"GRANT ACCESS"** link.
-- **Security**: Approval links are protected by a **24-hour signed JWT token** to prevent unauthorized access.
-- **Confirmation**: Upon approval, the user automatically receives a "Welcome to Pro" email, and their privileges are granted instantly.
-
----
-
-## 4. Visual Branding & Pro UI
-Enhanced the application's aesthetic to clearly distinguish premium accounts and features.
-
-### Global "PRO" Badge
-**Files Modified:** `Author.jsx`, `ProfileHeader.jsx`, `SideNavbar.jsx`
-- Designed a premium gold/amber gradient badge with a subtle inner glow.
-- Integrated the badge across all profile picture components, ensuring it is visible in Sidebar, Profile views, and Note authors.
-
-### Premium Upgrade Modal
-**File Modified:** `ProUpgradeModal.jsx`
-- Developed a high-conversion "Unlock Pro" modal featuring glassmorphic effects, animated icons (lucide-react), and clear value propositions.
-
----
-
-## 5. Infrastructure Resilience
-
-### Gmail App Password Support (`sendEmail.js`)
-- **Why**: Standard OAuth2 "Testing" tokens expire every 7 days, causing email failures.
-- **Fix**: Added support for `EMAIL_APP_PASS` in the transport layer, allowing for a permanent, secure connection to Gmail SMTP.
-
-### Remote Approval URL Mapping
-- **Fix**: Updated the backend approval link generation to use a `BACKEND_URL` fallback. This allows administrators to grant access from their mobile devices even if the dev server is running on `localhost`.
-
----
-
-## 6. Post-Upload Reporting System (Bulk Uploads)
-Implemented a comprehensive logging and reporting system for the bulk Markdown upload process.
-
-### Real-time Result Tracking (`useMarkdownUploadQueue.js`)
-- **What Changed**: The upload engine now collects the outcome of every individual file attempt within a session.
-- **Data Collected**: Filename, status (success/error), error message, and timestamp.
-
-### Upload Summary UI (`UploadQueueDisplay.jsx`)
-- **New Feature**: Added a results summary dashboard that appears automatically when a queue completes.
-- **Insights**: Displays total count of successful vs. failed uploads at a glance.
-
-### Detailed Log Generation (`generateUploadLog.js`)
-- **New Utility**: Created a professional log generator that compiles session data into a human-readable format.
-- **Downloadable Reports**: Users can now download a `.txt` log file of their bulk session, allowing them to troubleshoot specific failures (e.g., "Duplicate Title") offline.
-
----
-
-# Community Discovery & Live Data Infrastructure Log - 2026-04-07
-
-## 1. Live Backend-to-Frontend Data Bridge
-Successfully integrated the live note data from the MongoDB Atlas database (1,679 public notes) directly into the Home page marquee.
-
-### API Routing Recovery
-- **Fix**: Corrected a singular/plural routing mismatch that was causing 404 errors on the home page.
-- **Old Route**: `/api/note/public/all`
-- **New Route**: `/api/notes/public/all` (aligned with `note.routes.js` mount point in `app.js`).
-
----
-
-## 2. Optimized "Random Discovery" Algorithm
-Implemented a high-performance randomized fetching strategy to ensure the home page marquee stays fresh and represents the entire community.
-
-### New Randomized Controller (`getRandomPublicNotes`)
-- **Backend**: Added a specialized controller function that uses MongoDB Aggregation.
-- **Logic**:
-    1. `$match`: Filters for public notes only.
-    2. `$group`: Collects one note per unique category (ensures content variety).
-    3. `$sample`: Picks 10 truly random notes from the grouped result.
-    4. `$populate`: Resolves full `user` and `category` details.
-- **Frontend**: Updated `Home.jsx` to consume this new `/api/notes/public/random` endpoint instead of a static chronological list.
-
----
-
-## 3. Marquee Visual & Data Polish
-Refined the Marquee component to meet premium design standards and correctly handle real-world data structures.
-
-### Design Enhancements
-- **Velocity Normalization**: Increased animation duration in `index.css` (from 30s to 60s) to create a relaxed, readable pace for heavy content.
-- **Field Mapping Fix**: Updated `Marquee.jsx` to correctly map the `user` object returned by the backend (replacing the legacy `author` key).
-- **Graceful Handling**: Implemented robust type-checking for `category` objects to ensure titles display correctly even when categories are populated objects vs. plain strings.
-
----
-
-## 4. Stability & Quality Audit
-- **Database Verification**: Confirmed active connection to MongoDB Atlas and verified public note visibility.
-- **Style Cleanup**: Monitored and addressed Tailwind CSS linting warnings in `index.css` to maintain code health.
+_Log maintained by Antigravity AI._
