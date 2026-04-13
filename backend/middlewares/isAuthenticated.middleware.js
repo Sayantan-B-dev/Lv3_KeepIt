@@ -2,7 +2,6 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export function isLoggedIn(req, res, next) {
-    console.log("isLoggedIn check: authenticated =", req.isAuthenticated(), "user =", req.user?._id);
     if (process.env.NODE_ENV === 'development' && process.env.DEV_ID) {
         if (!req.user) {
             req.user = {

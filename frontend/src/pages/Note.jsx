@@ -13,6 +13,7 @@ import {
   NoteFooter,
   AccessDenied
 } from "@/features/notes";
+import { ErrorState } from "@/components/ui";
 import { noteCache } from "@/utils/noteCache";
 import { exportNoteAsMd } from "@/utils/exportNoteAsMd";
 import DownloadProgress from "@/features/category/DownloadProgress";
@@ -313,9 +314,11 @@ const Note = () => {
   }
 
   if (!note) return (
-    <div className="text-center p-20 font-mono text-type-3">
-      Note not found.
-    </div>
+    <ErrorState 
+      title="Not Found" 
+      message="The note you are looking for does not exist or has been removed." 
+      type="not-found"
+    />
   );
 
   if (!loggedInUser && timeLeft === 0) {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import MathContent from "./MathContent";
+import NoteCore from "./NoteCore";
 import { MdVisibility, MdEdit } from "react-icons/md";
 
 const NoteContent = ({
@@ -93,7 +93,7 @@ const NoteContent = ({
                     shadow-inner
                 ">
                     {editNote.content?.trim() ? (
-                        <MathContent content={editNote.content} />
+                        <NoteCore content={editNote.content} />
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center text-type-3 font-mono opacity-50">
                             <p className="text-xs uppercase tracking-widest">No Content to Render</p>
@@ -115,7 +115,7 @@ const NoteContent = ({
             font-mono
           "
         >
-          <MathContent content={note.content} />
+          <NoteCore content={note.content} />
         </div>
       )}
     </div>

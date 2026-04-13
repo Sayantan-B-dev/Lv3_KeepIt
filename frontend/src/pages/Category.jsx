@@ -5,7 +5,9 @@ import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 
 import { Loading } from "@/features/home";
-import { ConfirmPopUp } from "@/components/ui";
+import { ErrorState, ConfirmPopUp } from "@/components/ui";
+import ProUpgradeModal from "@/components/ui/ProUpgradeModal";
+import { noteCache } from "@/utils/noteCache";
 
 import CategoryHeader from "@/features/category/CategoryHeader";
 import CategoryNotesList from "@/features/category/CategoryNotesList";
@@ -13,8 +15,6 @@ import MarkdownUploadBox from "@/features/category/MarkdownUploadBox";
 import UploadQueueDisplay from "@/features/category/UploadQueueDisplay";
 import DownloadProgress from "@/features/category/DownloadProgress";
 import BulkTagModal from "@/features/category/BulkTagModal";
-import ProUpgradeModal from "@/components/ui/ProUpgradeModal";
-import { noteCache } from "@/utils/noteCache";
 
 import useMarkdownUploadQueue from "@/hooks/useMarkdownUploadQueue";
 import useDragAndDrop from "@/hooks/useDragAndDrop";
@@ -289,8 +289,20 @@ const Category = () => {
   /* ---------------- Guards ---------------- */
 
   if (loading) return <Loading />;
-  if (error) return <div className="text-red-500">{error}</div>;
-  if (!category) return <div>Category not found.</div>;
+  if (error) return (
+    <ErrorState 
+      title="Category Unavailable" 
+      message={error} 
+      onRetry={() => fetchCategoryAndNotes({ pageNum: 1, append: false })} 
+    />
+  );
+  if (!category) return (
+    <ErrorState 
+      title="Not Found" 
+      message="The category you are looking for does not exist or has been removed." 
+      type="not-found"
+    />
+  );
 
   const isOwner =
     loggedInUser &&

@@ -19,7 +19,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import TagInput from "@/components/common/TagInput";
 import { MdUndo, MdRedo, MdVisibility, MdEdit } from "react-icons/md";
-import MathContent from "@/features/notes/MathContent";
+import NoteCore from "@/features/notes/NoteCore";
 
 const textAreaStyle =
     "textAreaStyle";
@@ -556,7 +556,7 @@ const CreateNote = () => {
                                 shadow-inner
                             ">
                                 {content.trim() ? (
-                                    <MathContent content={content} />
+                                    <NoteCore content={content} />
                                 ) : (
                                     <div className="h-full flex flex-col items-center justify-center text-type-3 font-mono opacity-50">
                                         <MdVisibility size={40} className="mb-4" />
