@@ -1,6 +1,7 @@
 import Category from "../models/category.model.js"
 import Note from "../models/note.model.js"
 import User from "../models/user.model.js"
+import Stats from "../models/stats.model.js"
 
 export const getAllCategories = async (req, res) => {
   try {
@@ -64,14 +65,33 @@ export const getMetrics = async (req, res) => {
       User.countDocuments(),
     ]);
 
-    res.json({
-      totalNotes: totalNotes || 0,
-      totalTags: totalTags.length || 0,
-      totalCategories: totalCategories || 0,
-      totalUsers: totalUsers || 0,
-    });
+    const metrics = {
+        totalNotes: totalNotes || 0,
+        totalTags: totalTags.length || 0,
+        totalCategories: totalCategories || 0,
+        totalUsers: totalUsers || 0,
+    };
+
+    // Keep cached stats updated
+    await Stats.findOneAndUpdate({}, { ...metrics, lastUpdated: new Date() }, { upsert: true });
+
+    res.json(metrics);
   } catch (error) {
     console.error("Error fetching metrics:", error);
     res.status(500).json({ error: "Failed to fetch metrics" });
   }
 };
+
+export const getInitialData = async (req, res) => {
+    try {
+        const stats = await Stats.findOne().sort({ lastUpdated: -1 });
+        res.json(stats || {
+            totalNotes: 0,
+            totalTags: 0,
+            totalCategories: 0,
+            totalUsers: 0
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch initial stats" });
+    }
+}

@@ -19,17 +19,17 @@ const TechStackThread = () => {
 
       <div className="mx-auto px-6">
         <div className="flex overflow-hidden relative bo border-1 border-white/20  bg-black/40  py-6 ">
-           <div className="animate-tech-scroll flex gap-5 py-4 items-center whitespace-nowrap">
-             {techs.concat(techs).map((tech, index) => (
-               <div 
-                 key={index} 
-                 className="flex items-center gap-3 text-3xl md:text-5xl font-black text-white hover:opacity-100 opacity-60 transition-all duration-500 cursor-default font-mono italic uppercase tracking-tighter"
-               >
-                 <span className="drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">{tech}</span>
-                 <span className="text-white mx-10 text-2xl">•</span>
-               </div>
-             ))}
-           </div>
+            <div className="animate-tech-scroll flex gap-3 py-2 items-center whitespace-nowrap">
+              {techs.concat(techs).map((tech, index) => (
+                <div 
+                  key={index} 
+                  className="flex items-center gap-2 text-xl md:text-2xl font-black text-white hover:opacity-100 opacity-60 transition-all duration-500 cursor-default font-mono italic uppercase tracking-tighter"
+                >
+                  <span className="drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">{tech}</span>
+                  <span className="text-white mx-5 text-sm">•</span>
+                </div>
+              ))}
+            </div>
         </div>
       </div>
       

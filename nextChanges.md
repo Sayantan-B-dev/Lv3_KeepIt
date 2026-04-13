@@ -9,9 +9,10 @@
 * [x] **Live Community Feed:** in Live Community Feed make the notes clickable and rename it to Live Notes
 * [x] **remove `The Community`** remove user/community part from home
 * [x] **Better hero:** in hero remove the emojies or use something more professional maybe an svg or a icon?also for mobile make them smaller
-* [x] **matrics:** also in hero show total number of notes so far, total tags,total categoris, total users, all real data,
 * [x] **not logged in prevention:** if not logged in ..remove "Download .md" from noe page or hide the things need to be hideen from category 
-
+* [x] **matrics:** also in hero show total number of notes so far, total tags,total categoris, total users, all real data, store that in a new schema..,make a new model with Total staus for everything...a route and a controller function..call it inital page ...and show that data in hero...and if the backend is still off..show that number qncyripting like cyper text..moving and changingcyper text  in hero
+* [x] **pro info** add pro and free comparing feature in home on the bootom top of "Engineered With"
+* [x] **Engineered With** make the Engineered With option smaller in size all of it
 ---
 
 ### 🔴 Priority: High(complex)

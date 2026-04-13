@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import axiosInstance from "@/api/axiosInstance";
 import {
   Hero,
-  AppStats,
   Marquee,
   ProcessGuide,
   TechStackThread,
-  FeaturesCarousel
+  FeaturesCarousel,
+  ProComparison,
 } from "@/features/home";
 import { useAuth } from "@/context/AuthContext";
 
@@ -41,14 +41,10 @@ const Home = () => {
 
   return (
     <div className="w-full overflow-x-hidden selection:bg-white/30">
-      {/* Hero Section */}
-      <Hero user={user} isAuthenticated={isAuthenticated} />
-
-      {/* Stats Section */}
-      <AppStats />
+      <Hero user={user} isAuthenticated={isAuthenticated} isOffline={isBackendOffline} />
 
       {/* Live Notes Marquee */}
-      <div className=" pt-5 border-1 border-white/20 rounded-2xl">
+      <div className="pt-5 border-1 border-white/20 rounded-2xl ">
         <h2 className="text-sm font-mono text-type-3 uppercase tracking-[0.3em] font-bold text-center">
           {isBackendOffline ? 'Feed Offline' : 'Live Notes Feed'}
         </h2>
@@ -64,6 +60,9 @@ const Home = () => {
 
       {/* Features Carousel (Follow, Private, Pro/Free) */}
       <FeaturesCarousel />
+      
+      {/* Pro vs Free Comparison */}
+      <ProComparison />
 
       {/* Tech Stack Thread */}
       <TechStackThread />

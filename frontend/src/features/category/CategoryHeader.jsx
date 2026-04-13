@@ -186,9 +186,8 @@ const CategoryHeader = ({
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-6 p-4 border border-dashed border-muted rounded-xl bg-white/5">
-            {isOwner && (
-              <>
+          {isOwner && (
+            <div className="flex flex-wrap items-center justify-center gap-4 mt-6 p-4 border border-dashed border-muted rounded-xl bg-white/5">
                 <DottedButton text="Add Note" onClick={onCreateNote} className="!py-2 !px-4" />
                 
                 <DottedButton
@@ -206,9 +205,7 @@ const CategoryHeader = ({
                   onClick={onBulkDeleteClick}
                   className={`!py-2 !px-4 ${selectedNotesCount > 0 ? "!bg-red-500/20 !border-red-500/50 !text-red-400" : ""}`}
                 />
-              </>
-            )}
-          </div>
+          </div>)}
         </div>
       </div>
     </div>
