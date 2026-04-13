@@ -2,14 +2,15 @@
 * [x] **code block:** in code block on notes it needs to detect the language and shoe insted of `code` and it should stick to top right no matter if the code is scrolling
 * [x] **if not logged in:** if not logged in they can see the notes but it will be visible partially..like it will show a 20 second count down on top after finsinging count down it will show to not authenticated page
 * [x] **Route to login:** if someone is not logged in. in locked not authenticated page for note page redirect to login insted home
-* [ ] **Remove the fading efffect from note page if not logged in...countdown is fine** 
-* [ ] **Dismissable Announcement** make theannouncement part dismissable with cross
-* [ ] **Notification:** add a constant notification popup that backend is connecting and once connected it sayasbackend connected with greenand give a option to dismiss , after dismissing it goes away
-* [ ] **Home page refreshment:** tweak homepage for mobile, no need for community thing.
-* [ ] **Live Community Feed:** in Live Community Feed make the notes clickable and rename it to Live Notes
-* [ ] **remove `The Community`** remove user/community part from home
-* [ ] **Better hero:** in hero remove the emojies or use something more professional maybe an svg or a icon?also for mobile make them smaller
-* [ ] **matrics:** also in hero show total number of notes so far, total tags,total categoris, total users, all real data,
+* [x] **Remove the fading efffect from note page if not logged in...countdown is fine** 
+* [x] **Dismissable Announcement** make theannouncement part dismissable with cross
+* [x] **Notification:** add a constant notification popup that backend is connecting and once connected it sayasbackend connected with greenand give a option to dismiss , after dismissing it goes away
+* [x] **Home page refreshment:** tweak homepage for mobile, no need for community thing.
+* [x] **Live Community Feed:** in Live Community Feed make the notes clickable and rename it to Live Notes
+* [x] **remove `The Community`** remove user/community part from home
+* [x] **Better hero:** in hero remove the emojies or use something more professional maybe an svg or a icon?also for mobile make them smaller
+* [x] **matrics:** also in hero show total number of notes so far, total tags,total categoris, total users, all real data,
+* [x] **not logged in prevention:** if not logged in ..remove "Download .md" from noe page or hide the things need to be hideen from category 
 
 ---
 

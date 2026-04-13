@@ -380,21 +380,25 @@ const Category = () => {
       <div
         className="mb-8 mx-auto w-full p-10 shadow-xl border border-muted rounded-b-lg"
       >
-        <MarkdownUploadBox
-          dragActive={dragActive}
-          dragHandlers={dragHandlers}
-          onFileSelect={handleUpload}
-        />
+        {isOwner && (
+          <>
+            <MarkdownUploadBox
+              dragActive={dragActive}
+              dragHandlers={dragHandlers}
+              onFileSelect={handleUpload}
+            />
 
-        <UploadQueueDisplay
-          getUploadQueue={getUploadQueue}
-          clearUploadQueue={clearUploadQueue}
-          resumeQueue={resumeQueue}
-          categoryId={categoryId}
-          uploadReport={uploadReport}
-          clearReport={clearReport}
-          categoryName={category?.name}
-        />
+            <UploadQueueDisplay
+              getUploadQueue={getUploadQueue}
+              clearUploadQueue={clearUploadQueue}
+              resumeQueue={resumeQueue}
+              categoryId={categoryId}
+              uploadReport={uploadReport}
+              clearReport={clearReport}
+              categoryName={category?.name}
+            />
+          </>
+        )}
 
         <CategoryNotesList
           notes={notes}
