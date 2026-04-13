@@ -89,9 +89,7 @@ const MyTags = () => {
               key={t.tag}
               text={`#${t.tag} • ${t.count} note${t.count !== 1 ? "s" : ""}`}
               className="w-full"
-              onClick={() =>
-                navigate(`/tag/${encodeURIComponent(t.tag)}`)
-              }
+              href={`/tag/${encodeURIComponent(t.tag)}`}
             />
           ))}
         </div>

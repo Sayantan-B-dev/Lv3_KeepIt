@@ -88,9 +88,7 @@ const AllTags = () => {
               key={tag.tag}
               text={`#${tag.tag} • ${tag.count} Doc${tag.count !== 1 ? "s" : ""}`}
               className="w-full"
-              onClick={() =>
-                navigate(`/tag/${encodeURIComponent(tag.tag)}`)
-              }
+              href={`/tag/${encodeURIComponent(tag.tag)}`}
             />
           ))}
 

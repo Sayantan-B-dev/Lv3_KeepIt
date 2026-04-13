@@ -116,7 +116,7 @@ const AllNotes = () => {
               <DottedButton2
                 text={note.title}
                 className="w-full text-center"
-                onClick={() => navigate(`/note/${note._id}`)}
+                href={`/note/${note._id}`}
                 innerComponent={
                   <div className="w-12 h-12">
                     <Author

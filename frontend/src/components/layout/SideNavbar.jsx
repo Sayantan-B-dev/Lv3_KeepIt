@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import React, { useMemo, useState, useCallback } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import axiosInstance from "@/api/axiosInstance";
 import { useAuth } from "@/context/AuthContext";
@@ -157,21 +157,27 @@ export function SideNavbar({ open, setOpen }) {
     { label: "About", href: "/about", icon: Icons.info },
   ];
 
-  const handleCreateNote = () => {
-    isAuthenticated ? navigate("/CreateNote") : navigate("/login");
-  };
+  const createNoteHref = isAuthenticated ? "/CreateNote" : "/login";
+
+  const handleSpaClick = useCallback((e, href) => {
+    if (e.metaKey || e.ctrlKey || e.button === 1) return;
+    e.preventDefault();
+    navigate(href);
+  }, [navigate]);
 
   const renderNavItem = (item) => {
     const isActive = currentPath.startsWith(item.href);
 
     return (
-      <div
+      <a
         key={item.label}
-        onClick={() => navigate(item.href)}
+        href={item.href}
+        onClick={(e) => handleSpaClick(e, item.href)}
         className={`
           ${sidebarNavItemClass}
           ${isActive ? sidebarNavItemActiveClass : ""}
         `}
+        style={{ textDecoration: "none", color: "inherit" }}
       >
         {item.icon}
         <span
@@ -183,7 +189,7 @@ export function SideNavbar({ open, setOpen }) {
         >
           {item.label}
         </span>
-      </div>
+      </a>
     );
   };
 
@@ -194,19 +200,24 @@ export function SideNavbar({ open, setOpen }) {
       </div>
 
       <aside className={`${sidebarBaseClass} ${open ? "translate-x-0" : sidebarHiddenClass}`}>
-        <div className={sidebarHeaderClass} onClick={() => navigate("/")}>
+        <a href="/" onClick={(e) => handleSpaClick(e, "/")} className={sidebarHeaderClass} style={{ textDecoration: "none", color: "inherit" }}>
           Re-Docs
-        </div>
+        </a>
 
         {isAuthenticated && user && (
-          <div
+          <a
+            href="/profile/MyProfile"
+            onClick={(e) => handleSpaClick(e, "/profile/MyProfile")}
             className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2 relative overflow-hidden group shadow-lg"
-            onClick={() => navigate("/profile/MyProfile")}
-            style={user.coverImage?.url ? {
-              backgroundImage: `url(${user.coverImage.url})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            } : {}}
+            style={{
+              textDecoration: "none",
+              color: "inherit",
+              ...(user.coverImage?.url ? {
+                backgroundImage: `url(${user.coverImage.url})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              } : {}),
+            }}
           >
             {/* Background Overlay */}
             {user.coverImage?.url && (
@@ -239,12 +250,12 @@ export function SideNavbar({ open, setOpen }) {
                 {user.username}
               </span>
             </div>
-          </div>
+          </a>
         )}
 
         {isAuthenticated && (
           <div className="mb-3 w-full flex justify-center border-b border-muted pb-5">
-            <DottedButton text="Create Note" className="w-full" onClick={handleCreateNote} />
+            <DottedButton text="Create Note" className="w-full" href={createNoteHref} />
           </div>
         )}
 
@@ -268,13 +279,13 @@ export function SideNavbar({ open, setOpen }) {
         <div className={sidebarFooterClass}>
           {!isAuthenticated ? (
             <>
-              <DottedButton text="LOG IN" onClick={() => navigate("/login")} />
-              <DottedButton text="SIGN IN" onClick={() => navigate("/register")} />
+              <DottedButton text="LOG IN" href="/login" />
+              <DottedButton text="SIGN IN" href="/register" />
             </>
           ) : (
             <DottedButton
               text="LOG OUT"
-              onClick={() => navigate("/logout")}
+              href="/logout"
             />
           )}
         </div>

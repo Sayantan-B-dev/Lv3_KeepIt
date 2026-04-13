@@ -63,14 +63,19 @@ const PublicCategoryList = ({
                               .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: 'base' }))
                               .map((note) => (
                               <li key={note._id} className="flex items-center" style={{ wordBreak: "break-all" }}>
-                                <button
-                                  className="flex-1 text-left px-3 py-1 rounded bg-white text-black border-2 border-black hover:bg-indigo-50 transition cursor-pointer"
-                                  style={{ border: "2px solid black" }}
-                                  onClick={() => handleNoteClick ? handleNoteClick(note) : navigate(`/note/${note._id}`)}
-                                  type="button"
+                                <a
+                                  className="flex-1 text-left px-3 py-1 rounded bg-white text-black border-2 border-black hover:bg-indigo-50 transition cursor-pointer block"
+                                  style={{ border: "2px solid black", textDecoration: "none", color: "inherit" }}
+                                  href={`/note/${note._id}`}
+                                  onClick={(e) => {
+                                    if (!e.metaKey && !e.ctrlKey) {
+                                      e.preventDefault();
+                                      handleNoteClick ? handleNoteClick(note) : navigate(`/note/${note._id}`);
+                                    }
+                                  }}
                                 >
                                   {note.title}
-                                </button>
+                                </a>
                               </li>
                             ))}
                           </ul>

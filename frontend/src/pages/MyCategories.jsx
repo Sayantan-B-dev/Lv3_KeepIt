@@ -74,7 +74,7 @@ const MyCategories = () => {
               key={cat._id}
               text={cat.name}
               className="w-full"
-              onClick={() => navigate(`/category/${cat._id}`)}
+              href={`/category/${cat._id}`}
             />
           ))}
 

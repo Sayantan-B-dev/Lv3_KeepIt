@@ -90,7 +90,7 @@ const MyCategoryTypes = () => {
               key={type._id}
               text={type.name}
               className="w-full"
-              onClick={() => navigate(`/category-type/${type._id}`)}
+              href={`/category-type/${type._id}`}
             />
           ))}
         </div>

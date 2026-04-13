@@ -72,7 +72,7 @@ const MyNotes = () => {
               key={note._id}
               text={note.title}
               className="w-full"
-              onClick={() => navigate(`/note/${note._id}`)}
+              href={`/note/${note._id}`}
             />
           ))}
         </div>

@@ -70,10 +70,14 @@ const CategoryList = ({
             >
               {/* CATEGORY TYPE */}
               {categoryTypeId && (
-                <div
-                  onClick={() =>
-                    navigate(`/category-type/${categoryTypeId}`)
-                  }
+                <a
+                  href={`/category-type/${categoryTypeId}`}
+                  onClick={(e) => {
+                    if (!e.metaKey && !e.ctrlKey) {
+                      e.preventDefault();
+                      navigate(`/category-type/${categoryTypeId}`);
+                    }
+                  }}
                   className="
                     mb-4
                     text-lg font-mono tracking-wide
@@ -82,10 +86,12 @@ const CategoryList = ({
                     w-fit
                     cursor-pointer
                     break-all
+                    block
                   "
+                  style={{ textDecoration: "none", color: "inherit" }}
                 >
                   <span className="font-bold">Type :</span> {type}
-                </div>
+                </a>
               )}
 
               {/* CATEGORIES */}
@@ -151,10 +157,14 @@ const CategoryList = ({
                               <ul className="flex flex-col gap-2">
                                 {categoryNotes[cat._id].map((note) => (
                                   <li key={note._id}>
-                                    <button
-                                      onClick={() =>
-                                        handleNoteClick(note)
-                                      }
+                                    <a
+                                      href={`/note/${note._id}`}
+                                      onClick={(e) => {
+                                        if (!e.metaKey && !e.ctrlKey) {
+                                          e.preventDefault();
+                                          handleNoteClick(note);
+                                        }
+                                      }}
                                       className="
                                         w-full text-left
                                         px-3 py-1.5
@@ -162,10 +172,12 @@ const CategoryList = ({
                                         border border-muted
                                         break-all
                                         cursor-pointer
+                                        block
                                       "
+                                      style={{ textDecoration: "none", color: "inherit" }}
                                     >
                                       {note.title}
-                                    </button>
+                                    </a>
                                   </li>
                                 ))}
                               </ul>

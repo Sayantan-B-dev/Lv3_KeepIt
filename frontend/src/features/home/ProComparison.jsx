@@ -89,13 +89,15 @@ const ProComparison = () => {
                             <div className="text-center">
                                 <div className="text-2xl font-black text-white font-mono italic">₹99 <span className="text-xs not-italic font-normal opacity-50">One-time Access</span></div>
                             </div>
-                            <button 
-                                onClick={() => navigate('/upgrade')}
+                            <a 
+                                href="/upgrade"
+                                onClick={(e) => { if (!e.metaKey && !e.ctrlKey) { e.preventDefault(); navigate('/upgrade'); } }}
                                 className="group flex items-center gap-3 px-8 py-4 bg-white text-black font-black font-mono uppercase italic text-sm hover:bg-zinc-200 transition-all rounded-xl shadow-[0_0_40px_rgba(255,255,255,0.1)] active:scale-95 border-b-4 border-zinc-400"
+                                style={{ textDecoration: "none" }}
                             >
                                 Get Lifetime Pro Access
                                 <Zap className="w-4 h-4 fill-current" />
-                            </button>
+                            </a>
                         </div>
                     ) : (
                         <div className="flex flex-col items-center gap-4">

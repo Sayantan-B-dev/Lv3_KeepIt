@@ -138,14 +138,14 @@ const Footer = () => {
           <span className="mx-2 hidden sm:inline">|</span>
           <span className="block sm:inline mt-1 sm:mt-0">
             <span className="text-gray-300">Check out for more animated react components on &nbsp;
-              <span
-                onClick={() => window.open("https://reactbits.dev/", "_blank", "noopener,noreferrer")}
-                role="link"
-                tabIndex={0}
+              <a
+                href="https://reactbits.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="hover:underline font-semibold text-gray-500 hover:text-indigo-500 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded"
               >
                 Reactbits.dev
-              </span>
+              </a>
 
             </span>
 

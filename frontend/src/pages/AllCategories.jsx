@@ -116,7 +116,7 @@ const AllCategories = () => {
               <DottedButton2
                 text={cat.name}
                 className="w-full"
-                onClick={() => navigate(`/category/${cat._id}`)}
+                href={`/category/${cat._id}`}
                 innerComponent={
                   <div className="w-12 h-12">
                     <Author

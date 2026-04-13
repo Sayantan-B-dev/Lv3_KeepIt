@@ -137,7 +137,7 @@ const TagNotes = () => {
                   <DottedButton2
                     text={note.title}
                     className="w-full text-sm"
-                    onClick={() => navigate(`/note/${note._id}`)}
+                    href={`/note/${note._id}`}
                   />
 
                   <div className="w-12 h-12 shrink-0">

@@ -74,15 +74,17 @@ const Hero = ({ user, isAuthenticated, isOffline }) => {
               <DottedButton
                 text="Get Started Free"
                 className="!px-10 !py-4 scale-100 md:scale-110"
-                onClick={() => navigate(isAuthenticated ? "/CreateNote" : "/register")}
+                href={isAuthenticated ? "/CreateNote" : "/register"}
               />
-              <button 
-                onClick={() => navigate("/about")}
+              <a 
+                href="/about"
+                onClick={(e) => { if (!e.metaKey && !e.ctrlKey) { e.preventDefault(); navigate("/about"); } }}
                 className="group flex items-center justify-center gap-3 text-sm font-mono font-bold text-white/50 hover:text-white transition-all underline-animation"
+                style={{ textDecoration: "none" }}
               >
                 Explore Features 
                 <span className="group-hover:translate-x-1 transition-transform">→</span>
-              </button>
+              </a>
             </div>
 
             {/* Metrics Row */}

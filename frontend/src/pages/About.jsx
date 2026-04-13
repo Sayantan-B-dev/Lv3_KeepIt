@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { DottedButton } from "@/components/ui/buttons";
 
 
@@ -54,17 +54,17 @@ const About = () => {
 <div className={containerClass}>
   <h2 className={headingClass}>
     About{" "}
-    <span className="underline cursor-pointer" onClick={() => navigate("/")}>
+    <Link to="/" className="underline cursor-pointer">
       Re-Docs
-    </span>
+    </Link>
   </h2>
 
   {/* Intro */}
   <div className={paragraphClass}>
     <p>
-      <span className={brandClass} onClick={() => navigate("/")}>
+      <Link to="/" className={brandClass}>
         Re-Docs
-      </span>{" "}
+      </Link>{" "}
       is a focused knowledge-organization platform built for long-form thinking.
       It helps you write, organize, and revisit ideas in a clean, distraction-free
       environment. The goal is to keep your notes simple on the surface while
@@ -81,7 +81,7 @@ const About = () => {
         <li key={label}>
           <DottedButton
             text={label}
-            onClick={() => navigate(route)}
+            href={route}
             style={{ width: "100%" }}
           />
         </li>
@@ -92,9 +92,9 @@ const About = () => {
   {/* Footer */}
   <div className="text-center text-sm text-type-3 mt-8">
     © {new Date().getFullYear()}{" "}
-    <span className={brandClass} onClick={() => navigate("/")}>
+    <Link to="/" className={brandClass}>
       Re-Docs
-    </span>
+    </Link>
     . Built with care and intention by Sayantan.
   </div>
 </div>

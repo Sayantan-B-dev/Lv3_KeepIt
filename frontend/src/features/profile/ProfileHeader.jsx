@@ -220,7 +220,7 @@ const ProfileHeader = ({
         <div className="mt-auto flex flex-wrap justify-center sm:justify-start gap-4">
           {isOwnProfile && !editMode ? (
             <>
-              <DottedButton text="Create a new Note" onClick={handleCreateNote} />
+              <DottedButton text="Create a new Note" href="/CreateNote" />
               <button
                 onClick={onEdit}
                 className="px-6 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-type-1 font-mono text-sm border border-white/10 transition-all duration-300 active:scale-95"
