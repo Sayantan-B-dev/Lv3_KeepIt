@@ -1,4 +1,8 @@
-# Quick Updates Log - 2026-04-13 (14:50)
+# Quick Updates Log - 2026-04-13 (15:05)
+
+## 2. Guest Preview Mode & Auth Redirection
+- **What Changed**: Added a 20-second countdown for unauthenticated viewers on `Note.jsx`. After the preview ends, or if they hit an authentication error, they are presented with an `AccessDenied` page that features a "Go to Login" button redirecting to `/login` instead of just returning back.
+- **Why**: Allows guests a glimpse of content while strongly funneling them toward creating an account.
 
 ## 1. Code Block Language Detection
 - **What Changed**: Updated `MathContent.jsx` to parse the `language-` class and display the code block's language on the top right.

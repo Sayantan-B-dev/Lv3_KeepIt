@@ -57,6 +57,8 @@ const Note = () => {
 
   const [contentTooLarge, setContentTooLarge] = useState(false);
 
+  const [timeLeft, setTimeLeft] = useState(10);
+
   /* ---------------- Navigation helpers ---------------- */
 
   useEffect(() => {
@@ -253,6 +255,17 @@ const Note = () => {
     };
   }, [noteId]);
 
+  /* ---------------- Unauthenticated Timer ---------------- */
+
+  useEffect(() => {
+    if (!loading && !error && note && !loggedInUser) {
+      if (timeLeft > 0) {
+        const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [loading, error, note, loggedInUser, timeLeft]);
+
   /* ---------------- Prefetching (GUARDED) ---------------- */
 
   useEffect(() => {
@@ -290,7 +303,13 @@ const Note = () => {
   if (loading) return <Loading />;
 
   if (error) {
-    return <AccessDenied error={error} />;
+    return (
+      <AccessDenied 
+        error={error} 
+        redirect={!loggedInUser ? "/login" : undefined}
+        buttonText={!loggedInUser ? "Go to Login" : undefined}
+      />
+    );
   }
 
   if (!note) return (
@@ -298,6 +317,16 @@ const Note = () => {
       Note not found.
     </div>
   );
+
+  if (!loggedInUser && timeLeft === 0) {
+    return (
+      <AccessDenied 
+        error="Please log in to continue reading this note. This public preview has expired." 
+        redirect="/login"
+        buttonText="Go to Login"
+      />
+    );
+  }
 
   const isOwner =
     loggedInUser &&
@@ -323,6 +352,12 @@ const Note = () => {
       />
 
       <div className="w-full pb-32 relative">
+        {!loggedInUser && timeLeft > 0 && (
+<div className="fixed top-2 right-2 z-50 bg-black/60 backdrop-blur-md border border-red-500/50 rounded-full px-6 py-2 text-white font-mono text-sm shadow-xl">
+  Preview ends in: <span className="font-bold text-red-400">{timeLeft}s</span>
+</div>
+        )}
+
         <NoteNavigation
           currentIndex={currentIndex}
           categoryNotes={categoryNotes}
@@ -363,15 +398,17 @@ const Note = () => {
           currentTitle={exportState.currentTitle}
         />
 
-        <NoteContent
-          editMode={editMode}
-          editNote={editNote}
-          note={note}
-          updateLoading={updateLoading}
-          contentTooLarge={contentTooLarge}
-          CONTENT_MAX_LENGTH={CONTENT_MAX_LENGTH}
-          handleInputChange={handleInputChange}
-        />
+        <div style={!loggedInUser ? { maxHeight: "60vh", overflow: "hidden", maskImage: "linear-gradient(to bottom, black 50%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 50%, transparent 100%)" } : {}}>
+          <NoteContent
+            editMode={editMode}
+            editNote={editNote}
+            note={note}
+            updateLoading={updateLoading}
+            contentTooLarge={contentTooLarge}
+            CONTENT_MAX_LENGTH={CONTENT_MAX_LENGTH}
+            handleInputChange={handleInputChange}
+          />
+        </div>
 
         <NoteFooter
           note={note}

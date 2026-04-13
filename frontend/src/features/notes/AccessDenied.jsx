@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const AccessDenied = ({ error }) => {
+const AccessDenied = ({ error, redirect, buttonText }) => {
     const navigate = useNavigate();
     const isPrivateErr = error?.toLowerCase().includes("private") || error?.toLowerCase().includes("authorized");
 
@@ -28,10 +28,16 @@ const AccessDenied = ({ error }) => {
             </p>
 
             <button
-                onClick={() => navigate(-1)}
+                onClick={() => {
+                    if (redirect) {
+                        navigate(redirect);
+                    } else {
+                        navigate(-1);
+                    }
+                }}
                 className="px-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white font-mono transition-all hover:scale-105 active:scale-95"
             >
-                &larr; Return to Safety
+                {buttonText || "\u2190 Return to Safety"}
             </button>
         </div>
     );
