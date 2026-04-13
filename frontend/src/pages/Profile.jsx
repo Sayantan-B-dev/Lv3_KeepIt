@@ -90,7 +90,7 @@ const Profile = () => {
           setCoverImageFile(null);
         }
       } catch (err) {
-        setError(err?.response?.data?.message || "Failed to load profile.");
+        setError(err?.response?.data?.message || "Failed to load profile please try again later when the backend is online.");
       } finally {
         setLoading(false);
       }

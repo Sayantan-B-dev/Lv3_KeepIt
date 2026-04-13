@@ -55,7 +55,7 @@ router.get(
 
 /* ================= Single note ================= */
 
-router.get("/:id", isLoggedIn, getNotesById);
+router.get("/:id", getNotesById);
 router.get(
   "/category/:id/public",
   getPublicCategoryNotes

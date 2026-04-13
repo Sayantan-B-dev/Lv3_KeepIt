@@ -147,7 +147,7 @@ const Category = () => {
     } catch (err) {
       console.error("fetchCategoryAndNotes error:", err);
       setError(
-        err.response?.data?.message || err.response?.data?.error || "Failed to load category."
+        err.response?.data?.message || err.response?.data?.error || "Failed to load category please try again later when the backend is online."
       );
     } finally {
       setLoading(false);

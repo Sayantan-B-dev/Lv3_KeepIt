@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/api/axiosInstance";
 ;
-import { ListContainer } from "@/components/ui";
+import { ListContainer, ErrorState } from "@/components/ui";
 import { SearchBar } from "@/components/ui";
 import { DottedButton } from "@/components/ui/buttons";
 import { DottedButton2 } from "@/components/ui/buttons";
@@ -18,13 +18,14 @@ const AllTags = () => {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [search, setSearch] = useState("");
+  const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
 
   useEffect(() => {
     axiosInstance
       .get("/api/notes/tags")
       .then(res => setTags(res.data || []))
-      .catch(() => setTags([]))
+      .catch(() => setError("Failed to load tags please try again later when the backend is online."))
       .finally(() => setLoading(false));
   }, []);
 
@@ -64,16 +65,23 @@ const AllTags = () => {
       {/* Initial load */}
       {loading && (
         <Loader  variant="dots" text="Loading…" />
-
       )}
 
-      {!loading && visible.length === 0 && (
+      {error && (
+        <ErrorState 
+          title="Tags Unavailable" 
+          message={error} 
+          onRetry={() => window.location.reload()} 
+        />
+      )}
+
+      {!loading && !error && visible.length === 0 && (
         <div className="text-center text-type-3 py-6">
           No tags found.
         </div>
       )}
 
-      {!loading && visible.length > 0 && (
+      {!loading && !error && visible.length > 0 && (
         <div className="gridy">
           {visible.map(tag => (
             <DottedButton2

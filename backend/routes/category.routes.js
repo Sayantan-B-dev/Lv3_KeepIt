@@ -17,7 +17,7 @@ const router = express.Router();
 /* ================= User categories ================= */
 
 router.get("/", isLoggedIn, getUserCategories);
-router.get("/:id", isLoggedIn, getCategoryById);
+router.get("/:id", getCategoryById);
 router.get("/:id/public", getPublicCategoryById);
 
 

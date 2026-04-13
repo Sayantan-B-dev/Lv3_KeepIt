@@ -11,7 +11,8 @@ import {
   NoteContent,
   NoteNavigation,
   NoteFooter,
-  AccessDenied
+  AccessDenied,
+  PreviewCountdown
 } from "@/features/notes";
 import { ErrorState } from "@/components/ui";
 import { noteCache } from "@/utils/noteCache";
@@ -242,7 +243,7 @@ const Note = () => {
           setError(
             err.response?.data?.error ||
             err.response?.data?.message ||
-            "Failed to load note."
+            "Failed to load note please try again later when the backend is online."
           );
         }
       } finally {
@@ -303,30 +304,35 @@ const Note = () => {
 
   if (loading) return <Loading />;
 
+  // If there's an error, it's usually because the note is private or not found.
   if (error) {
+    const isAuthError = error.toLowerCase().includes("auth") || error.toLowerCase().includes("private") || error.toLowerCase().includes("login");
+    
     return (
       <AccessDenied 
         error={error} 
-        redirect={!loggedInUser ? "/login" : undefined}
-        buttonText={!loggedInUser ? "Go to Login" : undefined}
+        redirect={isAuthError ? "/login" : undefined}
+        buttonText={isAuthError ? "Go to Login" : "Return to Home"}
       />
     );
   }
 
   if (!note) return (
     <ErrorState 
-      title="Not Found" 
-      message="The note you are looking for does not exist or has been removed." 
+      title="NOT FOUND" 
+      message="The requested data node could not be retrieved from the persistent store." 
       type="not-found"
     />
   );
 
   if (!loggedInUser && timeLeft === 0) {
     return (
-      <AccessDenied 
-        error="Please log in to continue reading this note. This public preview has expired." 
-        redirect="/login"
-        buttonText="Go to Login"
+      <ErrorState 
+        title="PREVIEW_EXPIRED"
+        message="Your temporal access to this data node has reached its limit. Secure authentication is required for full protocol access."
+        onRetry={() => navigate("/login")}
+        actionText="SIGN_IN"
+        type="access"
       />
     );
   }
@@ -355,11 +361,7 @@ const Note = () => {
       />
 
       <div className="w-full pb-32 relative">
-        {!loggedInUser && timeLeft > 0 && (
-<div className="fixed top-2 right-2 z-50 bg-black/60 backdrop-blur-md border border-red-500/50 rounded-full px-6 py-2 text-white font-mono text-sm shadow-xl">
-  Preview ends in: <span className="font-bold text-red-400">{timeLeft}s</span>
-</div>
-        )}
+        {!loggedInUser && <PreviewCountdown timeLeft={timeLeft} />}
 
         <NoteNavigation
           currentIndex={currentIndex}

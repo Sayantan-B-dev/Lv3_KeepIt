@@ -13,7 +13,8 @@ const ErrorState = ({
   message = "An unexpected error occurred while processing your request.", 
   onRetry, 
   onBack,
-  type = "error" // 'error', 'access', 'not-found'
+  type = "error", // 'error', 'access', 'not-found'
+  actionText = "RETRY_CONTEXT"
 }) => {
   const navigate = useNavigate();
 
@@ -58,7 +59,7 @@ const ErrorState = ({
           {onRetry && (
             <div className="w-full">
                <DottedButton 
-                text="RETRY_CONTEXT" 
+                text={actionText} 
                 onClick={onRetry} 
                 style={{ width: '100%', fontSize: '13px', letterSpacing: '0.15em' }}
               />

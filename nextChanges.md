@@ -1,6 +1,6 @@
 ### 🔴 Priority: High(simple)
 * [x] **code block:** in code block on notes it needs to detect the language and shoe insted of `code` and it should stick to top right no matter if the code is scrolling
-* [x] **if not logged in:** if not logged in they can see the notes but it will be visible partially..like it will show a 20 second count down on top after finsinging count down it will show to not authenticated page
+* [x] **if not logged in:** if not logged in they can see the notes but it will be visible partially..like it will show a 10 second count down on top after finsinging count down it will show to not authenticated page
 * [x] **Route to login:** if someone is not logged in. in locked not authenticated page for note page redirect to login insted home
 * [x] **Remove the fading efffect from note page if not logged in...countdown is fine** 
 * [x] **Dismissable Announcement** make theannouncement part dismissable with cross
@@ -19,7 +19,7 @@
 * [x] **get pro feature fix:** remove the email concept to get pro instead use razorpay `RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxxxx,RAZORPAY_KEY_SECRET=xxxxxxxxxxxx`
 * [x] **Live Note Preview (While Editing)** *(moved to high priority & placed after Mermaid integration)*
 * [x] **Cover image implementation** on profile, category, note and slidenavbar
-* [ ] **Mermaid.js:** Diagram rendering in markdown.
+* [x] **Mermaid.js:** Diagram rendering in markdown.
 
 ---
 
