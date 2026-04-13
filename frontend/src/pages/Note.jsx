@@ -398,7 +398,7 @@ const Note = () => {
           currentTitle={exportState.currentTitle}
         />
 
-        <div style={!loggedInUser ? { maxHeight: "60vh", overflow: "hidden", maskImage: "linear-gradient(to bottom, black 50%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 50%, transparent 100%)" } : {}}>
+        <div>
           <NoteContent
             editMode={editMode}
             editNote={editNote}

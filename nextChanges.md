@@ -2,6 +2,7 @@
 * [x] **code block:** in code block on notes it needs to detect the language and shoe insted of `code` and it should stick to top right no matter if the code is scrolling
 * [x] **if not logged in:** if not logged in they can see the notes but it will be visible partially..like it will show a 20 second count down on top after finsinging count down it will show to not authenticated page
 * [x] **Route to login:** if someone is not logged in. in locked not authenticated page for note page redirect to login insted home
+* [ ] **Remove the fading efffect from note page if not logged in...countdown is fine** 
 * [ ] **Dismissable Announcement** make theannouncement part dismissable with cross
 * [ ] **Notification:** add a constant notification popup that backend is connecting and once connected it sayasbackend connected with greenand give a option to dismiss , after dismissing it goes away
 * [ ] **Home page refreshment:** tweak homepage for mobile, no need for community thing.
