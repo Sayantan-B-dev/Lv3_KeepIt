@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import axiosInstance from "@/api/axiosInstance";
 import { UserBox } from "@/features/home";
 
-import { ListContainer, SearchBar, Loader } from "@/components/ui";
+import { ListContainer, SearchBar, Loader, ErrorState } from "@/components/ui";
 import { DottedButton } from "@/components/ui/buttons";
 
 const PAGE_SIZE = 15;
@@ -14,12 +14,14 @@ const AllUsers = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(null);
 
   const searchTimeout = useRef(null);
 
   const fetchUsers = async ({ pageNum = 1, append = false } = {}) => {
     if (append) setLoadingMore(true);
     else setLoading(true);
+    setError(null);
 
     try {
       const res = await axiosInstance.get('/api/profile/users', {
@@ -40,6 +42,7 @@ const AllUsers = () => {
       setHasMore(data.length === PAGE_SIZE);
     } catch (err) {
       console.error('Failed to fetch users', err);
+      setError("Failed to load users please try again later when the backend is online.");
       if (!append) setUsers([]);
       setHasMore(false);
     } finally {
@@ -81,13 +84,21 @@ const AllUsers = () => {
         <Loader variant="dots" text="Loading…" />
       )}
 
-      {!loading && users.length === 0 && (
+      {error && (
+        <ErrorState 
+          title="Users Unavailable" 
+          message={error} 
+          onRetry={() => fetchUsers({ pageNum: 1, append: false })} 
+        />
+      )}
+
+      {!loading && !error && users.length === 0 && (
         <div className="text-center text-type-3 py-6">
           No users found.
         </div>
       )}
 
-      {!loading && (
+      {!loading && !error && (
         <div className="
         w-full mb-5 p-5
         flex flex-wrap gap-4

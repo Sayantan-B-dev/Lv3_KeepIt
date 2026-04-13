@@ -4,7 +4,7 @@ import axiosInstance from "@/api/axiosInstance";
 ;
 import { useAuth } from "@/context/AuthContext";
 ;
-import { ListContainer } from "@/components/ui";
+import { ListContainer, ErrorState } from "@/components/ui";
 import { SearchBar } from "@/components/ui";
 import { DottedButton } from "@/components/ui/buttons";
 import { DottedButton2 } from "@/components/ui/buttons";
@@ -24,12 +24,14 @@ const AllNotes = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(null);
 
   const searchTimeout = useRef(null);
 
   const fetchNotes = async ({ pageNum = 1, append = false }) => {
     if (append) setLoadingMore(true);
     else setLoading(true);
+    setError(null);
 
     try {
       const res = await axiosInstance.get("/api/global/all-notes", {
@@ -44,6 +46,8 @@ const AllNotes = () => {
 
       setNotes(prev => (append ? [...prev, ...data] : data));
       setHasMore(data.length === PAGE_SIZE);
+    } catch (err) {
+      setError("Failed to load notes please try again later when the backend is online.");
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -94,7 +98,15 @@ const AllNotes = () => {
         <Loader  variant="dots" text="Loading…" />
       )}
 
-      {!loading && (
+      {error && (
+        <ErrorState 
+          title="Notes Unavailable" 
+          message={error} 
+          onRetry={() => fetchNotes({ pageNum: 1, append: false })} 
+        />
+      )}
+
+      {!loading && !error && (
         <div className="gridy">
           {notes.map(note => (
             <div

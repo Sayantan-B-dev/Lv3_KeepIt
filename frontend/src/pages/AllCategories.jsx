@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from "@/api/axiosInstance";
 import { useAuth } from "@/context/AuthContext";
 
-import { ListContainer, SearchBar, Loader } from "@/components/ui";
+import { ListContainer, SearchBar, Loader, ErrorState } from "@/components/ui";
 import { DottedButton, DottedButton2 } from "@/components/ui/buttons";
 import Author from "@/components/common/Author";
 
@@ -19,12 +19,14 @@ const AllCategories = () => {
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [error, setError] = useState(null);
 
   const searchTimeout = useRef(null);
 
   const fetchCategories = async ({ pageNum = 1, append = false } = {}) => {
     if (append) setLoadingMore(true);
     else setLoading(true);
+    setError(null);
 
     try {
       const res = await axiosInstance.get('/api/global/all-categories', {
@@ -42,6 +44,8 @@ const AllCategories = () => {
       );
 
       setHasMore(data.length === PAGE_SIZE);
+    } catch (err) {
+      setError("Failed to load categories please try again later when the backend is online.");
     } finally {
       setLoading(false);
       setLoadingMore(false);
@@ -88,13 +92,21 @@ const AllCategories = () => {
         <Loader  variant="dots" text="Loading…" />
       )}
 
-      {!loading && categories.length === 0 && (
+      {error && (
+        <ErrorState 
+          title="Categories Unavailable" 
+          message={error} 
+          onRetry={() => fetchCategories({ pageNum: 1, append: false })} 
+        />
+      )}
+
+      {!loading && !error && categories.length === 0 && (
         <div className="text-center text-type-3">
           No categories found.
         </div>
       )}
 
-      {!loading && (
+      {!loading && !error && (
         <div className="gridy">
           {categories.map(cat => (
             <div
