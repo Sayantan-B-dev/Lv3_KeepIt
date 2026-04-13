@@ -115,11 +115,12 @@ const Upgrade = () => {
 
           {/* Test Mode Warning (RED) */}
           <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3 text-left">
-            <Info className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-            <p className="text-[9px] font-mono text-red-500 font-bold uppercase leading-tight tracking-tighter">
+            <Info className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-xs sm:text-base font-mono text-red-500 font-bold uppercase leading-tight tracking-tighter">
               DEVELOPMENT TEST MODE ACTIVE. USE ANY FAKE UPI ID (E.G. SUCCESS@RAZORPAY). NO REAL MONEY WILL BE DEDUCTED.
             </p>
           </div>
+     
 
           <div className="space-y-3 mb-8 text-left">
              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">

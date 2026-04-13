@@ -13,6 +13,7 @@ const ButtonType3 = ({
       onClick={onClick}
       disabled={disabled}
       className={`
+        inline-flex items-center justify-center text-center
         px-4 py-1
         border border-muted
         rounded-lg

@@ -4,7 +4,11 @@ const DottedButton = ({ text, onClick, style, href, className = "" }) => {
     const navigate = useNavigate();
 
     const classes = `
-        break-all
+        break-words
+        text-center
+        inline-flex
+        items-center
+        justify-center
         rounded-lg
         border border-muted
         px-4

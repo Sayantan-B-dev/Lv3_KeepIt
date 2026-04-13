@@ -1,15 +1,16 @@
-import React from "react";
-import { motion } from "framer-motion";
-import { Check, X, Zap, Crown, ArrowRight, ShieldX } from "lucide-react";
+import React, { useState } from "react";
+import { Check, X, Crown } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import axiosInstance from "@/api/axiosInstance";
 import { toast } from "react-toastify";
+import AlertPopup from "@/components/ui/AlertPopup";
+import { DottedButton } from "@/components/ui/buttons";
 
 const ProComparison = () => {
     const { user } = useAuth();
-    const navigate = useNavigate();
     const isPro = user?.isPro || user?.isPremium;
+    const [showCancelPopup, setShowCancelPopup] = useState(false);
+    const [isCancelling, setIsCancelling] = useState(false);
 
     const features = [
         { name: "Public Note Storage", free: true, pro: true },
@@ -23,13 +24,16 @@ const ProComparison = () => {
     ];
 
     const handleCancel = async () => {
-        if (!window.confirm("Are you sure you want to cancel your Pro membership?")) return;
+        setIsCancelling(true);
         try {
             await axiosInstance.post("/api/payment/cancel");
             toast.info("Membership cancelled.");
             window.location.reload();
         } catch (err) {
             toast.error("Failed to cancel membership.");
+        } finally {
+            setIsCancelling(false);
+            setShowCancelPopup(false);
         }
     };
 
@@ -82,32 +86,28 @@ const ProComparison = () => {
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div className="mt-12 flex flex-col items-center gap-6">
                     {!isPro ? (
                         <div className="flex flex-col items-center gap-4">
                             <div className="text-center">
                                 <div className="text-2xl font-black text-white font-mono italic">₹99 <span className="text-xs not-italic font-normal opacity-50">One-time Access</span></div>
                             </div>
-                            <a 
+                            <DottedButton
+                                text="GET LIFETIME PRO ACCESS"
                                 href="/upgrade"
-                                onClick={(e) => { if (!e.metaKey && !e.ctrlKey) { e.preventDefault(); navigate('/upgrade'); } }}
-                                className="group flex items-center gap-3 px-8 py-4 bg-white text-black font-black font-mono uppercase italic text-sm hover:bg-zinc-200 transition-all rounded-xl shadow-[0_0_40px_rgba(255,255,255,0.1)] active:scale-95 border-b-4 border-zinc-400"
-                                style={{ textDecoration: "none" }}
-                            >
-                                Get Lifetime Pro Access
-                                <Zap className="w-4 h-4 fill-current" />
-                            </a>
+                                className="group flex items-center justify-center gap-3 px-8 py-4 font-black font-mono uppercase italic text-sm rounded-xl shadow-[0_0_40px_rgba(255,255,255,0.1)] border-b-4 border-zinc-400"
+                                style={{ background: "#fff", color: "#000", textDecoration: "none" }}
+                            />
                         </div>
                     ) : (
                         <div className="flex flex-col items-center gap-4">
-                            <button 
-                                onClick={handleCancel}
-                                className="group flex items-center gap-3 px-8 py-4 bg-transparent border-2 border-white/10 text-white/40 hover:text-white hover:border-white transition-all rounded-xl font-mono font-bold uppercase text-xs tracking-widest active:scale-95"
-                            >
-                                <ShieldX className="w-4 h-4" />
-                                Cancel Pro Membership
-                            </button>
+                            <DottedButton
+                                text="CANCEL PRO MEMBERSHIP"
+                                onClick={() => setShowCancelPopup(true)}
+                                className="group flex items-center justify-center gap-3 px-8 py-4 rounded-xl font-mono font-bold uppercase text-xs tracking-widest border-2 border-white/10 text-white/40 hover:text-white hover:border-white transition-all"
+                                style={{ width: "fit-content" }}
+                            />
                             <p className="text-[10px] font-mono text-type-3 uppercase tracking-tighter italic">Warning: Cancellation removes all premium benefits instantly.</p>
                         </div>
                     )}
@@ -118,6 +118,20 @@ const ProComparison = () => {
             <div className="absolute top-0 right-0 p-10 opacity-[0.02] pointer-events-none select-none">
                 <Crown size={300} strokeWidth={0.5} />
             </div>
+
+            <AlertPopup
+                isOpen={showCancelPopup}
+                title="Canceling Membership"
+                message="Are you sure you want to cancel your Pro membership?"
+                confirmText="CANCEL MEMBERSHIP"
+                cancelText="KEEP PRO"
+                type="danger"
+                loading={isCancelling}
+                onClose={() => {
+                    if (!isCancelling) setShowCancelPopup(false);
+                }}
+                onConfirm={handleCancel}
+            />
         </div>
     );
 };
