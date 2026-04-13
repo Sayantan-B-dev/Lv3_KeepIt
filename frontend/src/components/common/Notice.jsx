@@ -41,7 +41,6 @@ export default function Notice({
     >
       <div className="mx-auto max-w-7xl px-4 py-2 flex items-center justify-center gap-3">
         <p className={`text-sm text-center ${style.text}`}>{message}</p>
-{/* 
         {dismissible && (
           <button
             onClick={() => setVisible(false)}
@@ -50,7 +49,7 @@ export default function Notice({
           >
             <X size={16} />
           </button>
-        )} */}
+        )}
       </div>
     </div>
   );
