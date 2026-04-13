@@ -1,5 +1,5 @@
 ### 🔴 Priority: High(simple)
-* [ ] **code block:** in code block on notes it needs to detect the language and shoe insted of `code` and it should stick to top right no matter if the code is scrolling
+* [x] **code block:** in code block on notes it needs to detect the language and shoe insted of `code` and it should stick to top right no matter if the code is scrolling
 * [ ] **if not logged in:** if not logged in they can see the notes but it will be visible partially..like in note page but the bottom half of thenote content will be faded With a button that rediirects to login
 * [ ] **Route to login:** if someone is not logged in. in locked authentication for note page redirect to login insted home
 * [ ] **Dismissable Announcement** make theannouncement part dismissable with cross

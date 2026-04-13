@@ -1,3 +1,9 @@
+# Quick Updates Log - 2026-04-13 (14:50)
+
+## 1. Code Block Language Detection
+- **What Changed**: Updated `MathContent.jsx` to parse the `language-` class and display the code block's language on the top right.
+- **Why**: To let users know which language context a code block is in and keep the language label visible regardless of horizontal scrolling.
+
 # Project Optimization & Infrastructure Log - 2026-03-27
 
 ## 1. High-Performance MongoDB Indexing Strategy
