@@ -1,7 +1,6 @@
 ### 🔴 Priority: High
 
-* [ ] **Canceling membership:** Are you sure you want to cancel your Pro membership? needs a proper popup..and it will be a separate component that is being used in other places specually for alerts..the style will be extreamly similar as ErrorState.jsx but it will be a popup with 20% faded background
-
+null 
 
 ---
 
@@ -39,3 +38,4 @@
 * [x] **Live Note Preview (While Editing)** *(moved to high priority & placed after Mermaid integration)*
 * [x] **Cover image implementation** on profile, category, note and slidenavbar
 * [x] **Mermaid.js:** Diagram rendering in markdown.
+* [x] **Canceling membership:** Are you sure you want to cancel your Pro membership? needs a proper popup..and it will be a separate component that is being used in other places specually for alerts..the style will be extreamly similar as ErrorState.jsx but it will be a popup with 20% faded background

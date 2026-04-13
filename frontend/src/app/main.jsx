@@ -17,7 +17,22 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <BrowserRouter>
         <App />
       </BrowserRouter>
-      <ToastContainer position="top-center" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick pauseOnFocusLoss draggable pauseOnHover />
+      <ToastContainer
+        position="top-center"
+        autoClose={3200}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+        toastClassName={(context) =>
+          `premium-toast premium-toast--${context?.type || "default"}`
+        }
+        bodyClassName="premium-toast__body"
+        progressClassName="premium-toast__progress"
+      />
     </AuthProvider>
   </React.StrictMode>
 );
