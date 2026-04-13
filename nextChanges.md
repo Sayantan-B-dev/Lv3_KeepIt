@@ -16,9 +16,11 @@
 ---
 
 ### 🔴 Priority: High(complex)
-* [ ] **Mermaid.js:** Diagram rendering in markdown.
+* [x] **get pro feature fix:** remove the email concept to get pro instead use razorpay `RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxxxx,RAZORPAY_KEY_SECRET=xxxxxxxxxxxx`
 * [ ] **Live Note Preview (While Editing)** *(moved to high priority & placed after Mermaid integration)*
-* [ ] **get pro feature fix:** remove the email concept to get pro instead use razorpay `RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxxxx,RAZORPAY_KEY_SECRET=xxxxxxxxxxxx`
+* [ ] **Mermaid.js:** Diagram rendering in markdown.
+
+
 
 ---
 

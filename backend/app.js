@@ -1,3 +1,6 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import session from "express-session";
 import MongoStore from "connect-mongo";
@@ -8,7 +11,6 @@ import cors from "cors";
 import helmet from "helmet";
 import methodOverride from "method-override";
 import sanitize from "mongo-sanitize";
-import dotenv from "dotenv";
 import flash from "connect-flash";
 import User from "./models/user.model.js";
 import errorHandler from "./middlewares/errorHandler.middleware.js";
@@ -20,8 +22,7 @@ import noteRoutes from "./routes/note.routes.js";
 import profileRoutes from "./routes/profile.routes.js";
 import globalRoutes from "./routes/global.routes.js";
 import categoryTypeRoutes from "./routes/categoryType.routes.js";
-
-dotenv.config();
+import paymentRoutes from "./routes/payment.routes.js";
 
 const app = express();
 const isProduction = process.env.NODE_ENV === "production";
@@ -31,19 +32,6 @@ const isProduction = process.env.NODE_ENV === "production";
 ====================================================== */
 app.use(
    cors({
-  //   origin: (origin, callback) => {
-  //     if (!origin) return callback(null, true);
-  //     const allowedOrigins = [
-  //       process.env.FRONTEND_URL?.trim().replace(/\/$/, ""),
-  //     ].filter(Boolean);
-
-  //     const incoming = origin.replace(/\/$/, "");
-  //     if (allowedOrigins.includes(incoming)) {
-  //       callback(null, true);
-  //     } else {
-  //       callback(new Error("Not allowed by CORS"));
-  //     }
-  //   },
     origin: process.env.FRONTEND_URL,
     credentials: true,
   })
@@ -152,6 +140,7 @@ sessionRouter.use("/profile", profileRoutes);
 sessionRouter.use("/notes", noteRoutes);
 sessionRouter.use("/categories", categoryRoutes);
 sessionRouter.use("/category-types", categoryTypeRoutes);
+sessionRouter.use("/payment", paymentRoutes);
 
 // Public / low-cost routes
 app.use("/api/global", globalRoutes);

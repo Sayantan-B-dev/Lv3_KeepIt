@@ -2,14 +2,13 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export function isLoggedIn(req, res, next) {
-    //console.log("isLoggedIn: req.user =", req.user);
-    //console.log("isLoggedIn: sessionID =", req.sessionID);
-    if (process.env.NODE_ENV === 'development') {
+    console.log("isLoggedIn check: authenticated =", req.isAuthenticated(), "user =", req.user?._id);
+    if (process.env.NODE_ENV === 'development' && process.env.DEV_ID) {
         if (!req.user) {
             req.user = {
                 _id: process.env.DEV_ID,
-                username: process.env.DEV_PASS,
-                email: process.env.DEV_EMAIL
+                username: process.env.DEV_PASS || "devuser",
+                email: process.env.DEV_EMAIL || "dev@example.com"
             };
         }
         return next();

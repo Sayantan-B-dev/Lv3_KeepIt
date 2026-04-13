@@ -7,9 +7,7 @@ import {
     uploadProfileImage,
     getAllUsers,
     forgotPassword,
-    resetPassword,
-    requestProUpgrade,
-    confirmProUpgrade
+    resetPassword
 } from "../controllers/auth.controller.js"
 import upload from "../utils/multer.util.js"
 import passport from "passport";
@@ -28,8 +26,7 @@ router.route('/users').get(getAllUsers)
 router.route('/upload-profile-image').post(upload.single('image'), validateBody(profileImageSchema), uploadProfileImage)
 router.route('/forgot-password').post(forgotPassword);
 router.route('/reset-password/:resetToken').post(resetPassword);
-router.route('/pro-upgrade-request').post(isLoggedIn, requestProUpgrade);
-router.route('/pro-upgrade-confirm/:token').get(confirmProUpgrade);
+
 
 // Google OAuth Routes
 router.get("/google", passport.authenticate("google", { scope: ["email", "profile"], prompt: "select_account" }));

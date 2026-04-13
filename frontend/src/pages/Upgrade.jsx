@@ -1,120 +1,161 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Crown, Send, CheckCircle, ArrowLeft } from "lucide-react";
+import { Crown, CheckCircle, ArrowLeft, ShieldCheck, Zap, X, Info } from "lucide-react";
 import axiosInstance from "@/api/axiosInstance";
 import { toast } from "react-toastify";
+import { useAuth } from "@/context/AuthContext";
 
 const Upgrade = () => {
   const navigate = useNavigate();
-  const [reason, setReason] = useState("");
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!reason.trim()) {
-      toast.warn("Please provide a reason for the upgrade.");
+  const handlePayment = async () => {
+    if (!user) {
+      toast.error("Please login to upgrade.");
+      navigate("/login");
       return;
     }
 
     setLoading(true);
     try {
-      await axiosInstance.post("/api/auth/pro-upgrade-request", { reason });
-      setSubmitted(true);
-      toast.success("Request sent to administrator!");
+      const { data: order } = await axiosInstance.post("/api/payment/orders", {
+        amount: 99, 
+      });
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, 
+        amount: order.amount,
+        currency: order.currency,
+        name: "RE-DOCS PRO",
+        description: "Lifetime Membership Access",
+        image: "/assets/logo.png",
+        order_id: order.id,
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+          }
+        },
+        handler: async function (response) {
+          const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = response;
+          try {
+            await axiosInstance.post("/api/payment/verify", {
+              razorpayOrderId: razorpay_order_id,
+              razorpayPaymentId: razorpay_payment_id,
+              signature: razorpay_signature,
+            });
+            
+            toast.success("Payment Successful! Welcome to Pro.");
+            window.location.href = "/profile/MyProfile?pro=success";
+          } catch (err) {
+            toast.error("Payment verification failed!");
+          }
+        },
+        prefill: {
+          name: user.username,
+          email: user.email,
+        },
+        theme: {
+          color: "#000000",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.on('payment.failed', function(response) {
+        toast.error("Payment Failed: " + response.error.description);
+        setLoading(false);
+      });
+      rzp.open();
     } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to send request.");
-    } finally {
+      console.error("Payment Initiation Error:", err);
+      toast.error(err.response?.data?.error || "Failed to initiate payment.");
       setLoading(false);
     }
   };
 
-  if (submitted) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-6 bg-transparent">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full bg-zinc-900 border border-white/10 p-10 rounded-3xl text-center shadow-2xl glass-panel"
-        >
-          <div className="flex justify-center mb-6">
-            <CheckCircle className="w-16 h-16 text-green-500" />
-          </div>
-          <h1 className="text-3xl font-bold text-type-1 font-mono mb-4 italic tracking-tighter">SUCCESS!</h1>
-          <p className="text-type-2 font-mono text-sm leading-relaxed mb-8">
-            Your request has been beamed to the administrator. You'll receive a confirmation email once your Pro access is granted.
-          </p>
-          <button
-            onClick={() => navigate("/")}
-            className="px-8 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-type-1 rounded-xl transition-all font-mono text-sm"
-          >
-            Return to Base
-          </button>
-        </motion.div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 bg-transparent">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      {/* Background more visible (Reduced opacity) */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        onClick={() => navigate(-1)}
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm cursor-pointer"
+      />
+
+      {/* Smaller Modal (max-w-xs / max-w-sm) */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-2xl w-full bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl overflow-hidden glass-panel"
+        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="max-w-sm w-full bg-[#10110f] border-2 border-white/20 rounded-2xl shadow-3xl overflow-hidden relative z-10"
       >
-        <div className="p-8 sm:p-12">
+        <div className="p-6 sm:p-8 text-center relative">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-type-3 hover:text-type-1 transition-colors mb-8 font-mono text-xs uppercase"
+            className="absolute top-4 right-4 p-2 text-type-3 hover:text-white transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Category
+            <X className="w-4 h-4" />
           </button>
 
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-3 bg-yellow-500/10 rounded-2xl border border-yellow-500/20">
-              <Crown className="w-8 h-8 text-yellow-500" />
+          <div className="flex justify-center mb-6">
+            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+              <Crown className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-type-1 font-mono italic tracking-tighter uppercase underline-animation">
-              Pro Access Request
-            </h1>
           </div>
 
-          <p className="text-type-2 font-mono text-sm mb-10 leading-relaxed max-w-lg">
-            Request manual authorization for Pro features. An admin will review your request and grant access via secure encrypted channel.
+          <div className="space-y-1 mb-6">
+            <h1 className="text-2xl font-black text-white font-mono italic tracking-tighter uppercase">
+                Unlock Pro
+            </h1>
+            <p className="text-[8px] text-type-3 font-mono uppercase tracking-[0.3em] font-bold">
+                Lifetime Legacy Access
+            </p>
+          </div>
+
+          {/* Test Mode Warning (RED) */}
+          <div className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/20 flex items-start gap-3 text-left">
+            <Info className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+            <p className="text-[9px] font-mono text-red-500 font-bold uppercase leading-tight tracking-tighter">
+              DEVELOPMENT TEST MODE ACTIVE. USE ANY FAKE UPI ID (E.G. SUCCESS@RAZORPAY). NO REAL MONEY WILL BE DEDUCTED.
+            </p>
+          </div>
+
+          <div className="space-y-3 mb-8 text-left">
+             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                <Zap className="w-4 h-4 text-white shrink-0" />
+                <p className="text-[10px] text-white font-mono uppercase font-black italic tracking-tighter">2,000 Notes / hr Sync Speed</p>
+             </div>
+             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                <CheckCircle className="w-4 h-4 text-white shrink-0" />
+                <p className="text-[10px] text-white font-mono uppercase font-black italic tracking-tighter">5 Concurrent upload streams</p>
+             </div>
+             <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+                <ShieldCheck className="w-4 h-4 text-white shrink-0" />
+                <p className="text-[10px] text-white font-mono uppercase font-black italic tracking-tighter">ZIP Exports & Advanced Tagging</p>
+             </div>
+          </div>
+
+          <div className="mb-8 py-4 rounded-xl border-2 border-white/10 bg-white/[0.01]">
+            <div className="text-4xl font-black text-white font-mono italic">₹99</div>
+          </div>
+
+          <button
+            onClick={handlePayment}
+            disabled={loading}
+            className="w-full relative flex items-center justify-center gap-3 py-4 bg-white hover:bg-zinc-200 text-black font-black font-mono rounded-xl shadow-xl transition-all active:scale-95 disabled:opacity-50 border-b-4 border-zinc-400 uppercase italic text-sm"
+          >
+            {loading ? "INITIALIZING..." : (
+              <>
+                Confirm Order
+                <ArrowLeft className="w-4 h-4 rotate-180" />
+              </>
+            )}
+          </button>
+
+          <p className="text-[8px] text-type-3 font-mono mt-6 uppercase opacity-40">
+            Securely encrypted via Razorpay v1.
           </p>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs font-mono text-type-3 uppercase tracking-widest pl-1">
-                Reason for Upgrade / Usage Intent
-              </label>
-              <textarea
-                value={reason}
-                onChange={(e) => setReason(e.target.value)}
-                placeholder="Briefly explain your need for increased limits or ZIP exports..."
-                rows={5}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-type-1 font-mono text-sm focus:outline-none focus:border-yellow-500/50 transition-colors custom-scrollbar"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full group relative flex items-center justify-center gap-3 py-4 bg-gradient-to-r from-yellow-600 to-amber-500 hover:from-yellow-500 hover:to-amber-400 text-black font-bold font-mono rounded-2xl shadow-xl transition-all active:scale-95 disabled:opacity-50"
-            >
-              {loading ? (
-                "TRANSMITTING..."
-              ) : (
-                <>
-                  TRANSMIT REQUEST
-                  <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                </>
-              )}
-            </button>
-          </form>
         </div>
       </motion.div>
     </div>
