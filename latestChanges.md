@@ -6,6 +6,15 @@ This log tracks the evolution of the Re-Docs MERN stack application, covering hi
 
 ## 📅 April 13, 2026
 
+### 🚀 Advanced Content & Infrastructure
+- **Razorpay Pro Integration**: Replaced the legacy email-based upgrade system with a full Razorpay payment gateway integration for automated Pro membership processing.
+- **Live Markdown Preview**: Implemented a side-by-side split-view system for Markdown editing, allowing for instantaneous visual feedback while typing.
+- **Mermaid.js Diagram Support**: Integrated Mermaid.js into the note previewer to render flowcharts, sequence diagrams, and class diagrams directly from markdown-style code blocks.
+- **User Cover Image Feature**: Added a customizable full-width background feature for profiles, which dynamically decorates Note Headers, Category Headers, and the Navigation Sidebar.
+- **NoteHeader & CategoryHeader Refactoring**: Re-architected both primary content headers into specialized modular sub-components (UserProfile, CategoryInfo, etc.) to improve long-term maintainability while ensuring consistency across the platform.
+- **Performance-First Rendering**: Optimized Mermaid.js with internal syntax validation and debounced rendering to prevent UI flickering and layout-breaking crashes during live edits.
+- **Universal Aesthetic Standard**: Synchronized 80% opacity background overlays across all profile-decorated components (Sidebar, Note Headers, Category Headers) to maximize text legibility against diverse user-uploaded cover images.
+
 ### 🚀 UI & Analytics Infrastructure
 - **Hero Evolution & Analytics**: Integrated live metrics (Notes, Tags, Topics, Users) directly into the Hero section as a minimalist inline row.
 - **Cyber/Matrix Cipher Effect**: Implemented an "active encryption" visual for numeric metrics that triggers during backend cold starts or downtime.
