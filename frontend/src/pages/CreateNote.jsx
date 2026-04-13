@@ -18,7 +18,8 @@ import { Loading } from "@/features/home";
 import { toast } from "react-toastify";
 import { useAuth } from "@/context/AuthContext";
 import TagInput from "@/components/common/TagInput";
-import { MdUndo, MdRedo } from "react-icons/md";
+import { MdUndo, MdRedo, MdVisibility, MdEdit } from "react-icons/md";
+import MathContent from "@/features/notes/MathContent";
 
 const textAreaStyle =
     "textAreaStyle";
@@ -74,6 +75,7 @@ const CreateNote = () => {
     const [categoryType, setCategoryType] = useState(
         initialDraft.categoryType
     );
+    const [previewMode, setPreviewMode] = useState(false);
 
     const [availableCategories, setAvailableCategories] = useState([]);
 
@@ -459,67 +461,115 @@ const CreateNote = () => {
                 </div>
 
                 {/* Content */}
-                <div>
-                    <label className="block text-type-2 font-mono mb-2">
-                        Content
-                    </label>
-
-                    <div className="relative">
-                        <textarea
-                            ref={contentInputRef}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <label className="block text-type-2 font-mono">
+                            Content
+                        </label>
+                        <button
+                            type="button"
+                            onClick={() => setPreviewMode(!previewMode)}
                             className={`
-                                ${textAreaStyle}
-                                h-75
-                                pr-12
-                                resize
+                                flex items-center gap-2 px-4 py-1.5 rounded-xl border font-mono text-xs transition-all
+                                ${previewMode 
+                                    ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
+                                    : 'bg-white/5 border-white/10 text-type-2 hover:bg-white/10 hover:text-type-1'}
                             `}
-                            value={content}
-                            onChange={handleContentChange}
-                            placeholder="Write your note here… (Markdown supported)"
-                            style={{ minHeight: 140 }}
-                        />
-
-                        {/* Undo / Redo */}
-                        <div className="absolute right-2 bottom-2 flex gap-1 z-10">
-                            {[{
-                                label: "Undo",
-                                onClick: handleUndo,
-                                disabled: contentUndoStack.length <= 1,
-                                icon: <MdUndo size={12} />
-                            }, {
-                                label: "Redo",
-                                onClick: handleRedo,
-                                disabled: contentRedoStack.length === 0,
-                                icon: <MdRedo size={12} />
-                            }].map(({ label, onClick, disabled, icon }) => (
-                                <button
-                                    key={label}
-                                    type="button"
-                                    onClick={onClick}
-                                    disabled={disabled}
-                                    title={label}
-                                    className="
-                                        w-5 h-5
-                                        flex items-center justify-center
-                                        rounded-full
-                                        border border-muted
-                                        bg-white/70
-                                        hover:bg-white
-                                        shadow
-                                        transition
-                                        disabled:opacity-50
-                                        disabled:cursor-not-allowed
-                                    "
-                                >
-                                    {icon}
-                                </button>
-                            ))}
-                        </div>
+                        >
+                            {previewMode ? (
+                                <><MdEdit className="w-4 h-4" /> Editing Mode</>
+                            ) : (
+                                <><MdVisibility className="w-4 h-4" /> Live Preview</>
+                            )}
+                        </button>
                     </div>
 
-                    <p className="text-xs text-type-2 mt-2 leading-relaxed">
-                        <b>Markdown supported:</b> **bold**, *italic*, `inline code`,
-                        ```code blocks```, lists, headings, blockquotes, and links.
+                    <div className={`grid gap-6 transition-all duration-300 ${previewMode ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1'}`}>
+                        {/* Editor Pane */}
+                        <div className={`relative group ${previewMode ? 'hidden lg:block' : 'block'}`}>
+                            <textarea
+                                ref={contentInputRef}
+                                className={`
+                                    ${textAreaStyle}
+                                    h-75 lg:h-120
+                                    pr-12
+                                    resize-none
+                                    transition-all
+                                    border-2 focus:border-white/40
+                                `}
+                                value={content}
+                                onChange={handleContentChange}
+                                placeholder="Write your note here… (Markdown supported)"
+                            />
+
+                            {/* Undo / Redo */}
+                            <div className="absolute right-3 bottom-3 flex gap-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {[{
+                                    label: "Undo",
+                                    onClick: handleUndo,
+                                    disabled: contentUndoStack.length <= 1,
+                                    icon: <MdUndo size={14} />
+                                }, {
+                                    label: "Redo",
+                                    onClick: handleRedo,
+                                    disabled: contentRedoStack.length === 0,
+                                    icon: <MdRedo size={14} />
+                                }].map(({ label, onClick, disabled, icon }) => (
+                                    <button
+                                        key={label}
+                                        type="button"
+                                        onClick={onClick}
+                                        disabled={disabled}
+                                        title={label}
+                                        className="
+                                            w-8 h-8
+                                            flex items-center justify-center
+                                            rounded-xl
+                                            border-2 border-white/20
+                                            bg-black/80
+                                            text-white
+                                            hover:border-white/60
+                                            shadow-2xl
+                                            transition-all
+                                            disabled:opacity-30
+                                            disabled:cursor-not-allowed
+                                            active:scale-90
+                                        "
+                                    >
+                                        {icon}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Preview Pane */}
+                        {previewMode && (
+                            <div className="
+                                h-120 
+                                p-8 
+                                rounded-xl 
+                                border-2 border-white/20 
+                                bg-black/40 
+                                backdrop-blur-md 
+                                overflow-y-auto 
+                                custom-scrollbar 
+                                shadow-inner
+                            ">
+                                {content.trim() ? (
+                                    <MathContent content={content} />
+                                ) : (
+                                    <div className="h-full flex flex-col items-center justify-center text-type-3 font-mono opacity-50">
+                                        <MdVisibility size={40} className="mb-4" />
+                                        <p className="text-sm uppercase tracking-widest">Preview Stream Idle</p>
+                                        <p className="text-[10px] mt-2 italic">Start typing to see live rendering</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    <p className="text-xs text-type-2 mt-2 leading-relaxed opacity-60">
+                        <b>Dynamic System:</b> Split-screen preview enabled for desktop. Note content auto-saves to local cache.
                     </p>
                 </div>
 
