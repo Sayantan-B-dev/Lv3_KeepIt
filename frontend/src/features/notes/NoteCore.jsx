@@ -75,9 +75,11 @@ const NoteCore = ({ content }) => {
                 <div className="absolute -top-3 right-4 text-[9px] text-white/30 uppercase font-black px-3 py-1 bg-black rounded-full border border-white/10 z-10">
                   {language}
                 </div>
-                <pre className="p-6 bg-black/60 rounded-2xl border-2 border-white/10 overflow-x-auto text-sm m-0 shadow-xl" {...props}>
-                  {children}
-                </pre>
+                <div className="rounded-2xl border-2 border-white/10 bg-black/60 shadow-xl overflow-hidden">
+                  <pre className="p-6 overflow-x-auto text-sm m-0" {...props}>
+                    {children}
+                  </pre>
+                </div>
               </div>
             );
           },
@@ -95,8 +97,10 @@ const NoteCore = ({ content }) => {
             );
           },
           table: ({ children }) => (
-            <div className="overflow-x-auto my-8 rounded-2xl border-2 border-white/10 bg-black/40 shadow-2xl">
-              <table className="min-w-full text-sm text-left">{children}</table>
+            <div className="my-8 rounded-2xl border-2 border-white/10 bg-black/40 shadow-2xl overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-left">{children}</table>
+              </div>
             </div>
           ),
           th: ({ children }) => <th className="px-6 py-4 bg-white/5 font-black uppercase text-white/40 tracking-widest text-[10px]">{children}</th>,

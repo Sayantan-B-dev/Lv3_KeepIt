@@ -100,10 +100,10 @@ const AllUsers = () => {
 
       {!loading && !error && (
         <div className="
-        w-full mb-5 p-5
-        flex flex-wrap gap-4
+        w-full mb-4 sm:mb-5 p-3 sm:p-5
+        grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4
         rounded-xl
-        border border border-muted
+        border border-muted
         bg-type-1 backdrop-blur-md
       " >
           <UserBox users={users} />
@@ -111,10 +111,11 @@ const AllUsers = () => {
       )}
       {loadingMore && <Loader variant="dots" text="Loading…" />}
       {hasMore && !loading && !loadingMore && (
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center mt-5 sm:mt-6">
           <DottedButton
             text={loadingMore ? 'Loading…' : 'Load More'}
             onClick={handleLoadMore}
+            className="w-full sm:w-auto"
           />
         </div>
       )}

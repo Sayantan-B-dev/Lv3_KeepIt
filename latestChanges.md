@@ -12,6 +12,10 @@ This log tracks the evolution of the Re-Docs MERN stack application, covering hi
 - **Shared Button Consistency Pass**: Normalized alignment/centering behavior across `DottedButton`, `DottedButton2`, and `ButtonType3`, including sidebar action buttons.
 - **Direct Pro Upgrade Routing**: Removed category-level “Unlock Pro Features” promo modal from gated actions and routed users directly to the dedicated `/upgrade` page.
 - **Footer Semantics Cleanup**: Replaced non-semantic footer spans with proper anchor behavior for improved accessibility and navigation consistency.
+- **AllUsers Mobile Experience Refresh**: Reworked user listing into a mobile-first responsive grid with tighter card spacing, better truncation behavior, and clearer small-screen hierarchy.
+- **User Card Action Clarity**: Added a mobile-only “View →” affordance to make profile card tap targets more explicit on touch devices.
+- **Content Overflow Containment**: Fixed markdown code/table overflow wrappers so horizontal scrollbars remain clipped within rounded parent boundaries.
+- **Scrollbar Slim Pass**: Reduced custom overflow scrollbar thickness and refined thumb styling for slicker code/table horizontal scrolling.
 
 ### 🚀 Advanced Content & Infrastructure
 - **Razorpay Pro Integration**: Replaced the legacy email-based upgrade system with a full Razorpay payment gateway integration for automated Pro membership processing.

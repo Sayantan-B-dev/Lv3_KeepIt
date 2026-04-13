@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { getOptimizedImageUrl } from "../../utils/imageUtils";
 
 const underlineAnimation = `
@@ -28,17 +29,18 @@ const UserBox = ({ users = [] }) => {
             to={`/profile/${user._id}`}
             className="
               flex
-              rounded-2xl
+              w-full
+              rounded-xl sm:rounded-2xl
               border border-white/20
               bg-black/40 backdrop-blur-md
               hover:bg-black/60 hover:border-white/40
               shadow-lg hover:shadow-2xl
               transition-all duration-300
-              p-4
-              min-w-[140px]
+              p-3 sm:p-4
+              min-h-[86px]
             "
           >
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full text-center sm:text-left">
+            <div className="flex items-center gap-3 sm:gap-4 w-full text-left">
               {/* Avatar */}
               {user.profileImage?.url ? (
                 <motion.img
@@ -79,25 +81,30 @@ const UserBox = ({ users = [] }) => {
 
               {/* User Info */}
               <motion.div
-                className="flex flex-col items-center sm:items-start"
+                className="flex flex-col items-start min-w-0"
                 whileHover={{ x: 4 }}
                 transition={{ type: "spring", stiffness: 280, damping: 18 }}
               >
                 <h2
                   className={
-                    "text-base sm:text-lg font-semibold text-white leading-tight whitespace-nowrap " +
+                    "text-sm sm:text-base font-semibold text-white leading-tight truncate max-w-full " +
                     underlineAnimation
                   }
                 >
                   {user.username}
                 </h2>
 
-                <p className="text-xs text-white/50 font-mono italic whitespace-nowrap">
+                <p className="text-[11px] text-white/60 font-mono italic truncate max-w-full">
                   {user.categories && user.categories.length > 0
-                    ? `${user.categories.length} segments`
+                    ? `${user.categories.length} categories`
                     : "Empty space"}
                 </p>
               </motion.div>
+
+              <div className="sm:hidden ml-auto flex items-center gap-1 text-[10px] uppercase tracking-wider text-white/55 font-mono font-bold">
+                <span>View</span>
+                <ArrowRight className="w-3 h-3" />
+              </div>
             </div>
           </Link>
         </motion.div>

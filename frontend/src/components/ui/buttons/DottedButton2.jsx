@@ -16,9 +16,9 @@ const DottedButton2 = ({
     h-full
     flex
     flex-col
-    items-center
+    items-start
     justify-between
-    text-center
+    text-left
     gap-2
     rounded-lg
     border border-muted2
@@ -47,8 +47,8 @@ const DottedButton2 = ({
   const content = (
     <>
       {/* Top row: title + optional inner component */}
-      <div className="flex w-full items-center justify-center gap-3">
-        <span className="flex-1 min-w-0 break-words whitespace-normal leading-snug text-center">
+      <div className="flex w-full items-start gap-3">
+        <span className="flex-1 min-w-0 break-words whitespace-normal leading-snug text-left">
           {text}
         </span>
 
@@ -61,7 +61,7 @@ const DottedButton2 = ({
 
       {/* Tags */}
       {Array.isArray(tags) && tags.length > 0 && (
-        <div className="hidden sm:flex flex-wrap gap-1 w-full justify-center">
+        <div className="hidden sm:flex flex-wrap gap-1 w-full">
           {[...tags].sort().map((tag, idx) => (
             <span
               key={idx}

@@ -25,6 +25,10 @@
 * [x] **Canceling membership popup:** Replaced native confirm with reusable alert modal (20% faded backdrop).
 * [x] **Button system alignment:** Unified button text alignment in shared button components and sidebar usage.
 * [x] **Pro gating UX change:** Category Pro actions now route directly to Upgrade page instead of showing unlock modal.
+* [x] **AllUsers mobile UI polish:** Improved card/grid readability on phones with better spacing and responsive sizing.
+* [x] **User card microcopy update:** Replaced `segments` label with `categories`.
+* [x] **Mobile tap clarity:** Added mobile-only “View →” action hint on user cards.
+* [x] **Wide content overflow fix:** Slimmed custom scrollbars and contained code/table horizontal overflow inside note content boundaries.
 
 ---
 
