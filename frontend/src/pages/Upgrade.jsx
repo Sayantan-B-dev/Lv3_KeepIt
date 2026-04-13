@@ -33,6 +33,11 @@ const Upgrade = () => {
         image: "/assets/logo.png",
         order_id: order.id,
         modal: {
+          backdropclose: false,
+          escape: true,
+          handleback: true,
+          animation: true,
+          confirm_close: true,
           ondismiss: function() {
             setLoading(false);
           }

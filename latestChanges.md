@@ -6,6 +6,13 @@ This log tracks the evolution of the Re-Docs MERN stack application, covering hi
 
 ## 📅 April 13, 2026
 
+### ✨ UI Polish & Upgrade Flow Refinements
+- **Premium Toast System (Monochrome Glassmorphism)**: Introduced a global Toastify skin with consistent black/white visual language, refined spacing, and smoother motion across all notification types.
+- **Reusable AlertPopup Component**: Replaced native membership cancellation confirms with a reusable popup alert architecture aligned to `ErrorState` aesthetics and dimmed backdrop behavior.
+- **Shared Button Consistency Pass**: Normalized alignment/centering behavior across `DottedButton`, `DottedButton2`, and `ButtonType3`, including sidebar action buttons.
+- **Direct Pro Upgrade Routing**: Removed category-level “Unlock Pro Features” promo modal from gated actions and routed users directly to the dedicated `/upgrade` page.
+- **Footer Semantics Cleanup**: Replaced non-semantic footer spans with proper anchor behavior for improved accessibility and navigation consistency.
+
 ### 🚀 Advanced Content & Infrastructure
 - **Razorpay Pro Integration**: Replaced the legacy email-based upgrade system with a full Razorpay payment gateway integration for automated Pro membership processing.
 - **Live Markdown Preview**: Implemented a side-by-side split-view system for Markdown editing, allowing for instantaneous visual feedback while typing.
@@ -71,4 +78,3 @@ This log tracks the evolution of the Re-Docs MERN stack application, covering hi
 - **Stale-While-Revalidate Auth**: Priority-loading for cached users in `localStorage` with a 5-second failure timeout to prevent infinite spinners.
 
 ---
-_Log maintained by Antigravity AI._

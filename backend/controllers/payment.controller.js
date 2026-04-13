@@ -14,7 +14,6 @@ const razorpay = new Razorpay({
 export const createOrder = async (req, res) => {
   try {
     const amount = Number(req.body.amount);
-    console.log("Initiating order for amount:", amount, "User:", req.user?._id);
     
     if (!amount || isNaN(amount)) {
         return res.status(400).json({ error: "Valid amount is required" });
@@ -27,7 +26,6 @@ export const createOrder = async (req, res) => {
     };
 
     const order = await razorpay.orders.create(options);
-    console.log("Razorpay Order Created:", order.id);
 
     await Payment.create({
       user: req.user._id,

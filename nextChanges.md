@@ -1,6 +1,6 @@
 ### 🔴 Priority: High
 
-null 
+* [ ] **Offline-safe Pro checkout fallback:** Add robust retry/fallback UX when payment init fails due to backend cold start or network jitter.
 
 ---
 
@@ -15,11 +15,20 @@ null
 
 ### 🟢 Priority: Low
 
-* [ ] **Premium Toasts:** Glassmorphic notification system.
+* [ ] **Changelog hygiene automation:** Auto-sync `latestChanges.md` from conventional commit history.
 
 
+---
 
-*** Things done:
+### 📅 Recently Completed (April 13, 2026)
+* [x] **Premium Toasts:** Glassmorphic notification system.
+* [x] **Canceling membership popup:** Replaced native confirm with reusable alert modal (20% faded backdrop).
+* [x] **Button system alignment:** Unified button text alignment in shared button components and sidebar usage.
+* [x] **Pro gating UX change:** Category Pro actions now route directly to Upgrade page instead of showing unlock modal.
+
+---
+
+### Things done:
 * [x] **code block:** in code block on notes it needs to detect the language and shoe insted of `code` and it should stick to top right no matter if the code is scrolling
 * [x] **if not logged in:** if not logged in they can see the notes but it will be visible partially..like it will show a 10 second count down on top after finsinging count down it will show to not authenticated page
 * [x] **Route to login:** if someone is not logged in. in locked not authenticated page for note page redirect to login insted home

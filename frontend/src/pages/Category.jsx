@@ -6,7 +6,6 @@ import { useAuth } from "@/context/AuthContext";
 
 import { Loading } from "@/features/home";
 import { ErrorState, ConfirmPopUp } from "@/components/ui";
-import ProUpgradeModal from "@/components/ui/ProUpgradeModal";
 import { noteCache } from "@/utils/noteCache";
 
 import CategoryHeader from "@/features/category/CategoryHeader";
@@ -46,7 +45,6 @@ const Category = () => {
 
   const [selectedNoteIds, setSelectedNoteIds] = useState([]);
   const [showBulkTagModal, setShowBulkTagModal] = useState(false);
-  const [showProUpgradeModal, setShowProUpgradeModal] = useState(false);
 
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -85,7 +83,7 @@ const Category = () => {
     categoryId, 
     setNotes, 
     loggedInUser,
-    () => setShowProUpgradeModal(true)
+    () => navigate("/upgrade")
   );
 
   const { dragActive, handlers: dragHandlers } = useDragAndDrop({
@@ -374,12 +372,7 @@ const Category = () => {
         isAuthenticated={!!loggedInUser}
         onUserClick={handleUserClick}
         loggedInUser={loggedInUser}
-        onOpenProModal={() => setShowProUpgradeModal(true)}
-      />
-
-      <ProUpgradeModal 
-        open={showProUpgradeModal} 
-        onClose={() => setShowProUpgradeModal(false)} 
+        onOpenProModal={() => navigate("/upgrade")}
       />
 
       <DownloadProgress
