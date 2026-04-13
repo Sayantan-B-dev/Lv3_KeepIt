@@ -298,13 +298,23 @@ function MathContent({ content }) {
             );
           },
           pre({ children }) {
+            let language = 'Code';
+            if (children && children.props && children.props.className) {
+              const match = /language-(\w+)/.exec(children.props.className || '');
+              if (match) {
+                language = match[1];
+              }
+            }
+
             return (
-              <pre className="my-6 p-4 bg-black/60 text-red-50 font-mono text-sm rounded-xl border-2 border-white/20 overflow-x-auto shadow-2xl relative group">
-                <div className="absolute top-2 right-2 px-2 py-0.5 text-[10px] uppercase tracking-widest text-white/30 font-sans border border-white/10 rounded pointer-events-none group-hover:text-white/50 transition-colors">
-                  Code
+              <div className="relative my-6 group">
+                <div className="absolute top-2 right-2 px-2 py-0.5 text-[10px] uppercase tracking-widest text-white/50 font-sans border border-white/20 rounded pointer-events-none transition-colors z-10 bg-black/60 backdrop-blur-sm shadow-sm group-hover:bg-white/10">
+                  {language}
                 </div>
-                {children}
-              </pre>
+                <pre className="p-4 bg-black/60 text-red-50 font-mono text-sm rounded-xl border-2 border-white/20 overflow-x-auto shadow-2xl m-0">
+                  {children}
+                </pre>
+              </div>
             );
           },
           code({ inline, children, ...props }) {
