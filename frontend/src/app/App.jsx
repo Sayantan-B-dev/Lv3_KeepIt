@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState, lazy, Suspense } from "react";
 
-import { Footer, SideNavbar } from "@/components/layout";
+import { Footer, SideNavbar, BackendStatus } from "@/components/layout";
 import { Loading } from "@/features/home";
 import { useAuth } from "@/context/AuthContext";
 
@@ -190,6 +190,7 @@ Alternatively, you can sign in using email and password or use a different brows
 
         <RotatingKeepIt />
         <Footer />
+        <BackendStatus />
       </div>
     </div>
   );

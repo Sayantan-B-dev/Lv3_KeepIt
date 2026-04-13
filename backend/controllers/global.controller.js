@@ -1,6 +1,6 @@
-
 import Category from "../models/category.model.js"
 import Note from "../models/note.model.js"
+import User from "../models/user.model.js"
 
 export const getAllCategories = async (req, res) => {
   try {
@@ -54,3 +54,24 @@ export const getAllNotes = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch notes' });
   }
 }
+
+export const getMetrics = async (req, res) => {
+  try {
+    const [totalNotes, totalTags, totalCategories, totalUsers] = await Promise.all([
+      Note.countDocuments({ isPrivate: false }),
+      Note.distinct("tags", { isPrivate: false }),
+      Category.countDocuments({ isPrivate: false }),
+      User.countDocuments(),
+    ]);
+
+    res.json({
+      totalNotes: totalNotes || 0,
+      totalTags: totalTags.length || 0,
+      totalCategories: totalCategories || 0,
+      totalUsers: totalUsers || 0,
+    });
+  } catch (error) {
+    console.error("Error fetching metrics:", error);
+    res.status(500).json({ error: "Failed to fetch metrics" });
+  }
+};

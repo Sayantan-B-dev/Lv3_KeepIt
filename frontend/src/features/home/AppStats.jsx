@@ -1,35 +1,58 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Shield, Sparkles, Zap, Lock } from "lucide-react";
-
-const stats = [
-    {
-        icon: <Zap className="w-5 h-5 text-white/40" />,
-        label: "Super Fast",
-        value: "Vite Powered",
-        desc: "Lightning speed performance"
-    },
-    {
-        icon: <Lock className="w-5 h-5 text-white/40" />,
-        label: "Security",
-        value: "Encrypted",
-        desc: "Your data stays private"
-    },
-    {
-        icon: <Shield className="w-5 h-5 text-white/40" />,
-        label: "Safe Space",
-        value: "Isolated",
-        desc: "Unique workspace per user"
-    },
-    {
-        icon: <Sparkles className="w-5 h-5 text-white/40" />,
-        label: "UI/UX",
-        value: "Modern",
-        desc: "Beautifully crafted design"
-    }
-];
+import { BookOpen, Hash, Layers, Users } from "lucide-react";
+import axiosInstance from "@/api/axiosInstance";
 
 const AppStats = () => {
+    const [metrics, setMetrics] = useState({
+        totalNotes: 0,
+        totalTags: 0,
+        totalCategories: 0,
+        totalUsers: 0
+    });
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchMetrics = async () => {
+            try {
+                const response = await axiosInstance.get('/api/global/metrics');
+                setMetrics(response.data);
+            } catch (error) {
+                console.error("Error fetching metrics:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchMetrics();
+    }, []);
+
+    const stats = [
+        {
+            icon: <BookOpen className="w-5 h-5 text-white/40" />,
+            label: "Public Notes",
+            value: loading ? "..." : metrics.totalNotes,
+            desc: "Knowledge shared so far"
+        },
+        {
+            icon: <Hash className="w-5 h-5 text-white/40" />,
+            label: "Global Tags",
+            value: loading ? "..." : metrics.totalTags,
+            desc: "Organized by interest"
+        },
+        {
+            icon: <Layers className="w-5 h-5 text-white/40" />,
+            label: "Categories",
+            value: loading ? "..." : metrics.totalCategories,
+            desc: "Diverse topics available"
+        },
+        {
+            icon: <Users className="w-5 h-5 text-white/40" />,
+            label: "Creators",
+            value: loading ? "..." : metrics.totalUsers,
+            desc: "Growing community"
+        }
+    ];
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5 w-full">
             {stats.map((item, idx) => (

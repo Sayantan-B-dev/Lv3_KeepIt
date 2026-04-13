@@ -29,15 +29,6 @@ const isProduction = process.env.NODE_ENV === "production";
 /* ======================================================
    1. FAST, ISOLATED HEALTH CHECK (NO MIDDLEWARE)
 ====================================================== */
-app.get("/api/health", (req, res) => {
-  res.sendStatus(200);
-});
-
-/* ======================================================
-   2. LIGHTWEIGHT GLOBAL MIDDLEWARE (STATELESS)
-====================================================== */
-app.use(compression());
-
 app.use(
    cors({
   //   origin: (origin, callback) => {
@@ -57,6 +48,15 @@ app.use(
     credentials: true,
   })
 );
+
+app.get("/api/health", (req, res) => {
+  res.sendStatus(200);
+});
+
+/* ======================================================
+   2. LIGHTWEIGHT GLOBAL MIDDLEWARE (STATELESS)
+====================================================== */
+app.use(compression());
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
