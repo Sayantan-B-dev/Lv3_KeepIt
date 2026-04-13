@@ -12,16 +12,20 @@ import {
 const ProfileHeader = ({
   profile,
   profileImageSrc,
+  coverImageSrc,
   isOwnProfile,
   editMode,
   handleProfileImageClick,
+  handleCoverImageClick,
   fileInputRef,
+  coverInputRef,
   handleCreateNote,
   onEdit,
   isFollowing,
   onFollowToggle,
   onStatClick,
   handleProfileImageChange,
+  handleCoverImageChange,
 }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -35,13 +39,40 @@ const ProfileHeader = ({
     /^https?:\/\//i.test(website) ? website : `//${website}`;
 
   return (
-    <div className="w-full flex flex-col sm:flex-row items-center sm:items-start gap-8 sm:gap-12 mb-10 p-8 rounded-3xl border border-muted glass-panel shadow-2xl relative overflow-hidden">
-      {/* Background Decorative Element */}
-      <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-64 h-64 bg-red-500/5 rounded-full blur-3xl -z-10" />
+    <div 
+      className="w-full flex flex-col sm:flex-row items-center sm:items-start gap-8 sm:gap-12 mb-10 p-8 rounded-3xl border border-muted shadow-2xl relative overflow-hidden transition-all duration-500"
+      style={{
+        backgroundImage: coverImageSrc ? `url(${coverImageSrc})` : 'none',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      {/* Background Overlay */}
+      <div className={`absolute inset-0 z-0 transition-opacity duration-500 ${coverImageSrc ? 'bg-black/80 backdrop-blur-[2px]' : 'glass-panel opacity-100'}`} />
+
+      {/* Profile/Cover Change Buttons Layer */}
+      {isOwnProfile && editMode && (
+        <div className="absolute top-4 right-4 z-20">
+          <button
+            onClick={handleCoverImageClick}
+            className="flex items-center gap-2 px-4 py-2 bg-black/60 hover:bg-black/80 text-white text-xs font-mono rounded-xl border border-white/20 backdrop-blur-md transition-all active:scale-95"
+          >
+            <FolderHeart className="w-4 h-4" />
+            Change Cover
+          </button>
+          <input
+            type="file"
+            accept="image/*"
+            ref={coverInputRef}
+            className="hidden"
+            onChange={handleCoverImageChange}
+          />
+        </div>
+      )}
 
       {/* Avatar Section */}
       <div
-        className={`relative shrink-0 ${isOwnProfile && editMode ? "cursor-pointer group" : ""}`}
+        className={`relative shrink-0 z-10 ${isOwnProfile && editMode ? "cursor-pointer group" : ""}`}
         onClick={isOwnProfile && editMode ? handleProfileImageClick : undefined}
       >
         <div className="relative">
@@ -93,7 +124,7 @@ const ProfileHeader = ({
       </div>
 
       {/* Info Section */}
-      <div className="flex-1 w-full text-center sm:text-left flex flex-col pt-2">
+      <div className="flex-1 w-full text-center sm:text-left flex flex-col pt-2 z-10 relative">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3 justify-center sm:justify-start">
           <h3 className="text-4xl font-black text-type-1 font-mono tracking-tight break-all">
             {profile.username}

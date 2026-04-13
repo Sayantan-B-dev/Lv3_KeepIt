@@ -40,16 +40,6 @@ const Profile = () => {
   const [updateError, setUpdateError] = useState(null);
   const [updateSuccess, setUpdateSuccess] = useState(null);
 
-  /* ================= IMAGE ================= */
-
-  const [profileImageFile, setProfileImageFile] = useState(null);
-  const [profileImagePreview, setProfileImagePreview] = useState(null);
-  const fileInputRef = useRef(null);
-
-  /* ================= DELETE ================= */
-
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
 
   /* ================= NOTES ================= */
 
@@ -66,23 +56,28 @@ const Profile = () => {
   const [socialLoading, setSocialLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  /* ================= FETCH PROFILE ================= */
+  /* ================= IMAGE ================= */
+  const [profileImageFile, setProfileImageFile] = useState(null);
+  const [profileImagePreview, setProfileImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
 
+  const [coverImageFile, setCoverImageFile] = useState(null);
+  const [coverImagePreview, setCoverImagePreview] = useState(null);
+  const coverInputRef = useRef(null);
+
+  /* ================= DELETE ================= */
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  /* ================= FETCH PROFILE ================= */
   useEffect(() => {
     const fetchProfile = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        const endpoint = isOwnProfile
-          ? "/api/profile/MyProfile"
-          : `/api/profile/${userId}`;
-
+        const endpoint = isOwnProfile ? "/api/profile/MyProfile" : `/api/profile/${userId}`;
         const res = await axiosInstance.get(endpoint);
-
         setProfile(res.data);
         setCategories(res.data.categories || []);
-
         if (isOwnProfile) {
           setEditProfile({
             bio: res.data.bio || "",
@@ -90,6 +85,8 @@ const Profile = () => {
           });
           setProfileImagePreview(res.data.profileImage?.url || null);
           setProfileImageFile(null);
+          setCoverImagePreview(res.data.coverImage?.url || null);
+          setCoverImageFile(null);
         }
       } catch (err) {
         setError(err?.response?.data?.message || "Failed to load profile.");
@@ -97,21 +94,29 @@ const Profile = () => {
         setLoading(false);
       }
     };
-
     fetchProfile();
   }, [userId, isOwnProfile]);
 
-  /* ================= IMAGE CHANGE (FIXED) ================= */
-
+  /* ================= IMAGE CHANGE ================= */
   const handleProfileImageChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     handleProfileImage(file, ({ profileImage, profileImagePreview }) => {
       setProfileImageFile(profileImage);
       setProfileImagePreview(profileImagePreview);
     });
   };
+
+  const handleCoverImageChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    handleProfileImage(file, ({ profileImage, profileImagePreview }) => {
+      setCoverImageFile(profileImage);
+      setCoverImagePreview(profileImagePreview);
+    });
+  };
+
+
 
   /* ================= CATEGORY ================= */
 
@@ -169,29 +174,27 @@ const Profile = () => {
     }
   };
 
-  /* ================= SAVE ================= */
 
+
+  /* ================= SAVE ================= */
   const handleSave = async (e) => {
     e.preventDefault();
-
     setUpdateLoading(true);
     setUpdateError(null);
     setUpdateSuccess(null);
-
     try {
       const formData = new FormData();
       formData.append("bio", editProfile.bio || "");
       formData.append("website", editProfile.website || "");
-
-      if (profileImageFile) {
-        formData.append("profileImage", profileImageFile);
-      }
+      if (profileImageFile) formData.append("profileImage", profileImageFile);
+      if (coverImageFile) formData.append("coverImage", coverImageFile);
 
       const res = await axiosInstance.put("/api/profile/MyProfile", formData);
-
       setProfile(res.data);
       setProfileImageFile(null);
       setProfileImagePreview(null);
+      setCoverImageFile(null);
+      setCoverImagePreview(null);
       setEditMode(false);
       setUpdateSuccess("Profile updated");
     } catch {
@@ -279,10 +282,17 @@ const Profile = () => {
     );
   }
 
+
+
   const profileImageSrc =
     editMode && profileImagePreview
       ? profileImagePreview
       : profile.profileImage?.url || null;
+
+  const coverImageSrc =
+    editMode && coverImagePreview
+      ? coverImagePreview
+      : profile.coverImage?.url || null;
 
   /* ================= RENDER ================= */
 
@@ -299,13 +309,19 @@ const Profile = () => {
         <ProfileHeader
           profile={profile}
           profileImageSrc={profileImageSrc}
+          coverImageSrc={coverImageSrc}
           isOwnProfile={isOwnProfile}
           editMode={editMode}
           handleProfileImageClick={() =>
             isOwnProfile && editMode && fileInputRef.current?.click()
           }
+          handleCoverImageClick={() =>
+            isOwnProfile && editMode && coverInputRef.current?.click()
+          }
           fileInputRef={fileInputRef}
+          coverInputRef={coverInputRef}
           handleProfileImageChange={handleProfileImageChange}
+          handleCoverImageChange={handleCoverImageChange}
           handleCreateNote={() => navigate("/CreateNote")}
           onEdit={() => {
             setUpdateError(null);
@@ -334,6 +350,8 @@ const Profile = () => {
               setEditMode(false);
               setProfileImagePreview(profile.profileImage?.url || null);
               setProfileImageFile(null);
+              setCoverImagePreview(profile.coverImage?.url || null);
+              setCoverImageFile(null);
             }}
             updateLoading={updateLoading}
             updateError={updateError}

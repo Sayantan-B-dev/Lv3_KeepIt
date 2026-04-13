@@ -11,23 +11,33 @@ import TrashIcon from "@/assets/svg/TrashIcon";
 const UserProfile = ({ user, onUserClick }) => (
   <div
     onClick={() => onUserClick?.(user._id)}
-    className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2 w-full transition-all hover:bg-white/5"
+    className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2 w-full relative overflow-hidden group transition-all"
+    style={user.coverImage?.url ? {
+      backgroundImage: `url(${user.coverImage.url})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    } : {}}
   >
-    {user?.profileImage?.url ? (
-      <motion.img
-        src={user.profileImage.url}
-        alt={user.username}
-        className="w-14 h-14 rounded-full object-cover border border-muted"
-        whileHover={{ scale: 1.1, rotate: 2 }}
-      />
-    ) : (
-      <div className="w-14 h-14 rounded-full bg-type-1 flex items-center justify-center text-type-2 font-bold border border-muted">
-        {user?.username?.[0]?.toUpperCase() || "?"}
-      </div>
+    {user.coverImage?.url && (
+      <div className="absolute inset-0 bg-black/80 group-hover:bg-black/60 transition-colors duration-300" />
     )}
-    <span className="text-sm text-type-1 underline-animation">
-      {user?.username}
-    </span>
+    <div className="relative z-10 flex flex-col items-center gap-2">
+      {user?.profileImage?.url ? (
+        <motion.img
+          src={user.profileImage.url}
+          alt={user.username}
+          className="w-14 h-14 rounded-full object-cover border-2 border-muted"
+          whileHover={{ scale: 1.1, rotate: 2 }}
+        />
+      ) : (
+        <div className="w-14 h-14 rounded-full bg-type-1 flex items-center justify-center text-type-2 font-bold border-2 border-muted shadow-lg font-mono">
+          {user?.username?.[0]?.toUpperCase() || "?"}
+        </div>
+      )}
+      <span className="text-sm text-type-1 underline-animation font-bold drop-shadow-md">
+        {user?.username}
+      </span>
+    </div>
   </div>
 );
 

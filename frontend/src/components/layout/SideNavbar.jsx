@@ -200,33 +200,45 @@ export function SideNavbar({ open, setOpen }) {
 
         {isAuthenticated && user && (
           <div
-            className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2"
+            className="mb-3 flex flex-col items-center gap-2 cursor-pointer border border-muted p-4 rounded-lg bg-type-2 relative overflow-hidden group shadow-lg"
             onClick={() => navigate("/profile/MyProfile")}
+            style={user.coverImage?.url ? {
+              backgroundImage: `url(${user.coverImage.url})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            } : {}}
           >
-            <div className="relative">
-              {user.profileImage?.url ? (
-                <motion.img
-                  src={user.profileImage.url}
-                  className="w-14 h-14 rounded-full object-cover border border-muted shadow-2xl"
-                  whileHover={{ scale: 1.25, rotate: 5 }}
-                />
-              ) : (
-                <motion.div
-                  className="w-14 h-14 rounded-full bg-type-1 flex items-center justify-center text-2xl font-bold text-type-2 border border-muted shadow-2xl"
-                  whileHover={{ scale: 1.25, rotate: 5 }}
-                >
-                  {user.username?.[0]?.toUpperCase() || "?"}
-                </motion.div>
-              )}
-              {(user?.isPro || user?.isPremium) && (
-                <div className="absolute -bottom-1 -right-1 px-1.5 py-0.5 bg-gradient-to-tr from-yellow-600 to-amber-400 text-[8px] font-black text-black rounded-md border border-yellow-300 shadow-[0_0_10px_rgba(245,158,11,0.5)] z-10">
-                  PRO
-                </div>
-              )}
+            {/* Background Overlay */}
+            {user.coverImage?.url && (
+              <div className="absolute inset-0 bg-black/80 group-hover:bg-black/60 transition-colors duration-300" />
+            )}
+
+            <div className="relative z-10 flex flex-col items-center gap-2">
+              <div className="relative">
+                {user.profileImage?.url ? (
+                  <motion.img
+                    src={user.profileImage.url}
+                    className="w-14 h-14 rounded-full object-cover border-2 border-muted shadow-2xl"
+                    whileHover={{ scale: 1.15, rotate: 2 }}
+                  />
+                ) : (
+                  <motion.div
+                    className="w-14 h-14 rounded-full bg-type-1 flex items-center justify-center text-2xl font-bold text-type-2 border-2 border-muted shadow-2xl font-mono"
+                    whileHover={{ scale: 1.15, rotate: 2 }}
+                  >
+                    {user.username?.[0]?.toUpperCase() || "?"}
+                  </motion.div>
+                )}
+                {(user?.isPro || user?.isPremium) && (
+                  <div className="absolute -bottom-1 -right-1 px-1.5 py-0.5 bg-gradient-to-tr from-yellow-600 to-amber-400 text-[8px] font-black text-black rounded-md border border-yellow-300 shadow-[0_0_10px_rgba(245,158,11,0.5)] z-10">
+                    PRO
+                  </div>
+                )}
+              </div>
+              <span className="text-sm font-mono text-type-1 underline-animation font-bold drop-shadow-md">
+                {user.username}
+              </span>
             </div>
-            <span className="text-sm font-mono text-type-1 underline-animation">
-              {user.username}
-            </span>
           </div>
         )}
 

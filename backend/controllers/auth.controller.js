@@ -63,6 +63,7 @@ export const registerUser = async (req, res, next) => {
                     username: registeredUser.username,
                     email: registeredUser.email,
                     profileImage: registeredUser.profileImage,
+                    coverImage: registeredUser.coverImage,
                     isPro: registeredUser.isPro,
                     isPremium: registeredUser.isPremium
                 }
@@ -91,6 +92,7 @@ export const loginUser = (req, res, next) => {
                     username: user.username,
                     email: user.email,
                     profileImage: user.profileImage,
+                    coverImage: user.coverImage,
                     isPro: user.isPro,
                     isPremium: user.isPremium
                 }
@@ -108,6 +110,7 @@ export const postLogin = (req, res) => {
             username: req.user.username,
             email: req.user.email,
             profileImage: req.user.profileImage,
+            coverImage: req.user.coverImage,
             isPro: req.user.isPro,
             isPremium: req.user.isPremium
         }
@@ -141,6 +144,7 @@ export const checkAuth = (req, res) => {
                 username: req.user.username,
                 email: req.user.email,
                 profileImage: req.user.profileImage,
+                coverImage: req.user.coverImage,
                 isPro: req.user.isPro,
                 isPremium: req.user.isPremium
             }

@@ -22,6 +22,7 @@ export const getUserProfile = async (req, res) => {
           select: "name",
         },
       })
+      .select("+coverImage")
       .lean();
 
     if (!user) {
@@ -71,7 +72,7 @@ export const getAllUsers = async (req, res) => {
     }
 
     const users = await User.find(query)
-      .select('_id username profileImage categories createdAt')
+      .select('_id username profileImage coverImage categories createdAt')
       .sort({ createdAt: -1 })
       .skip((pageNum - 1) * pageLimit)
       .limit(pageLimit)
@@ -141,25 +142,37 @@ export const updateProfile = async (req, res) => {
     if (req.body.bio !== undefined) user.bio = req.body.bio;
     if (req.body.website !== undefined) user.website = req.body.website;
 
-    // Handle image replacement
-    if (req.file) {
-      // delete old image
+    // Handle Profile Image replacement
+    const profileFile = req.files?.['profileImage']?.[0];
+    if (profileFile) {
       if (user.profileImage?.filename) {
         const publicId = extractPublicId(user.profileImage.filename);
         if (publicId) {
-          await cloudinary.uploader.destroy(publicId, { invalidate: true });
+          await cloudinary.uploader.destroy(publicId, { invalidate: true }).catch(() => {});
         }
       }
-
-      // save new image
       user.profileImage = {
-        url: req.file.path,
-        filename: req.file.filename,
+        url: profileFile.path,
+        filename: profileFile.filename,
+      };
+    }
+
+    // Handle Cover Image replacement
+    const coverFile = req.files?.['coverImage']?.[0];
+    if (coverFile) {
+      if (user.coverImage?.filename) {
+        const publicId = extractPublicId(user.coverImage.filename);
+        if (publicId) {
+          await cloudinary.uploader.destroy(publicId, { invalidate: true }).catch(() => {});
+        }
+      }
+      user.coverImage = {
+        url: coverFile.path,
+        filename: coverFile.filename,
       };
     }
 
     await user.save();
-
     res.json(user);
   } catch (err) {
     res.status(500).json({

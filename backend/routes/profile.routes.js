@@ -31,7 +31,10 @@ router.get('/:userId', getUserProfile);
 router.put(
   '/MyProfile',
   isLoggedIn,
-  upload.single('profileImage'),
+  upload.fields([
+    { name: 'profileImage', maxCount: 1 },
+    { name: 'coverImage', maxCount: 1 }
+  ]),
   updateProfile
 );
 

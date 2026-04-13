@@ -1,19 +1,20 @@
 import mongoose from "mongoose";
 import passportLocalMongoose from "passport-local-mongoose";
 
-const profileImageSchema = new mongoose.Schema({
+const imageSchema = new mongoose.Schema({
   url: { type: String, required: true },
   filename: { type: String, required: true },
 });
 
-profileImageSchema.virtual("thumbnail").get(function () {
+imageSchema.virtual("thumbnail").get(function () {
   return this.url.replace("/upload", "/upload/w_200");
 });
 
 const userSchema = new mongoose.Schema({
   username: { type: String, maxLength: 20, minLength: 3, required: true },
   email: { type: String, required: true, unique: true, maxLength: 128, minLength: 3 },
-  profileImage: profileImageSchema,
+  profileImage: imageSchema,
+  coverImage: imageSchema,
   bio: { type: String, maxLength: 200 },
   location: { type: String, maxLength: 128 },
   website: { type: String, maxLength: 128 },

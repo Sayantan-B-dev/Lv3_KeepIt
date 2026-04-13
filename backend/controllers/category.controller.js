@@ -10,7 +10,7 @@ export const getPublicCategoryById = async (req, res) => {
   try {
     const category = await Category.findById(id)
       .populate("categoryType", "name")
-      .populate("user", "username profileImage")
+      .populate("user", "username profileImage coverImage")
       .lean();
 
     if (!category) {
@@ -46,7 +46,7 @@ export const getCategoryById = async (req, res) => {
   try {
     const category = await Category.findById(id)
       .populate("categoryType", "name")
-      .populate("user", "username profileImage bio website")
+      .populate("user", "username profileImage coverImage bio website")
       .populate({
         path: "notes",
         select: "_id title createdAt isPrivate user",
