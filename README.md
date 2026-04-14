@@ -1,128 +1,225 @@
-# Re-Docs — README
+# Re-Docs: The Ultimate Second Brain
 
-> Quick start (clone and run)
+> A full-stack MERN note management platform with rich editing, social discovery, and premium features.
+
+## 🚀 Quick Start
 
 ```bash
-# Clone repository (replace with your repository URL or Google Drive/GCS path)
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+# Clone repository
+git clone https://github.com/your-username/re-docs.git
+cd re-docs
 
-# Backend
+# Backend Setup
 cd backend
 cp .env.example .env    # populate env values
 npm install
 npm run dev
 
-# Frontend (in a new terminal)
+# Frontend Setup (in a new terminal)
 cd frontend
 cp .env.example .env    # populate env values
 npm install
 npm run dev
 ```
 
----
-# Deployed version
+## 🌐 Live Demo
 
->https://re-docs-pi.vercel.app/
+**Frontend**: https://re-docs-pi.vercel.app/
 
-Note: this is deployed on free tair so the backend needs a little bit of time to wake up after being idle for a while. 
-
-> **Session persistence warning:** The free-tier service will restart or hibernate the backend frequently. If your
-> `DATABASE_URL` targets an ephemeral/local Mongo instance or any data store that is wiped on restart, all
-> login sessions stored via `connect-mongo` will vanish and users will have to sign in again. Always use a
-> hosted/persistent database (Atlas, mLab, etc.) or switch to a stateless token scheme to avoid this.
+> ⚠️ **Note**: Backend deployed on free tier (Render). May take 30-60 seconds to wake up after idle periods.
 
 ---
 
-# Overview
+## 📋 Overview
 
-A full-stack MERN (MongoDB, Express, React, Node) knowledge and note management platform. Key features:
+Re-Docs is a modern, feature-rich knowledge management platform built with MERN stack. It combines professional note-taking with social discovery and premium collaboration features.
 
-* .md supported text format
-* Session-based authentication (local + Google OAuth).
-* User-owned CategoryTypes → Categories → Notes hierarchy with public/private visibility.
-* Notes with Markdown support, tags, likes, and export (MD / ZIP).
-* Social features: follow/unfollow, public profiles.
-* File uploads using Multer + Cloudinary.
-* Security: Joi validation, request sanitization, rate-limiting, helmet.
+### ✨ Core Features
+
+**Content Creation & Organization**
+- 📝 **Live Markdown Preview**: Real-time split-view editing with instant visualization
+- 📊 **Mermaid.js Support**: Render flowcharts, sequence diagrams, and class diagrams directly in notes
+- 🧮 **KaTeX Math Rendering**: Beautiful LaTeX equations and formulas
+- 🏷️ **Smart Tagging**: Unlimited tags with full-text search
+- 📂 **Multi-level Organization**: CategoryTypes → Categories → Notes hierarchy
+- 💾 **Rich Exports**: Download as Markdown (.md) or bulk export as ZIP archives
+
+**Authentication & Security**
+- 🔐 **Session-based Auth**: Secure cookie-based sessions with MongoDB persistence
+- 🔑 **Google OAuth**: One-click sign-in via Google
+- 🛡️ **Advanced Security**: Joi validation, input sanitization, rate-limiting, helmet headers
+- 🚫 **Access Control**: Public/private categories and notes with granular permissions
+- ⏱️ **Guest Preview Mode**: 20-second preview for unauthenticated users before redirect
+
+**Social & Discovery**
+- 👥 **Follow System**: Follow creators and stay updated with their notes
+- 🌍 **Live Notes Feed**: Discover public notes from the community
+- 💬 **Collaborative Sharing**: Share categories and collaborate with followers
+- 🔍 **User Discovery**: Browse all users and their public profiles
+
+**Premium Features (Pro Membership)**
+- 💎 **Lifetime Pro Access**: One-time payment via Razorpay
+- 🚀 **Higher Rate Limits**: 2,000 uploads/hour (vs 50 for free users)
+- 📦 **Category ZIP Export**: Batch download entire categories
+- ⚡ **Priority Support**: Dedicated support for Pro members
+- 🎯 **Advanced Analytics**: Usage statistics and insights (coming soon)
+
+**Media & Integration**
+- 🖼️ **Cover Image Support**: Customize profiles, categories, and notes with images
+- ☁️ **Cloudinary Integration**: Seamless image uploads and optimization
+- 📧 **Email Notifications**: Smart notifications via Nodemailer + Google OAuth2
+- 📨 **Admin Approval Flow**: Signed JWT-based email approval links for memberships
+
+**Performance & Reliability**
+- 🔌 **Backend Health Monitor**: Real-time connectivity status with glassmorphic UI
+- 🔄 **Cipher Effect**: Animated "encrypting" text during backend cold starts
+- 📊 **Live Metrics**: Dashboard showing total notes, tags, categories, users
+- 💾 **Persistent Stats**: Last-known application state for instant UI rendering
 
 This README contains the complete project tree, environment guidance, deployment notes, and multiple Mermaid.js diagrams describing the request and data flows.
 
 ---
-# Prerequisites
+## 📋 Prerequisites
 
-* Node.js (LTS recommended, v18+)
-* npm (or yarn)
-* MongoDB instance (Atlas recommended for production)
-* Cloudinary account (for image uploads) or other storage
-* (Optional) Google OAuth client credentials for social login
+- **Node.js**: v18+ (LTS recommended)
+- **npm** or **yarn**
+- **MongoDB**: Atlas (production) or local instance
+- **Cloudinary**: Account for image storage and optimization
+- **Google OAuth**: Client credentials for social login
+- **Razorpay**: Account for payment processing (Pro membership)
+- **Email Service**: Gmail App Password or Google OAuth2 refresh token
 
 ---
 
-# Environment variables (recommended structure)
+## 🔐 Environment Variables
 
-Create `.env` files for both `backend` and `frontend` according to the templates below.
+Create `.env` files in both `backend/` and `frontend/` directories. Use the `.env.example` files as templates.
 
-## Backend `.env` (example)
+### Backend `.env`
 
 ```env
-CLOUDINARY_API_KEY=123456789012345
-CLOUDINARY_API_SECRET=cloudinary_dummy_secret_key_123
-CLOUDINARY_CLOUD_NAME=demo-cloud
-CLOUDINARY_URL=cloudinary://123456789012345:cloudinary_dummy_secret_key_123@demo-cloud
-
-DATABASE_URL=mongodb+srv://demoUser:demoPassword@cluster0.mongodb.net/demoDB?retryWrites=true&w=majority
-# ⚠️ When deploying (Render free tier, Heroku, etc.) this must point to a **persistent** database.
-# Ephemeral or in‑container MongoDB instances are cleared on restart and will invalidate all sessions,
-# forcing users to re‑login every time the server process is recycled.
-
+# --- Application URLs ---
 FRONTEND_URL=http://localhost:5173
+BACKEND_URL=http://localhost:5000  # For email approval links
 
+# --- Security & Database ---
+DATABASE_URL=mongodb+srv://username:password@cluster.mongodb.net/dbname?retryWrites=true&w=majority
+SESSION_SECRET=your_very_long_random_session_secret_string
 NODE_ENV=development
-OPENAI_API_KEY=sk-demo_openai_key_1234567890
-SESSION_SECRET=your_long_secret_here  # must be fixed across restarts; changing it invalidates existing sessions
 
-EMAIL_USER=demo_user@example.com
-EMAIL_FROM=demo_user@example.com
+# --- Email Configuration (Nodemailer) ---
+EMAIL_USER=your_email@gmail.com
+EMAIL_FROM=your_email@gmail.com
+ADMIN_EMAIL=admin_email@gmail.com
 
-GOOGLE_CLIENT_ID=12345678901234567890123456789012
-GOOGLE_CLIENT_SECRET=google_dummy_client_secret_1234567890
-GOOGLE_REFRESH_TOKEN=google_dummy_refresh_token_1234567890
-GOOGLE_CALLBACK_URL=http://localhost:5000/auth/google/callback
+# Option 1: Google App Password (Recommended)
+EMAIL_APP_PASS=your_16_character_google_app_password
+
+# Option 2: Google OAuth2 (Alternative)
+# GOOGLE_REFRESH_TOKEN=your_oauth_refresh_token
+
+# --- Google OAuth (Social Login) ---
+GOOGLE_CLIENT_ID=your_client_id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:5000/api/auth/google/callback
+
+# --- Cloudinary (Image Storage) ---
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+CLOUDINARY_URL=cloudinary://key:secret@cloud_name
+
+# --- Payment Processing (Razorpay) ---
+RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxx    # Test key for development
+RAZORPAY_KEY_SECRET=xxxxxxxxxxxxxxxx   # Test secret for development
+
+# --- Development Only (Optional) ---
+# DEV_ID=your_mongodb_user_id          # For dev mode auth bypass
+# DEV_PASS=devpassword
+# DEV_EMAIL=dev@example.com
 ```
 
-## Frontend `.env` (example)
+**⚠️ Critical Notes:**
+- **DATABASE_URL**: Must be a persistent database (Atlas, etc.). Free-tier services reset sessions on restart.
+- **SESSION_SECRET**: Use a strong, random string. Changing it invalidates all existing sessions.
+- **RAZORPAY_KEYS**: Use test keys (`rzp_test_*`) for development, production keys for production.
+
+### Frontend `.env`
 
 ```env
-VITE_API_BASE_URL=http://localhost:5000/
+VITE_API_BASE_URL=http://localhost:5000
+VITE_RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxx  # Same test key as backend
 ```
 
 ---
 
-# Run locally — step-by-step
+## 🏃 Running Locally
 
-1. Start the database (local Mongo or Atlas connection available).
-2. Backend: `cd backend` → `npm install` → copy `.env` → `npm run dev`.
-3. Frontend: `cd frontend` → `npm install` → copy `.env` → `npm run dev`.
-4. Open the frontend URL (Vite default `http://localhost:5173`) and register a user.
+### Prerequisites
+- MongoDB running locally or connect to MongoDB Atlas
 
-If using Docker or containers, consider writing a `docker-compose.yml` that brings up `backend`, `frontend` (or a static build), and `mongo` services.
+### Step-by-Step
+
+1. **Clone and setup**:
+   ```bash
+   git clone <repo-url>
+   cd re-docs
+   ```
+
+2. **Backend setup**:
+   ```bash
+   cd backend
+   cp .env.example .env      # Edit with your credentials
+   npm install
+   npm run dev               # Starts on http://localhost:5000
+   ```
+
+3. **Frontend setup** (new terminal):
+   ```bash
+   cd frontend
+   cp .env.example .env      # Edit with VITE_API_BASE_URL
+   npm install
+   npm run dev               # Starts on http://localhost:5173
+   ```
+
+4. **Access the app**:
+   - Open http://localhost:5173
+   - Register a new account or use Google OAuth
+   - Start creating notes!
+
+### Using Docker (Optional)
+
+```bash
+docker-compose up -d
+```
+
+Make sure `docker-compose.yml` exists with services for MongoDB, backend, and frontend.
 
 ---
 
-# Scripts (NPM)
+## 📦 NPM Scripts
 
-**Frontend** (in `frontend/package.json`)
+### Frontend (`frontend/package.json`)
+```json
+{
+  "scripts": {
+    "dev": "vite",                    // Vite dev server (http://localhost:5173)
+    "build": "vite build",            // Production build
+    "preview": "vite preview",        // Preview production build
+    "lint": "eslint ."                // ESLint check
+  }
+}
+```
 
-* `npm run dev` — Start Vite dev server
-* `npm run build` — Build production assets
-* `npm run preview` — Preview built assets
-* `npm run lint` — ESLint
-
-**Backend** (in `backend/package.json`)
-
-* `npm run dev` — Start server with nodemon
-* `npm start` — Start server (production)
+### Backend (`backend/package.json`)
+```json
+{
+  "scripts": {
+    "dev": "nodemon server.js",       // Dev server with auto-reload
+    "start": "node server.js"         // Production server
+  }
+}
+```
 
 ---
 
@@ -405,57 +502,135 @@ flowchart TD
 
 ---
 
-# Deployment checklist
+## 📤 Deployment Checklist
 
-1. Build frontend: `cd frontend && npm run build`.
-2. Host static build in CDN / static host (Netlify, Vercel, or serve via backend Express static middleware).
-3. Configure backend environment variables for production.
-4. Ensure `SESSION_SECRET` and OAuth secrets are strong.
-5. Set secure cookie flags and enable HTTPS.
-6. Enable CORS with production origins only.
-7. Configure Cloudinary or S3 for file uploads in production.
-8. Add monitoring/logging (Sentry, LogDNA) and backups for MongoDB.
+### Pre-Deployment
+- [ ] Update all environment variables to production values
+- [ ] Generate strong SESSION_SECRET
+- [ ] Switch Razorpay keys from test to production (`rzp_live_*`)
+- [ ] Update FRONTEND_URL and BACKEND_URL to production domains
+- [ ] Update GOOGLE_CALLBACK_URL to production domain
+- [ ] Configure Cloudinary credentials for production
+- [ ] Set NODE_ENV=production
 
----
+### Build & Deploy
+- [ ] `cd frontend && npm run build` (creates `dist/` folder)
+- [ ] Deploy frontend static build to Vercel, Netlify, or Render
+- [ ] Deploy backend to Render, Railway, or Heroku
+- [ ] Ensure HTTPS is enabled on both frontend and backend
+- [ ] Set CORS origin to production frontend URL only
+- [ ] Enable secure cookie flags (`secure: true`, `sameSite: 'Strict'`)
 
-# Technologies
-
-**Backend:** Node.js, Express, Mongoose, MongoDB, Passport (local + Google), Joi, Multer, Cloudinary, Nodemailer
-
-**Frontend:** React 19, Vite, Tailwind CSS, React Router, React Markdown, KaTeX, Framer Motion
-
-**Dev & Tools:** ESLint, depcheck, Prettier (optional), nodemon, GitHub Actions (recommended)
-
----
-
-# Contributing
-
-* Fork the repo, create a feature branch, run lint/tests locally, open a PR against `main`.
-* Use conventional commits or clear PR descriptions.
-
----
-
-# License
-
-Choose an open-source license, e.g. MIT. Add a `LICENSE` file.
+### Post-Deployment
+- [ ] Test login/OAuth flow
+- [ ] Test payment flow with test Razorpay account
+- [ ] Verify email sending works
+- [ ] Monitor backend logs for errors
+- [ ] Set up error tracking (Sentry recommended)
+- [ ] Configure database backups
+- [ ] Monitor uptime and performance
 
 ---
 
-# Images / placeholders
+## 🛠️ Technology Stack
 
-Replace the following images in the repo or the README with your images. These are just placeholders and paths you can use.
+**Backend**
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **Database**: MongoDB + Mongoose
+- **Authentication**: Passport.js (Local strategy + Google OAuth2)
+- **Email**: Nodemailer (Gmail with OAuth2 or App Password)
+- **Payment**: Razorpay API
+- **File Storage**: Cloudinary
+- **File Upload**: Multer
+- **Validation**: Joi validation + input sanitization
+- **Security**: Helmet, express-rate-limit, mongo-sanitize
 
-## Home page
-![Home page](frontend/public/assets/home.png)
+**Frontend**
+- **Library**: React 19
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS + PostCSS
+- **Routing**: React Router v6
+- **Markdown**: Remark + Rehype
+- **Math**: KaTeX
+- **Diagramming**: Mermaid.js
+- **Animations**: Framer Motion
+- **HTTP Client**: Axios
+- **UI Components**: Shadcn UI + Lucide React icons
+- **Notifications**: React Toastify
 
-## Feature: Markdown
-![Feature: Markdown](frontend/public/assets/md.png)
+**Dev Tools**
+- **Linting**: ESLint
+- **Environment**: dotenv
+- **Auto-reload**: nodemon
+- **Version Control**: Git + GitHub
 
-## Profile screenshot
-![Profile screenshot](frontend/public/assets/profile.png)
+---
 
-## Mobile view
-![Mobile view](frontend/public/assets/mobile.png)
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature`
+3. Make your changes and test locally
+4. Use conventional commits: `feat: add new feature`, `fix: resolve bug`
+5. Push to your fork and open a Pull Request against `main`
+
+**Guidelines**:
+- Keep commits atomic and well-described
+- Test your changes before submitting PR
+- Update README if adding new features
+- Follow existing code style and conventions
+
+---
+
+## 📄 License
+
+MIT License - See LICENSE file for details
+
+---
+
+## 🎯 Roadmap
+
+### In Progress
+- [ ] Local vault (PWA offline support)
+- [ ] IndexedDB for offline note storage
+- [ ] Advanced search and filtering
+- [ ] Collaborative editing
+- [ ] Team workspaces
+
+### Planned
+- [ ] AI-powered summaries (GPT integration)
+- [ ] Voice notes and transcription
+- [ ] Mobile apps (iOS/Android)
+- [ ] Advanced analytics dashboard
+- [ ] Zapier/Make integrations
+
+---
+
+## 📞 Support
+
+For issues, questions, or suggestions:
+- Open an issue on GitHub
+- Check existing issues for solutions
+- Review the [CHANGELOG](latestChanges.md) for recent updates
+
+---
+
+## 🖼️ Screenshots
+
+### Home Page
+![Home page](frontend/public/assets/home(2).png)
+
+### Note Editing with Live Markdown Preview
+![Markdown editor](frontend/public/assets/md(2).png)
+
+### User Profile
+![Profile](frontend/public/assets/profile(2).png)
+
+### Mobile Responsive View
+![Mobile](frontend/public/assets/mobile.png)
 
 
 

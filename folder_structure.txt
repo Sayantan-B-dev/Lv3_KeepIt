@@ -1,0 +1,219 @@
+├── .gitignore
+├── README.md
+├── backend
+│   ├── .env
+│   ├── .env.example
+│   ├── Readme.md
+│   ├── app.js
+│   ├── config
+│   │   ├── passport.config.js
+│   │   └── passport.js
+│   ├── controllers
+│   │   ├── auth.controller.js
+│   │   ├── category.controller.js
+│   │   ├── categoryType.controller.js
+│   │   ├── global.controller.js
+│   │   ├── note.controller.js
+│   │   ├── payment.controller.js
+│   │   └── profile.controller.js
+│   ├── devJunks
+│   │   ├── .sh
+│   │   └── quicktag.js
+│   ├── middlewares
+│   │   ├── errorHandler.middleware.js
+│   │   ├── isAuthenticated.middleware.js
+│   │   ├── sanitizeInput.middleware.js
+│   │   └── validate.middleware.js
+│   ├── models
+│   │   ├── category.model.js
+│   │   ├── categoryType.model.js
+│   │   ├── note.model.js
+│   │   ├── payment.model.js
+│   │   ├── stats.model.js
+│   │   └── user.model.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── routes
+│   │   ├── auth.routes.js
+│   │   ├── category.routes.js
+│   │   ├── categoryType.routes.js
+│   │   ├── global.routes.js
+│   │   ├── note.routes.js
+│   │   ├── payment.routes.js
+│   │   └── profile.routes.js
+│   ├── scripts
+│   │   ├── linkCategoriesToCategoryTypes.js
+│   │   ├── linkCategoriesToTypes.js
+│   │   ├── seedCategoryTypes.js
+│   │   └── seedData.js
+│   ├── server.js
+│   ├── utils
+│   │   ├── bannedWords.util.js
+│   │   ├── cloudinary.util.js
+│   │   ├── generateOTP.js
+│   │   ├── multer.util.js
+│   │   └── sendEmail.js
+│   ├── validators
+│   │   └── auth.validator.js
+│   └── vercel.json
+├── frontend
+│   ├── .env
+│   ├── .gitignore
+│   ├── components.json
+│   ├── eslint.config.js
+│   ├── index.html
+│   ├── jsconfig.json
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.mjs
+│   ├── public
+│   │   ├── assets
+│   │   │   ├── home.png
+│   │   │   ├── logo.png
+│   │   │   ├── md.png
+│   │   │   ├── mobile.png
+│   │   │   ├── profile.png
+│   │   │   └── user-svgrepo-com.svg
+│   │   └── vite.svg
+│   ├── src
+│   │   ├── api
+│   │   │   ├── axios.js
+│   │   │   └── axiosInstance.js
+│   │   ├── app
+│   │   │   ├── App.jsx
+│   │   │   └── main.jsx
+│   │   ├── assets
+│   │   │   ├── images
+│   │   │   │   ├── 1.jpg
+│   │   │   │   └── edit.png
+│   │   │   ├── styles
+│   │   │   │   └── styles.css
+│   │   │   └── svg
+│   │   │       └── TrashIcon.jsx
+│   │   ├── components
+│   │   │   ├── advanced
+│   │   │   │   ├── LiquidEther.jsx
+│   │   │   │   └── RotatingText.jsx
+│   │   │   ├── common
+│   │   │   │   ├── Author.jsx
+│   │   │   │   ├── LinkifyText.jsx
+│   │   │   │   ├── Notice.jsx
+│   │   │   │   ├── RotatingKeepIt.jsx
+│   │   │   │   ├── ScrollToTop.jsx
+│   │   │   │   ├── TagInput.jsx
+│   │   │   │   └── VariableProximity.jsx
+│   │   │   ├── layout
+│   │   │   │   ├── BackendStatus.jsx
+│   │   │   │   ├── Footer.jsx
+│   │   │   │   ├── SideNavbar.jsx
+│   │   │   │   ├── Waiting.jsx
+│   │   │   │   └── index.js
+│   │   │   └── ui
+│   │   │       ├── AlertPopup.jsx
+│   │   │       ├── ConfirmPopUp.jsx
+│   │   │       ├── ErrorState.jsx
+│   │   │       ├── ListContainer.jsx
+│   │   │       ├── Loader.jsx
+│   │   │       ├── ProUpgradeModal.jsx
+│   │   │       ├── SearchBar.jsx
+│   │   │       ├── SimpleModal.jsx
+│   │   │       ├── buttons
+│   │   │       │   ├── ButtonType3.jsx
+│   │   │       │   ├── DottedButton.jsx
+│   │   │       │   ├── DottedButton2.jsx
+│   │   │       │   └── index.js
+│   │   │       └── index.js
+│   │   ├── context
+│   │   │   └── AuthContext.jsx
+│   │   ├── features
+│   │   │   ├── category
+│   │   │   │   ├── BulkTagModal.jsx
+│   │   │   │   ├── CategoryHeader.jsx
+│   │   │   │   ├── CategoryNotesList.jsx
+│   │   │   │   ├── DownloadProgress.jsx
+│   │   │   │   ├── MarkdownUploadBox.jsx
+│   │   │   │   └── UploadQueueDisplay.jsx
+│   │   │   ├── home
+│   │   │   │   ├── AppStats.jsx
+│   │   │   │   ├── CipherNumber.jsx
+│   │   │   │   ├── ColdStartBanner.jsx
+│   │   │   │   ├── FeaturesCarousel.jsx
+│   │   │   │   ├── Hero.jsx
+│   │   │   │   ├── Loading.jsx
+│   │   │   │   ├── Marquee.jsx
+│   │   │   │   ├── ProComparison.jsx
+│   │   │   │   ├── ProcessGuide.jsx
+│   │   │   │   ├── TechStackThread.jsx
+│   │   │   │   ├── UserBox.jsx
+│   │   │   │   └── index.js
+│   │   │   ├── notes
+│   │   │   │   ├── AccessDenied.jsx
+│   │   │   │   ├── NoteContent.jsx
+│   │   │   │   ├── NoteCore.jsx
+│   │   │   │   ├── NoteFooter.jsx
+│   │   │   │   ├── NoteHeader.jsx
+│   │   │   │   ├── NoteMath.jsx
+│   │   │   │   ├── NoteMermaid.jsx
+│   │   │   │   ├── NoteNavigation.jsx
+│   │   │   │   ├── PreviewCountdown.jsx
+│   │   │   │   └── index.js
+│   │   │   └── profile
+│   │   │       ├── CategoryList.jsx
+│   │   │       ├── CategoryStatsModal.jsx
+│   │   │       ├── CreateCategoryModal.jsx
+│   │   │       ├── DeleteAccountModal.jsx
+│   │   │       ├── DeleteAccountSection.jsx
+│   │   │       ├── NoteModal.jsx
+│   │   │       ├── ProfileForm.jsx
+│   │   │       ├── ProfileHeader.jsx
+│   │   │       ├── PublicCategoryList.jsx
+│   │   │       ├── PublicProfileHeader.jsx
+│   │   │       ├── UserListModal.jsx
+│   │   │       └── index.js
+│   │   ├── hooks
+│   │   │   ├── useDebouncedSearch.js
+│   │   │   ├── useDragAndDrop.js
+│   │   │   └── useMarkdownUploadQueue.js
+│   │   ├── index.css
+│   │   ├── lib
+│   │   │   └── utils.js
+│   │   ├── pages
+│   │   │   ├── About.jsx
+│   │   │   ├── AllCategories.jsx
+│   │   │   ├── AllNotes.jsx
+│   │   │   ├── AllTags.jsx
+│   │   │   ├── AllUsers.jsx
+│   │   │   ├── Category.jsx
+│   │   │   ├── CategoryType.jsx
+│   │   │   ├── CreateNote.jsx
+│   │   │   ├── ForgotPassword.jsx
+│   │   │   ├── Home.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Logout.jsx
+│   │   │   ├── MyCategories.jsx
+│   │   │   ├── MyCategoryTypes.jsx
+│   │   │   ├── MyNotes.jsx
+│   │   │   ├── MyTags.jsx
+│   │   │   ├── Note.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   ├── Register.jsx
+│   │   │   ├── ResetPassword.jsx
+│   │   │   ├── TagNotes.jsx
+│   │   │   └── Upgrade.jsx
+│   │   └── utils
+│   │       ├── exportCategoryAsZip.js
+│   │       ├── exportNoteAsMd.js
+│   │       ├── generateUploadLog.js
+│   │       ├── handleProfileImage.js
+│   │       ├── imageUtils.js
+│   │       ├── noteCache.js
+│   │       └── toast.js
+│   ├── tailwind.config.mjs
+│   ├── vercel.json
+│   └── vite.config.mjs
+├── latestChanges.md
+├── nextChanges.md
+├── package-lock.json
+├── package.json
+├── system.prompt.txt
+└── tree.py

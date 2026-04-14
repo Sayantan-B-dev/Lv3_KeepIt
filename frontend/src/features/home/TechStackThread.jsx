@@ -10,23 +10,23 @@ const TechStackThread = () => {
   ];
 
   return (
-    <div className="relative py-16  border-1 border-white/20 rounded-2xl overflow-hidden group">
-      <div className="text-center mb-10">
-         <h3 className="text-xl text-white tracking-widest uppercase font-mono italic inline-block relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white/10 after:scale-x-0 group-hover:after:scale-x-100 transition-all duration-500">
+    <div className="relative py-8 md:py-16 border-1 border-white/20 rounded-2xl overflow-hidden group">
+      <div className="text-center mb-6 md:mb-10">
+         <h3 className="text-xs md:text-xl text-white tracking-widest uppercase font-mono italic inline-block relative after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-white/10 after:scale-x-0 group-hover:after:scale-x-100 transition-all duration-500">
            Engineered With
          </h3>
       </div>
 
-      <div className="mx-auto px-6">
-        <div className="flex overflow-hidden relative bo border-1 border-white/20  bg-black/40  py-6 ">
-            <div className="animate-tech-scroll flex gap-3 py-2 items-center whitespace-nowrap">
+      <div className="mx-auto px-3 md:px-6">
+        <div className="flex overflow-hidden relative border-1 border-white/20 bg-black/40 py-3 md:py-6">
+            <div className="animate-tech-scroll flex gap-1 md:gap-3 py-1 md:py-2 items-center whitespace-nowrap">
               {techs.concat(techs).map((tech, index) => (
                 <div 
                   key={index} 
-                  className="flex items-center gap-2 text-xl md:text-2xl font-black text-white hover:opacity-100 opacity-60 transition-all duration-500 cursor-default font-mono italic uppercase tracking-tighter"
+                  className="flex items-center gap-1 md:gap-2 text-xs md:text-xl lg:text-2xl font-black text-white hover:opacity-100 opacity-60 transition-all duration-500 cursor-default font-mono italic uppercase tracking-tighter"
                 >
                   <span className="drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">{tech}</span>
-                  <span className="text-white mx-5 text-sm">•</span>
+                  <span className="text-white mx-2 md:mx-5 text-xs md:text-sm">•</span>
                 </div>
               ))}
             </div>

@@ -1,32 +1,33 @@
 import React from 'react';
+import { User, FolderOpen, PenTool, Rocket } from 'lucide-react';
 
 const ProcessGuide = () => {
   const steps = [
     {
       title: "Create Your Account",
       description: "Join the community of note-takers. Simple registration process with instant access to all core features.",
-      icon: "👤",
+      icon: <User className="w-8 h-8 text-white/60" />,
       color: "bg-white/5",
       accent: "white",
     },
     {
       title: "Organize with Categories",
       description: "Categorize your thoughts. Create private or public categories to keep your workspace organized and efficient.",
-      icon: "📁",
+      icon: <FolderOpen className="w-8 h-8 text-white/60" />,
       color: "bg-white/5",
       accent: "white",
     },
     {
       title: "Craft Your Notes",
       description: "Use our beautiful editor to write, tag, and export notes. Rich text support with a clean, distraction-free interface.",
-      icon: "🖋️",
+      icon: <PenTool className="w-8 h-8 text-white/60" />,
       color: "bg-white/5",
       accent: "white",
     },
     {
       title: "Follow & Share",
       description: "Follow your favorite creators, stay updated with their latest public notes, and collaborate on shared categories.",
-      icon: "🚀",
+      icon: <Rocket className="w-8 h-8 text-white/60" />,
       color: "bg-white/5",
       accent: "white",
     }
@@ -54,7 +55,7 @@ const ProcessGuide = () => {
                className="group relative flex flex-col items-center text-center p-8 rounded-[3rem] border border-white/20 bg-black/10 backdrop-blur-sm transition-all duration-500 hover:border-white/40 hover:bg-black/20 hover:-translate-y-2 shadow-2xl"
              >
                <div className={`
-                 w-16 h-16 rounded-full ${step.color} mb-6 flex items-center justify-center text-3xl
+                 w-16 h-16 rounded-full ${step.color} mb-6 flex items-center justify-center
                  border border-white/20 group-hover:border-white/40 transition-all duration-300 shadow-xl
                `}>
                  {step.icon}
