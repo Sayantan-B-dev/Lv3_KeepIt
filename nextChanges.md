@@ -1,6 +1,6 @@
 ### 🔴 Priority: High
-
-* [ ] **Offline-safe Pro checkout fallback:** Add robust retry/fallback UX when payment init fails due to backend cold start or network jitter.
+* [] **Live Preview** while editing live prediew and text should be parallal..meaning scrooling one automatically scrolls other one just like in vs code
+* [x] **Offline-safe Pro checkout fallback:** Add robust retry/fallback UX when payment init fails due to backend cold start or network jitter.
 
 ---
 
@@ -20,7 +20,13 @@
 
 ---
 
-### 📅 Recently Completed (April 13, 2026)
+### 📅 Recently Completed (April 16, 2026)
+* [x] **Live editing bug** Small edits trigger re-render, causing a brief right-side shift from a temporary dmermaid-svg-* element.
+* [x] **Limit notes:** 40k (free) vs 200k (Pro); enforce in backend and update UI messaging.
+
+---
+
+### Things done:
 * [x] **Premium Toasts:** Glassmorphic notification system.
 * [x] **Canceling membership popup:** Replaced native confirm with reusable alert modal (20% faded backdrop).
 * [x] **Button system alignment:** Unified button text alignment in shared button components and sidebar usage.
@@ -29,10 +35,6 @@
 * [x] **User card microcopy update:** Replaced `segments` label with `categories`.
 * [x] **Mobile tap clarity:** Added mobile-only “View →” action hint on user cards.
 * [x] **Wide content overflow fix:** Slimmed custom scrollbars and contained code/table horizontal overflow inside note content boundaries.
-
----
-
-### Things done:
 * [x] **code block:** in code block on notes it needs to detect the language and shoe insted of `code` and it should stick to top right no matter if the code is scrolling
 * [x] **if not logged in:** if not logged in they can see the notes but it will be visible partially..like it will show a 10 second count down on top after finsinging count down it will show to not authenticated page
 * [x] **Route to login:** if someone is not logged in. in locked not authenticated page for note page redirect to login insted home

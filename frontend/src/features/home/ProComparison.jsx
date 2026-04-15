@@ -16,6 +16,7 @@ const ProComparison = () => {
         { name: "Public Note Storage", free: true, pro: true },
         { name: "Private Note Vault", free: false, pro: true },
         { name: "Upload Speed (Notes/hr)", free: "50", pro: "2,000" },
+        { name: "Text limit", free: "30000", pro: "200000" },
         { name: "Concurrent Uploads", free: "1 Stream", pro: "5 Parallel" },
         { name: "Batch Sync Delay", free: "5s", pro: "3s" },
         { name: "Category ZIP Export", free: false, pro: true },
@@ -69,9 +70,9 @@ const ProComparison = () => {
                                     <td className="py-5 px-4 text-sm font-mono text-type-2 group-hover/row:text-white transition-colors">{feature.name}</td>
                                     <td className="py-5 px-4 text-center">
                                         {typeof feature.free === "boolean" ? (
-                                            feature.free ? <Check className="w-4 h-4 text-white/20 mx-auto" /> : <X className="w-4 h-4 text-white/5 mx-auto" />
+                                            feature.free ? <Check className="w-4 h-4 text-white mx-auto" /> : <X className="w-4 h-4 text-red-300 mx-auto" />
                                         ) : (
-                                            <span className="text-xs font-mono text-white/20 italic">{feature.free}</span>
+                                            <span className="text-xs font-mono text-white/40 italic">{feature.free}</span>
                                         )}
                                     </td>
                                     <td className="py-5 px-4 text-center bg-white/[0.02]">

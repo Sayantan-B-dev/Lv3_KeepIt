@@ -3,6 +3,7 @@ import Note from "../models/note.model.js"
 import Category from "../models/category.model.js"
 import User from "../models/user.model.js"
 import CategoryType from "../models/categoryType.model.js";
+import archiver from "archiver";
 
 
 export const getPublicCategoryNotes = async (req, res) => {
@@ -96,6 +97,7 @@ export const getNotesById = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch note" });
   }
 };
+
 export const getCategoryNotes = async (req, res) => {
   const { id } = req.params;
 
@@ -129,6 +131,7 @@ export const getCategoryNotes = async (req, res) => {
     });
   }
 };
+
 export const getMyNotesPaginated = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -164,6 +167,7 @@ export const getMyNotesPaginated = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch notes" });
   }
 };
+
 export const pinNote = async (req, res) => {
   const { id } = req.params;
   const note = await Note.findByIdAndUpdate(id, { isPinned: true }, { new: true })
@@ -347,6 +351,7 @@ export const getAllTags = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch tags' });
   }
 };
+
 export const getMyTags = async (req, res) => {
   try {
     const { page = 1, limit = 15, search = "" } = req.query;
@@ -403,6 +408,8 @@ export const createNote = async (req, res) => {
 
     const isPro = req.user.isPro || req.user.isPremium; // Handle both for now
     const limit = isPro ? 2000 : 50;
+    const noteTextlimit = isPro ? 200000 : 30000;
+
 
     if (notesLastHour >= limit) {
       return res.status(429).json({ 
@@ -412,6 +419,13 @@ export const createNote = async (req, res) => {
 
     // ===== input =====
     const { title, content, category, tags, type, isPrivate } = req.body;
+
+    // ===== TEXT LIMIT CHECK =====
+    if (content && content.length > noteTextlimit) {
+      return res.status(400).json({
+        error: `Content too long (max ${noteTextlimit} characters for ${isPro ? "Pro" : "Normal"} users).`
+      });
+    }
 
     let categoryDoc = null;
 
@@ -604,8 +618,6 @@ export const bulkDeleteNotes = async (req, res) => {
   }
 };
 
-
-
 export const sanitizeNoteInput = (req, res, next) => {
   const sanitize = (str) =>
     typeof str === "string"
@@ -619,8 +631,6 @@ export const sanitizeNoteInput = (req, res, next) => {
 
   next();
 };
-
-import archiver from "archiver";
 
 export const downloadCategoryZip = async (req, res) => {
   try {

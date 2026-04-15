@@ -20,9 +20,27 @@ const Upgrade = () => {
 
     setLoading(true);
     try {
-      const { data: order } = await axiosInstance.post("/api/payment/orders", {
-        amount: 99, 
-      });
+      let order;
+      let retries = 3;
+      while (retries > 0) {
+        try {
+          const { data } = await axiosInstance.post("/api/payment/orders", {
+            amount: 99, 
+          });
+          order = data;
+          break;
+        } catch (error) {
+          retries--;
+          if (retries === 0) throw error;
+          
+          if (!error.response || error.response.status >= 500 || error.code === 'ERR_NETWORK') {
+              toast.info(`Engine waking up... Retrying payment init (${3 - retries}/2)...`, { autoClose: 2500, toastId: 'payment-retry' });
+              await new Promise(resolve => setTimeout(resolve, 3000));
+          } else {
+              throw error; 
+          }
+        }
+      }
 
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID, 

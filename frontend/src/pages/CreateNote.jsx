@@ -471,8 +471,8 @@ const CreateNote = () => {
                             onClick={() => setPreviewMode(!previewMode)}
                             className={`
                                 flex items-center gap-2 px-4 py-1.5 rounded-xl border font-mono text-xs transition-all
-                                ${previewMode 
-                                    ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
+                                ${previewMode
+                                    ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]'
                                     : 'bg-white/5 border-white/10 text-type-2 hover:bg-white/10 hover:text-type-1'}
                             `}
                         >

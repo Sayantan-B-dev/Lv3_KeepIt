@@ -18,25 +18,25 @@ const NoteContent = ({
       {editMode ? (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-             <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-[10px] font-mono text-type-3 uppercase tracking-widest font-bold">Edit Mode Active</span>
-             </div>
-             <button
-                type="button"
-                onClick={() => setPreviewMode(!previewMode)}
-                className={`
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-[10px] font-mono text-type-3 uppercase tracking-widest font-bold">Edit Mode Active</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setPreviewMode(!previewMode)}
+              className={`
                     flex items-center gap-2 px-4 py-1.5 rounded-xl border font-mono text-[10px] uppercase tracking-wider transition-all
-                    ${previewMode 
-                        ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
-                        : 'bg-white/5 border-white/10 text-type-2 hover:bg-white/10 hover:text-type-1'}
+                    ${previewMode
+                  ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]'
+                  : 'bg-white/5 border-white/10 text-type-2 hover:bg-white/10 hover:text-type-1'}
                 `}
             >
-                {previewMode ? (
-                    <><MdEdit className="w-3 h-3" /> Hide Preview</>
-                ) : (
-                    <><MdVisibility className="w-3 h-3" /> Show Live Preview</>
-                )}
+              {previewMode ? (
+                <><MdEdit className="w-3 h-3" /> Hide Preview</>
+              ) : (
+                <><MdVisibility className="w-3 h-3" /> Show Live Preview</>
+              )}
             </button>
           </div>
 
@@ -80,7 +80,7 @@ const NoteContent = ({
             </div>
 
             {previewMode && (
-                <div className="
+              <div className="
                     h-full 
                     min-h-[400px]
                     p-8 
@@ -92,14 +92,14 @@ const NoteContent = ({
                     custom-scrollbar 
                     shadow-inner
                 ">
-                    {editNote.content?.trim() ? (
-                        <NoteCore content={editNote.content} />
-                    ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-type-3 font-mono opacity-50">
-                            <p className="text-xs uppercase tracking-widest">No Content to Render</p>
-                        </div>
-                    )}
-                </div>
+                {editNote.content?.trim() ? (
+                  <NoteCore content={editNote.content} />
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-type-3 font-mono opacity-50">
+                    <p className="text-xs uppercase tracking-widest">No Content to Render</p>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>

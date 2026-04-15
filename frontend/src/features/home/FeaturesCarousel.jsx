@@ -44,7 +44,7 @@ const FeaturesCarousel = () => {
 
         const interval = setInterval(() => {
             setActiveIndex((prev) => (prev + 1) % features.length);
-        }, 1000);
+        }, 3000);
 
         return () => clearInterval(interval);
     }, [isHovering]);
