@@ -491,7 +491,7 @@ const CreateNote = () => {
                                 ref={contentInputRef}
                                 className={`
                                     ${textAreaStyle}
-                                    h-75 lg:h-120
+                                    h-[500px] lg:h-[700px]
                                     pr-12
                                     resize-none
                                     transition-all
@@ -544,14 +544,17 @@ const CreateNote = () => {
 
                         {/* Preview Pane */}
                         {previewMode && (
-                            <div className="
-                                h-120 
+                            <div 
+                                ref={previewRef}
+                                onScroll={handlePreviewScroll}
+                                className="
+                                h-[500px] lg:h-[700px]
                                 p-8 
                                 rounded-xl 
                                 border-2 border-white/20 
                                 bg-black/40 
                                 backdrop-blur-md 
-                                overflow-y-auto 
+                                overflow-y-scroll 
                                 custom-scrollbar 
                                 shadow-inner
                             ">

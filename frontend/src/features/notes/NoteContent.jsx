@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import NoteCore from "./NoteCore";
 import { MdVisibility, MdEdit } from "react-icons/md";
 
@@ -12,6 +12,36 @@ const NoteContent = ({
   note,
 }) => {
   const [previewMode, setPreviewMode] = useState(false);
+  const contentInputRef = useRef(null);
+  const previewRef = useRef(null);
+  const isSyncingLeft = useRef(false);
+  const isSyncingRight = useRef(false);
+
+  const handleEditorScroll = (e) => {
+    if (!previewMode || !previewRef.current) return;
+    if (isSyncingLeft.current) {
+        isSyncingLeft.current = false;
+        return;
+    }
+    isSyncingRight.current = true;
+    const target = e.target;
+    if (target.scrollHeight - target.clientHeight <= 0) return;
+    const percentage = target.scrollTop / (target.scrollHeight - target.clientHeight);
+    previewRef.current.scrollTop = percentage * (previewRef.current.scrollHeight - previewRef.current.clientHeight);
+  };
+
+  const handlePreviewScroll = (e) => {
+    if (!previewMode || !contentInputRef.current) return;
+    if (isSyncingRight.current) {
+        isSyncingRight.current = false;
+        return;
+    }
+    isSyncingLeft.current = true;
+    const target = e.target;
+    if (target.scrollHeight - target.clientHeight <= 0) return;
+    const percentage = target.scrollTop / (target.scrollHeight - target.clientHeight);
+    contentInputRef.current.scrollTop = percentage * (contentInputRef.current.scrollHeight - contentInputRef.current.clientHeight);
+  };
 
   return (
     <div className="my-8">
@@ -51,10 +81,11 @@ const NoteContent = ({
               )}
 
               <textarea
+                ref={contentInputRef}
+                onScroll={handleEditorScroll}
                 name="content"
                 value={editNote.content}
                 onChange={handleInputChange}
-                rows={16}
                 maxLength={CONTENT_MAX_LENGTH}
                 disabled={updateLoading || contentTooLarge}
                 className="
@@ -69,7 +100,7 @@ const NoteContent = ({
                   focus:border-white/40
                   transition-all
                   resize-none
-                  min-h-[400px]
+                  h-[500px] lg:h-[700px]
                 "
                 style={
                   contentTooLarge
@@ -80,15 +111,17 @@ const NoteContent = ({
             </div>
 
             {previewMode && (
-              <div className="
-                    h-full 
-                    min-h-[400px]
+              <div 
+                  ref={previewRef}
+                  onScroll={handlePreviewScroll}
+                  className="
+                    h-[500px] lg:h-[700px]
                     p-8 
                     rounded-xl 
                     border-2 border-white/20 
                     bg-black/40 
                     backdrop-blur-md 
-                    overflow-y-auto 
+                    overflow-y-scroll 
                     custom-scrollbar 
                     shadow-inner
                 ">

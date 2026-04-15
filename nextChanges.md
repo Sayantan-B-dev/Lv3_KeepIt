@@ -1,6 +1,6 @@
 ### 🔴 Priority: High
-* [] **Live Preview** while editing live prediew and text should be parallal..meaning scrooling one automatically scrolls other one just like in vs code
-* [x] **Offline-safe Pro checkout fallback:** Add robust retry/fallback UX when payment init fails due to backend cold start or network jitter.
+
+
 
 ---
 
@@ -23,10 +23,11 @@
 ### 📅 Recently Completed (April 16, 2026)
 * [x] **Live editing bug** Small edits trigger re-render, causing a brief right-side shift from a temporary dmermaid-svg-* element.
 * [x] **Limit notes:** 40k (free) vs 200k (Pro); enforce in backend and update UI messaging.
-
+* [x] **Live Preview** Editor and preview scroll together with equal height—like side-by-side preview in Visual Studio Code.
 ---
 
 ### Things done:
+* [x] **Pro checkout fallback:** Add retry/fallback UX for payment init failures (cold starts/network issues).
 * [x] **Premium Toasts:** Glassmorphic notification system.
 * [x] **Canceling membership popup:** Replaced native confirm with reusable alert modal (20% faded backdrop).
 * [x] **Button system alignment:** Unified button text alignment in shared button components and sidebar usage.
