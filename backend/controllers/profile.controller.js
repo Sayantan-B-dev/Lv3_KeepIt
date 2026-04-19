@@ -263,7 +263,7 @@ export const requestDeleteOTP = async (req, res) => {
     // Return OTP directly to frontend
     res.json({ otp });
   } catch (err) {
-    console.error("requestDeleteOTP Error:", err);
+    //console.error("requestDeleteOTP Error:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };

@@ -34,7 +34,7 @@ const CategoryNotesList = ({
           <div className="flex items-center gap-2">
             <input 
               type="checkbox" 
-              className="w-4 h-4 cursor-pointer accent-blue-500"
+              className="w-4 h-4 cursor-default accent-blue-500"
               checked={selectedNoteIds.length === notes.length && notes.length > 0}
               onChange={(e) => {
                 if (e.target.checked) {
@@ -45,7 +45,7 @@ const CategoryNotesList = ({
               }}
               id="selectAll"
             />
-            <label htmlFor="selectAll" className="text-type-2 font-mono text-sm cursor-pointer select-none">
+            <label htmlFor="selectAll" className="text-type-2 font-mono text-sm cursor-default select-none">
               Select All Loaded Notes
             </label>
           </div>
@@ -78,7 +78,7 @@ const CategoryNotesList = ({
                   isOwner ? (
                     <input 
                       type="checkbox" 
-                      className="w-5 h-5 cursor-pointer accent-blue-500"
+                      className="w-5 h-5 cursor-default accent-blue-500"
                       checked={isSelected}
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => {

@@ -24,7 +24,7 @@ export const getAllCategories = async (req, res) => {
 
     res.json(categories);
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    //console.error("Error fetching categories:", error);
     res.status(500).json({ error: "Failed to fetch categories" });
   }
 };
@@ -51,7 +51,7 @@ export const getAllNotes = async (req, res) => {
 
     res.json(notes);
   } catch (error) {
-    console.error('Error fetching notes:', error);
+    //console.error('Error fetching notes:', error);
     res.status(500).json({ error: 'Failed to fetch notes' });
   }
 }
@@ -77,7 +77,7 @@ export const getMetrics = async (req, res) => {
 
     res.json(metrics);
   } catch (error) {
-    console.error("Error fetching metrics:", error);
+    //console.error("Error fetching metrics:", error);
     res.status(500).json({ error: "Failed to fetch metrics" });
   }
 };

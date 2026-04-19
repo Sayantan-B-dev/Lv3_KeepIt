@@ -161,7 +161,7 @@ export const getAllUsers = async (req, res) => {
         const users = await User.find({}, 'username email profileImage');
         res.json(users);
     } catch (error) {
-        console.error('Error fetching users:', error);
+        //console.error('Error fetching users:', error);
         res.status(500).json({ error: 'Failed to fetch users' });
     }
 };

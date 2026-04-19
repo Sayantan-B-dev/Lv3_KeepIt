@@ -18,7 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <App />
       </BrowserRouter>
       <ToastContainer
-        position="top-center"
+        position="top-right"
         autoClose={3200}
         hideProgressBar={false}
         newestOnTop

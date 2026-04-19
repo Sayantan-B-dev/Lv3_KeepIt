@@ -37,7 +37,7 @@ export const createOrder = async (req, res) => {
 
     res.json(order);
   } catch (error) {
-    console.error("Razorpay Order Error Details:", error);
+    //console.error("Razorpay Order Error Details:", error);
     res.status(500).json({ error: error.message || "Failed to create order" });
   }
 };
@@ -77,7 +77,7 @@ export const verifyPayment = async (req, res) => {
       res.status(400).json({ success: false, message: "Invalid payment signature" });
     }
   } catch (error) {
-    console.error("Payment Verification Error:", error);
+    //console.error("Payment Verification Error:", error);
     res.status(500).json({ error: "Server error during verification" });
   }
 };

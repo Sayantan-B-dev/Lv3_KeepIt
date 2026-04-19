@@ -63,7 +63,7 @@ export const getPublicCategoryNotes = async (req, res) => {
 
   } catch (error) {
     // Log error internally for debugging
-    console.error("Error in getPublicCategoryNotes:", error);
+    //console.error("Error in getPublicCategoryNotes:", error);
 
     // Return generic error response to client
     return res.status(500).json({
@@ -125,7 +125,7 @@ export const getCategoryNotes = async (req, res) => {
       hasMore: skip + notes.length < total,
     });
   } catch (err) {
-    console.error("Error in getCategoryNotes:", err);
+    //console.error("Error in getCategoryNotes:", err);
     res.status(500).json({
       error: "Failed to fetch category notes",
     });
@@ -163,7 +163,7 @@ export const getMyNotesPaginated = async (req, res) => {
       hasMore: notes.length === limit,
     });
   } catch (err) {
-    console.error("getMyNotesPaginated error:", err);
+    //console.error("getMyNotesPaginated error:", err);
     res.status(500).json({ error: "Failed to fetch notes" });
   }
 };
@@ -216,7 +216,7 @@ export const getUserNotes = async (req, res) => {
       hasMore: skip + notes.length < total,
     });
   } catch (err) {
-    console.error("Error in getUserNotes:", err);
+    //console.error("Error in getUserNotes:", err);
     res.status(500).json({
       error: "Failed to fetch user notes",
     });
@@ -258,7 +258,7 @@ export const getAllPublicNotes = async (req, res) => {
       .lean();
     res.json(notes)
   } catch (error) {
-    console.error('Error fetching public notes:', error);
+    //console.error('Error fetching public notes:', error);
     res.status(500).json({ error: 'Failed to fetch public notes' });
   }
 }
@@ -286,7 +286,7 @@ export const getRandomPublicNotes = async (req, res) => {
 
     res.json(populatedNotes);
   } catch (error) {
-    console.error('Error fetching random public notes:', error);
+    //console.error('Error fetching random public notes:', error);
     res.status(500).json({ error: 'Failed to fetch random public notes' });
   }
 }
@@ -310,7 +310,7 @@ export const getNotesByTag = async (req, res) => {
         .sort({ createdAt: -1 });
       return res.json(notes);
     } catch (error) {
-      console.error('Error fetching notes by tag:', error);
+      //console.error('Error fetching notes by tag:', error);
       return res.status(500).json({ error: 'Failed to fetch notes by tag' });
     }
   } else {
@@ -323,7 +323,7 @@ export const getNotesByTag = async (req, res) => {
         .sort({ createdAt: -1 });
       return res.json(notes);
     } catch (error) {
-      console.error('Error fetching public notes:', error);
+      //console.error('Error fetching public notes:', error);
       return res.status(500).json({ error: 'Failed to fetch public notes' });
     }
   }
@@ -347,7 +347,7 @@ export const getAllTags = async (req, res) => {
       .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
     res.json(tagsArr);
   } catch (error) {
-    console.error('Error fetching tags:', error);
+    //console.error('Error fetching tags:', error);
     res.status(500).json({ error: 'Failed to fetch tags' });
   }
 };
@@ -387,7 +387,7 @@ export const getMyTags = async (req, res) => {
       hasMore: start + limit < tags.length,
     });
   } catch (err) {
-    console.error("getMyTags error:", err);
+    //console.error("getMyTags error:", err);
     res.status(500).json({ error: "Failed to fetch tags" });
   }
 };
@@ -486,7 +486,7 @@ export const createNote = async (req, res) => {
 
     res.status(201).json(note);
   } catch (error) {
-    console.error("Error creating note:", error);
+    //console.error("Error creating note:", error);
     res.status(500).json({
       error: "Failed to create note",
       details: error.message,
@@ -525,7 +525,7 @@ export const bulkAddTags = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error bulk adding tags:", error);
+    //console.error("Error bulk adding tags:", error);
     res.status(500).json({
       error: "Failed to bulk add tags",
       details: error.message,
@@ -554,7 +554,7 @@ export const updateNote = async (req, res) => {
     if (error.code === 11000 && error.keyPattern && error.keyPattern.title && error.keyPattern.user) {
       return res.status(400).json({ error: 'You already have a note with this title. Note titles must be unique.' });
     }
-    console.error('Error updating note:', error);
+    //console.error('Error updating note:', error);
     res.status(500).json({
       error: 'Failed to update note',
       details: error.message
@@ -610,7 +610,7 @@ export const bulkDeleteNotes = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error bulk deleting notes:", error);
+    //console.error("Error bulk deleting notes:", error);
     res.status(500).json({
       error: "Failed to bulk delete notes",
       details: error.message,
@@ -655,7 +655,7 @@ export const downloadCategoryZip = async (req, res) => {
     const archive = archiver("zip", { zlib: { level: 9 } });
 
     archive.on("error", (err) => {
-      console.error("Archive error:", err);
+      //console.error("Archive error:", err);
       res.status(500).send({ error: "Failed to generate ZIP" });
     });
 
@@ -670,7 +670,7 @@ export const downloadCategoryZip = async (req, res) => {
     await archive.finalize();
 
   } catch (error) {
-    console.error("Error in downloadCategoryZip:", error);
+    //console.error("Error in downloadCategoryZip:", error);
     if (!res.headersSent) {
       res.status(500).json({ error: "Failed to download ZIP" });
     }

@@ -364,6 +364,9 @@ button:focus-visible {
   animation: spin-slow 3s linear infinite;
 }
 
+
+
+
 /* ================= premium toasts ================= */
 
 .Toastify__toast-container {
@@ -373,24 +376,29 @@ button:focus-visible {
 
 .premium-toast {
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.541);
   background:
-    linear-gradient(160deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.015)),
-    rgba(0, 0, 0, 0.02);
+    linear-gradient(160deg, rgba(0, 0, 0, 0.329), rgba(0, 0, 0, 0.452)),
+    rgba(0, 0, 0, 0.562);
   box-shadow:
     0 10px 28px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
-  min-height: 78px;
+  min-height: auto;
   padding: 14px;
+  margin: 5px;
   overflow: hidden;
   animation: premium-toast-in 220ms ease-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
 }
 
 .premium-toast__body {
   margin: 0;
-  padding: 16px 18px;
+  padding: 0;
   font-family: monospace, serif;
   font-size: 12px;
   font-weight: 600;
@@ -398,17 +406,49 @@ button:focus-visible {
   text-transform: uppercase;
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.94);
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .premium-toast .Toastify__toast-icon {
-  margin-inline-end: 10px;
+  margin-inline-end: 0;
   width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .premium-toast .Toastify__close-button {
   align-self: center;
   opacity: 0.72;
   color: rgba(255, 255, 255, 0.85);
+  flex-shrink: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: none !important;
+  border: none !important;
+  cursor: pointer;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  min-width: 20px !important;
+  min-height: 20px !important;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  position: relative;
+  top: 0 !important;
+  right: 0 !important;
+}
+
+.premium-toast .Toastify__close-button svg {
+  width: 16px;
+  height: 16px;
+}
+.premium-toast .Toastify__close-button:hover {
+  opacity: 1;
 }
 
 .premium-toast__progress {
@@ -457,7 +497,7 @@ button:focus-visible {
   }
 
   .premium-toast__body {
-    padding: 14px 14px;
+    padding: 0;
     font-size: 11px;
   }
 }

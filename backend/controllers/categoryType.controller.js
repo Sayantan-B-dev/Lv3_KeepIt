@@ -27,7 +27,7 @@ export const getPublicCategoriesByCategoryType = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("getPublicCategoriesByCategoryType error:", err);
+    //console.error("getPublicCategoriesByCategoryType error:", err);
     res.status(500).json({ error: "Failed to fetch categories" });
   }
 };
@@ -61,7 +61,7 @@ export const getMyCategoryTypes = async (req, res) => {
       hasMore: types.length === limit,
     });
   } catch (err) {
-    console.error("getMyCategoryTypes error:", err);
+    //console.error("getMyCategoryTypes error:", err);
     res.status(500).json({ error: "Failed to fetch category types" });
   }
 };
@@ -85,7 +85,7 @@ export const createCategoryType = async (req, res) => {
       });
     }
 
-    console.error("createCategoryType error:", err);
+    //console.error("createCategoryType error:", err);
     res.status(500).json({ error: "Failed to create category type" });
   }
 };
@@ -120,7 +120,7 @@ export const deleteCategoryType = async (req, res) => {
 
     res.json({ message: "Category type and all related data deleted." });
   } catch (err) {
-    console.error("deleteCategoryType error:", err);
+    //console.error("deleteCategoryType error:", err);
     res.status(500).json({ error: err.message });
   }
 };
@@ -157,7 +157,7 @@ export const getCategoriesByCategoryType = async (req, res) => {
       categories,
     });
   } catch (err) {
-    console.error("getCategoriesByCategoryType error:", err);
+    //console.error("getCategoriesByCategoryType error:", err);
     res.status(500).json({ error: "Failed to fetch categories" });
   }
 };

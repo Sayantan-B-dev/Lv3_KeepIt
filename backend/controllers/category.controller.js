@@ -35,7 +35,7 @@ export const getPublicCategoryById = async (req, res) => {
       notes,
     });
   } catch (err) {
-    console.error("PUBLIC CATEGORY ERROR:", err);
+    //console.error("PUBLIC CATEGORY ERROR:", err);
     res.status(500).json({ error: "Failed to fetch category" });
   }
 };
@@ -132,7 +132,7 @@ export const createCategory = async (req, res) => {
 
     res.status(201).json(category);
   } catch (error) {
-    console.error("Error creating category:", error);
+    //console.error("Error creating category:", error);
     res.status(500).json({ error: "Failed to create category" });
   }
 };
@@ -150,7 +150,7 @@ export const createCategoryType = async (req, res) => {
 
     res.status(200).json(categoryType);
   } catch (err) {
-    console.error("Error creating category type:", err);
+    //console.error("Error creating category type:", err);
     res.status(500).json({ error: "Failed to create category type" });
   }
 };
@@ -187,7 +187,7 @@ export const deleteCategory = async (req, res) => {
 
     res.json({ message: "Category deleted" });
   } catch (err) {
-    console.error("DELETE CATEGORY ERROR:", err);
+    //console.error("DELETE CATEGORY ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 };
