@@ -15,8 +15,6 @@
 
 ### 🟢 Priority: Low
 
-* [ ] **Changelog hygiene automation:** Auto-sync `latestChanges.md` from conventional commit history.
-
 
 ---
 

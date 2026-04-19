@@ -2,7 +2,7 @@
 import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema({
-    name: { type: String, required: true, maxLength: 50, minLength: 3 },
+    name: { type: String, required: true, maxLength: 100, minLength: 3 },
     type: { type: String },
     categoryType: {
         type: mongoose.Schema.Types.ObjectId,
