@@ -143,7 +143,7 @@ const NoteCore = ({ content }) => {
 
             return (
               <div className="my-8 flex justify-center">
-                <div className="w-full max-w-4xl relative rounded-2xl overflow-hidden border border-white/40 p-4 shadow-2xl hover:border-white/60 hover:scale-102 transition-transform">
+                <div className="w-full max-w-6xl relative rounded-2xl overflow-hidden border border-white/40 p-4 shadow-2xl hover:border-white/60 hover:scale-102 transition-transform">
                   <LoadingPlaceholder isLoading={isLoading} />
                   <img 
                     src={src} 
